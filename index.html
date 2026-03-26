@@ -908,7 +908,9 @@ async function bootApp(){
   const main=document.querySelector('.main');
   if(!document.getElementById('sheet-banner') && CURRENT_ROLE==='admin'){
     const b=document.createElement('div');b.id='sheet-banner';b.className='sheet-banner';
+    if(CURRENT_ROLE==="admin){
     b.innerHTML=`📊 Synced with Google Sheets — <a href="https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit" target="_blank">Open Sheet ↗</a>`;
+    }
     main.prepend(b);
   }
   // Auto-sync every 60 seconds
