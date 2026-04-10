@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Account Book — Fityahal</title>
 <script src="https://accounts.google.com/gsi/client"></script>
 <style>
@@ -25,7 +28,7 @@
   --g3:linear-gradient(135deg,#ff5c6c,#ff8c42);
 }
 html,body{height:100%;font-family:var(--fn);font-size:14px;color:var(--tx);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
-::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar{width:7px;height:7px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--sf3);border-radius:99px;}
 
@@ -112,16 +115,19 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 #sync-status{font-size:11px;color:var(--tx3);display:flex;align-items:center;gap:1px;}
 
 /* ══ READONLY BANNER ══ */
-#readonly-banner{background:linear-gradient(90deg,rgba(157,122,250,.1),rgba(91,141,238,.1));border-bottom:1px solid rgba(157,122,250,.2);padding:8px 1.5rem;display:none;align-items:center;justify-content:center;gap:10px;font-size:12px;color:var(--tx2);position:relative;}
-#readonly-banner::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(157,122,250,.03) 0px,rgba(157,122,250,.03) 1px,transparent 1px,transparent 8px);}
 
 /* ══ APP ══ */
 #app{display:none;min-height:100vh;flex-direction:column;position:relative;z-index:1;}
 #app.show{display:flex;}
 
 /* ══ TOPBAR ══ */
-.topbar{background:rgba(17,24,39,.9);border-bottom:1px solid var(--br);padding:0 1.25rem;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
-.tb-l{display:flex;align-items:center;gap:10px;}
+.topbar{background:rgba(17,24,39,.95);border-bottom:1px solid var(--br);padding:0;height:52px;display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+.tb-l{padding:0 1rem;flex-shrink:0;}
+.tb-nav{display:flex;overflow-x:auto;scrollbar-width:none;align-items:stretch;justify-content:center;}
+.tb-nav::-webkit-scrollbar{display:none;}
+.tb-nav .nb{padding:0 12px;height:100%;border-bottom:3px solid transparent;border-top:none;display:flex;align-items:center;font-size:13px;}
+.tb-nav .nb.active{background:rgba(91,141,238,.08);color:var(--ac-t);border-bottom-color:var(--ac);}
+.tb-nav .nb:hover{color:var(--tx);background:rgba(255,255,255,.04);}
 .tb-logo{width:34px;height:34px;background:var(--g1);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 12px rgba(91,141,238,.35);overflow:hidden;flex-shrink:0;}
 .tb-logo img{width:100%;height:100%;object-fit:cover;}
 .tb-ttl{font-size:15px;font-weight:800;letter-spacing:-.4px;background:var(--g1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
@@ -281,7 +287,7 @@ tfoot td.sk{text-align:left;font-family:var(--fn);font-size:12px;font-weight:600
 .role-toggle-btn:hover:not(.active-admin):not(.active-viewer){background:var(--sf2);color:var(--tx);}
 
 /* ══ TOAST ══ */
-.toast{position:fixed;bottom:80px;right:1.25rem;padding:11px 16px;border-radius:var(--rl);font-size:13px;z-index:9999;box-shadow:var(--sh-l);animation:toastIn .3s cubic-bezier(.16,1,.3,1);font-weight:500;display:flex;align-items:center;gap:8px;max-width:300px;}
+.toast{position:fixed;top:70px;right:1.25rem;padding:13px 18px;border-radius:var(--rl);font-size:13px;z-index:9999;box-shadow:var(--sh-l);animation:toastIn .3s cubic-bezier(.16,1,.3,1);font-weight:500;display:flex;align-items:center;gap:10px;max-width:340px;}
 @keyframes toastIn{from{opacity:0;transform:translateX(16px) scale(.96);}to{opacity:1;transform:translateX(0) scale(1);}}
 .t-ok{background:var(--sf);border:1px solid rgba(16,212,142,.35);color:var(--gn-t);}
 .t-err{background:var(--sf);border:1px solid rgba(255,92,108,.35);color:var(--rd-t);}
@@ -312,7 +318,206 @@ tfoot td.sk{text-align:left;font-family:var(--fn);font-size:12px;font-weight:600
 .act-txt{font-size:13px;color:var(--tx);flex:1;line-height:1.5;}
 .act-time{font-size:11px;color:var(--tx3);flex-shrink:0;}
 
-@media print{.topbar,.nav,.fb,.btn,.mc-ac,.sh-a,#readonly-banner,#undo-bar,.sheet-banner{display:none!important;}.main{padding:0;max-width:100%;}.tw{box-shadow:none;}}
+/* ══ PAYMENT HISTORY ITEMS ══ */
+.pay-hist-item{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:var(--r);background:var(--sf2);border:1px solid var(--br);}
+.pay-hist-key{font-size:13px;font-weight:600;flex:1;}
+.pay-hist-amt{font-size:12px;font-family:var(--mo);color:var(--gn-t);}
+.pay-hist-del{padding:3px 9px;border:1px solid rgba(255,92,108,.3);background:var(--rd-s);color:var(--rd-t);border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--fn);transition:all .15s;}
+.pay-hist-del:hover{background:var(--rd);color:#fff;}
+
+/* ══ PROJECT CARD ══ */
+.proj-card{background:var(--sf);border:1px solid var(--br);border-radius:var(--rl);overflow:hidden;margin-bottom:14px;box-shadow:var(--sh);}
+.proj-hd{padding:1rem 1.15rem;border-bottom:1px solid var(--br);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.proj-name{font-size:15px;font-weight:700;}
+.proj-status{padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;}
+.ps-active{background:var(--gn-s);color:var(--gn-t);border:1px solid rgba(16,212,142,.2);}
+.ps-done{background:var(--ac-s);color:var(--ac-t);border:1px solid rgba(91,141,238,.2);}
+.proj-meta{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--br);}
+.proj-m{padding:.85rem 1.15rem;text-align:center;}
+.proj-ml{font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:var(--tx3);margin-bottom:4px;font-weight:700;}
+.proj-mv{font-size:16px;font-weight:700;font-family:var(--mo);}
+.proj-progress{height:4px;background:var(--sf3);margin:0 1.15rem;}
+.proj-progress-fill{height:100%;background:var(--g2);border-radius:99px;transition:width .4s ease;}
+.proj-sect{padding:.85rem 1.15rem;border-top:1px solid var(--br);}
+.proj-sl{font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;}
+.proj-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--br);font-size:12px;gap:8px;}
+.proj-row:last-child{border-bottom:none;}
+.proj-row-del{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:11px;padding:1px 4px;transition:color .15s;}
+.proj-row-del:hover{color:var(--rd-t);}
+
+/* ══ CHAT MESSAGES ══ */
+.chat-msg{display:flex;flex-direction:column;max-width:75%;}
+.msg-mine{align-self:flex-end;align-items:flex-end;}
+.msg-other{align-self:flex-start;align-items:flex-start;}
+.msg-bubble{padding:9px 13px;border-radius:14px;font-size:13px;line-height:1.6;word-break:break-word;}
+.msg-mine .msg-bubble{background:var(--ac);color:#fff;border-radius:14px 14px 3px 14px;}
+.msg-other .msg-bubble{background:var(--sf2);color:var(--tx);border-radius:14px 14px 14px 3px;}
+.msg-meta{font-size:10px;color:var(--tx3);margin-top:3px;padding:0 4px;}
+
+/* ══ ORG ROLE BADGE COLOURS ══ */
+.orb-alif{background:rgba(255,200,40,.12);color:#ffd94d;border:1px solid rgba(255,200,40,.25);}
+.orb-mutabbiq{background:rgba(255,92,108,.12);color:var(--rd-t);border:1px solid rgba(255,92,108,.25);}
+.orb-khazin{background:rgba(16,212,142,.12);color:var(--gn-t);border:1px solid rgba(16,212,142,.25);}
+.org-role-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;letter-spacing:.3px;}
+
+@media print{.topbar,.nav,.fb,.btn,.mc-ac,.sh-a,#undo-bar,.sheet-banner{display:none!important;}.main{padding:0;max-width:100%;}.tw{box-shadow:none;}}
+
+/* ══ THEME: LIGHT ══ */
+body.theme-light{
+  --bg:#f0f2f8;--bg2:#e8eaf2;--sf:#ffffff;--sf2:#f4f5fa;--sf3:#eaecf4;
+  --tx:#111827;--tx2:#374151;--tx3:#6b7280;
+  --br:rgba(0,0,0,.06);--br2:rgba(0,0,0,.1);--br3:rgba(0,0,0,.15);
+  --sh:0 2px 8px rgba(0,0,0,.08);--sh-m:0 8px 24px rgba(0,0,0,.12);--sh-l:0 20px 60px rgba(0,0,0,.18);
+}
+body.theme-light .topbar{background:rgba(255,255,255,.9);}
+body.theme-light .nav{background:rgba(255,255,255,.85);}
+body.theme-light body::before{background-image:linear-gradient(rgba(91,141,238,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(91,141,238,.05) 1px,transparent 1px);}
+body.theme-light .fi,.theme-light .pc-id-row input,.theme-light .fr input,.theme-light .fr select,.theme-light .fr textarea,.theme-light .fb input,.theme-light .fb select{background:var(--sf);color:var(--tx);}
+body.theme-light .lc{background:rgba(255,255,255,.95);}
+body.theme-light .cm-box,.theme-light .mo-b,.theme-light .pc{background:var(--sf);}
+
+/* ══ THEME: NIGHT ══ */
+body.theme-night{
+  --bg:#01050b;--bg2:#030810;--sf:#07111e;--sf2:#0c1a2a;--sf3:#112033;
+  --tx:#c8d8f0;--tx2:#7a9bb5;--tx3:#3a5570;
+  --ac:#3a6fd8;--ac-t:#7aaff5;
+}
+
+/* ══ THEME TOGGLE ══ */
+.theme-btn{font-size:16px;padding:5px 8px;cursor:pointer;border-radius:var(--r);border:1px solid var(--br2);background:var(--sf2);transition:all .18s;line-height:1;}
+.theme-btn:hover{background:var(--sf3);}
+
+/* ══ GLOW EFFECTS ══ */
+@keyframes glowRed{0%,100%{box-shadow:0 0 8px 2px rgba(255,92,108,.5),0 0 18px 4px rgba(255,92,108,.25);}50%{box-shadow:0 0 12px 4px rgba(255,92,108,.7),0 0 28px 8px rgba(255,92,108,.35);}}
+@keyframes glowYellow{0%,100%{box-shadow:0 0 8px 2px rgba(255,173,46,.5),0 0 18px 4px rgba(255,173,46,.25);}50%{box-shadow:0 0 12px 4px rgba(255,173,46,.7),0 0 28px 8px rgba(255,173,46,.35);}}
+@keyframes glowGreen{0%,100%{box-shadow:0 0 8px 2px rgba(16,212,142,.4),0 0 18px 4px rgba(16,212,142,.2);}50%{box-shadow:0 0 12px 4px rgba(16,212,142,.6),0 0 28px 8px rgba(16,212,142,.3);}}
+@keyframes glowWhite{0%,100%{box-shadow:0 0 8px 2px rgba(255,255,255,.35),0 0 18px 4px rgba(255,255,255,.15);}50%{box-shadow:0 0 12px 4px rgba(255,255,255,.5),0 0 28px 8px rgba(255,255,255,.25);}}
+@keyframes glowBlue{0%,100%{box-shadow:0 0 10px 3px rgba(91,141,238,.6),0 0 22px 6px rgba(91,141,238,.3);}50%{box-shadow:0 0 16px 5px rgba(91,141,238,.8),0 0 32px 10px rgba(91,141,238,.4);}}
+.glow-red{animation:glowRed 2s ease-in-out infinite;border-color:rgba(255,92,108,.4)!important;}
+.glow-yellow{animation:glowYellow 2s ease-in-out infinite;border-color:rgba(255,173,46,.4)!important;}
+.glow-green{animation:glowGreen 2s ease-in-out infinite;border-color:rgba(16,212,142,.4)!important;}
+.glow-white{animation:glowWhite 2s ease-in-out infinite;}
+.glow-blue{animation:glowBlue 1.8s ease-in-out infinite;}
+
+/* ══ ROLE BADGES (org roles) ══ */
+.org-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:99px;font-size:10px;font-weight:800;letter-spacing:.4px;border:1px solid rgba(91,141,238,.35);background:rgba(91,141,238,.12);color:var(--ac-t);animation:glowBlue 2s ease-in-out infinite;margin-left:4px;}
+
+/* ══ NOTICE BOARD ══ */
+.notice-list{display:flex;flex-direction:column;gap:10px;}
+.notice-item{background:var(--sf);border:1px solid var(--br);border-radius:var(--rl);padding:1rem 1.15rem;position:relative;overflow:hidden;transition:all .2s;}
+.notice-item::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--g1);}
+.notice-item:hover{transform:translateX(3px);box-shadow:var(--sh-m);}
+.ni-title{font-size:14px;font-weight:700;margin-bottom:4px;}
+.ni-body{font-size:13px;color:var(--tx2);line-height:1.7;white-space:pre-wrap;}
+.ni-meta{font-size:10px;color:var(--tx3);margin-top:8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.ni-tag{background:var(--sf2);padding:2px 8px;border-radius:99px;border:1px solid var(--br2);}
+
+/* ══ NIZAM RULEBOOK ══ */
+.rule-list{display:flex;flex-direction:column;gap:8px;}
+.rule-item{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:.9rem 1.1rem;display:flex;gap:12px;align-items:flex-start;transition:all .15s;}
+.rule-item:hover{border-color:var(--br2);}
+.rule-num{width:28px;height:28px;background:var(--ac-s);color:var(--ac-t);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;border:1px solid rgba(91,141,238,.2);}
+.rule-txt{font-size:13px;color:var(--tx2);line-height:1.7;flex:1;}
+
+/* ══ PRIVATE NOTICES ══ */
+.pn-item{background:var(--sf);border:1px solid var(--br);border-radius:var(--rl);padding:1rem 1.15rem;position:relative;}
+.pn-item::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--pu);}
+.pn-from{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;font-weight:700;}
+.pn-msg{font-size:13px;color:var(--tx);line-height:1.7;white-space:pre-wrap;}
+.pn-time{font-size:10px;color:var(--tx3);margin-top:6px;}
+.pn-badge{background:var(--pu-s);color:var(--pu-t);border:1px solid rgba(157,122,250,.2);font-size:10px;font-weight:700;padding:1px 8px;border-radius:99px;display:inline-block;margin-bottom:6px;}
+
+/* ══ CHAT ══ */
+#chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 160px);max-height:600px;}
+.chat-msgs{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:10px;}
+.chat-msg{display:flex;gap:8px;align-items:flex-end;max-width:80%;}
+.chat-msg.mine{flex-direction:row-reverse;align-self:flex-end;}
+.chat-av{width:30px;height:30px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;}
+.chat-bub{padding:9px 13px;border-radius:12px;font-size:13px;line-height:1.6;max-width:100%;word-break:break-word;}
+.chat-msg.mine .chat-bub{background:var(--ac);color:#fff;border-radius:12px 12px 3px 12px;}
+.chat-msg:not(.mine) .chat-bub{background:var(--sf2);color:var(--tx);border-radius:12px 12px 12px 3px;}
+.chat-meta{font-size:9px;color:var(--tx3);margin-top:3px;text-align:right;}
+.chat-msg:not(.mine) .chat-meta{text-align:left;}
+.chat-input-wrap{display:flex;gap:8px;padding:10px;border-top:1px solid var(--br);background:var(--sf2);}
+.chat-input{flex:1;padding:9px 13px;border:1px solid var(--br2);border-radius:20px;font-family:var(--fn);font-size:13px;color:var(--tx);background:var(--sf);outline:none;transition:border .2s;}
+.chat-input:focus{border-color:var(--ac);}
+.chat-send{padding:9px 16px;background:var(--ac);color:#fff;border:none;border-radius:20px;font-family:var(--fn);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;}
+.chat-send:hover{opacity:.85;}
+.muted-badge{background:var(--rd-s);color:var(--rd-t);font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;border:1px solid rgba(255,92,108,.2);}
+
+/* ══ PROJECT TRACKER ══ */
+.proj-card{background:var(--sf);border:1px solid var(--br);border-radius:var(--rl);overflow:hidden;margin-bottom:12px;}
+.proj-head{padding:1rem 1.15rem;border-bottom:1px solid var(--br);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.proj-nm{font-size:15px;font-weight:700;}
+.proj-desc{font-size:12px;color:var(--tx3);margin-top:2px;}
+.proj-body{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+@media(max-width:600px){.proj-body{grid-template-columns:1fr;}}
+.proj-section{padding:1rem 1.15rem;}
+.proj-section:first-child{border-right:1px solid var(--br);}
+@media(max-width:600px){.proj-section:first-child{border-right:none;border-bottom:1px solid var(--br);}}
+.proj-section-t{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.proj-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--br);font-size:12px;}
+.proj-row:last-child{border-bottom:none;}
+.proj-row-l{color:var(--tx2);flex:1;}
+.proj-row-v{font-family:var(--mo);font-weight:600;}
+.proj-footer{background:var(--sf2);padding:.85rem 1.15rem;display:flex;gap:1.5rem;flex-wrap:wrap;}
+.proj-stat{text-align:center;}
+.proj-stat-v{font-size:16px;font-weight:700;font-family:var(--mo);}
+.proj-stat-l{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+
+/* ══ PAYMENT HISTORY MODAL ══ */
+.pay-hist-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:var(--r);background:var(--sf2);margin-bottom:6px;gap:8px;}
+.pay-hist-row:hover{background:var(--sf3);}
+.ph-month{font-size:13px;font-weight:600;flex:1;}
+.ph-amt{font-size:12px;font-family:var(--mo);color:var(--gn-t);}
+.ph-del{padding:3px 8px;border:1px solid rgba(255,92,108,.3);background:var(--rd-s);color:var(--rd-t);border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--fn);transition:all .15s;}
+.ph-del:hover{background:var(--rd);color:#fff;}
+
+
+/* ══ ELITE CARD ══ */
+.mc.elite{background:linear-gradient(135deg,rgba(20,16,40,.95),rgba(30,20,60,.95));border:1.5px solid rgba(200,160,255,.35);box-shadow:0 0 28px rgba(157,122,250,.18),0 2px 12px rgba(0,0,0,.5);}
+.mc.elite::before{opacity:1;background:linear-gradient(90deg,#ffd94d,#9d7afa,#ffd94d);background-size:200%;animation:eliteShimmer 3s linear infinite;}
+@keyframes eliteShimmer{0%{background-position:0%;}100%{background-position:200%;}}
+.mc.elite .mc-av{background:linear-gradient(135deg,#ffd94d,#9d7afa);box-shadow:0 4px 20px rgba(200,160,255,.5);}
+
+/* ══ PENDING PAYMENT ══ */
+.pay-pending-item{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:var(--r);background:rgba(255,173,46,.07);border:1px solid rgba(255,173,46,.2);margin-bottom:6px;}
+.pay-pending-badge{padding:2px 9px;border-radius:99px;font-size:10px;font-weight:700;background:var(--am-s);color:var(--am-t);border:1px solid rgba(255,173,46,.25);}
+.pay-approved-badge{background:var(--gn-s);color:var(--gn-t);border:1px solid rgba(16,212,142,.25);}
+
+/* ══ NIZAM BOOK OVERLAY ══ */
+#nizam-book-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:8500;backdrop-filter:blur(10px);padding:1rem;}
+.nizam-book{position:relative;width:min(720px,96vw);max-height:90vh;display:flex;border-radius:4px;box-shadow:0 40px 120px rgba(0,0,0,.8),0 0 0 1px rgba(200,160,100,.25);}
+.book-spine{width:36px;background:linear-gradient(180deg,#5c3a10,#3b2008,#5c3a10);border-radius:6px 0 0 6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;text-orientation:mixed;font-size:11px;font-weight:700;color:rgba(255,220,120,.7);letter-spacing:2px;}
+.book-pages{flex:1;background:var(--sf);border-radius:0 6px 6px 0;overflow-y:auto;padding:2rem 2.2rem;position:relative;border-left:3px solid rgba(180,140,80,.3);}
+.book-pages::before{content:'';position:absolute;left:0;top:0;bottom:0;width:24px;background:linear-gradient(90deg,rgba(180,140,80,.08),transparent);pointer-events:none;}
+.book-title{font-size:22px;font-weight:800;color:var(--ac-t);text-align:center;margin-bottom:.5rem;font-family:Georgia,serif;}
+.book-subtitle{font-size:12px;color:var(--tx3);text-align:center;margin-bottom:1.5rem;font-style:italic;}
+.book-divider{border:none;border-top:1px solid var(--br2);margin:1rem 0;}
+.book-content{font-family:Georgia,serif;font-size:14px;color:var(--tx);line-height:2;white-space:pre-wrap;}
+.book-close-btn{display:block;margin:2rem auto 0;padding:10px 32px;background:var(--g1);color:#fff;border:none;border-radius:8px;font-family:var(--fn);font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.5px;}
+.book-close-btn:hover{opacity:.85;}
+
+/* ══ NOTIF DOT ══ */
+.notif-dot{width:8px;height:8px;border-radius:50%;background:var(--rd);position:absolute;top:3px;right:3px;border:2px solid var(--bg);}
+.nb-wrap{position:relative;display:inline-block;}
+
+/* ══ PROFILE ══ */
+.profile-hero{background:linear-gradient(135deg,var(--sf),var(--sf2));border:1px solid var(--br2);border-radius:var(--rxl);padding:2rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;position:relative;overflow:hidden;}
+.profile-hero::before{content:'';position:absolute;inset:0;background:var(--g1);opacity:.04;pointer-events:none;}
+.profile-av{width:80px;height:80px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 4px 20px rgba(91,141,238,.35);overflow:hidden;}
+.profile-av img{width:100%;height:100%;object-fit:cover;}
+.profile-name{font-size:20px;font-weight:800;letter-spacing:-.4px;}
+.profile-email{font-size:12px;color:var(--tx3);margin-top:3px;}
+.profile-section{background:var(--sf);border:1px solid var(--br);border-radius:var(--rl);overflow:hidden;margin-bottom:1rem;box-shadow:var(--sh);}
+.profile-section-hd{padding:.85rem 1.1rem;border-bottom:1px solid var(--br);font-size:12px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;background:var(--sf2);}
+.profile-row{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1.1rem;border-bottom:1px solid var(--br);font-size:13px;}
+.profile-row:last-child{border-bottom:none;}
+.profile-row-label{color:var(--tx3);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+.profile-row-val{font-weight:600;color:var(--tx);}
+.profile-pay-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700;}
+.ppc-paid{background:var(--gn-s);color:var(--gn-t);border:1px solid rgba(16,212,142,.2);}
+.ppc-unpaid{background:var(--sf3);color:var(--tx3);border:1px solid var(--br2);}
 </style>
 </head>
 <body>
@@ -349,9 +554,9 @@ tfoot td.sk{text-align:left;font-family:var(--fn);font-size:12px;font-weight:600
     </div>
     <div class="l-hint"><strong>Admin</strong> — use your Google account to sign in.<br><strong>Viewers</strong> — sign in with the Google account your admin registered for you.</div>
     <div class="l-err" id="l-err-pw">❌ Access denied. Your Google account is not authorised.</div>
+    <div class="l-err" id="l-err-config" style="display:none;"></div>
     <button class="lb-btn" id="google-signin-btn" onclick="startGoogleLogin()" style="display:flex;align-items:center;justify-content:center;gap:10px;">
-      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#fff" d="M9 3.48c1.69 0 2.83.73 3.48 1.34l2.54-2.48C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.96l2.91 2.26C4.6 5.05 6.62 3.48 9 3.48z"/><path fill="#fff" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#fff" d="M3.88 10.78A5.54 5.54 0 0 1 3.58 9c0-.62.11-1.22.29-1.78L.96 4.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.04l2.92-2.26z"/><path fill="#fff" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.4-1.57-5.12-3.74L.87 13.04C2.35 15.98 5.48 18 9 18z"/></svg>
-      Sign in with Google
+Sign in with Google
     </button>
     <p style="font-size:11px;color:var(--tx3);text-align:center;margin-top:12px;">Only authorised accounts can access this app.</p>
   </div>
@@ -378,33 +583,32 @@ tfoot td.sk{text-align:left;font-family:var(--fn);font-size:12px;font-weight:600
 
 <!-- APP -->
 <div id="app">
-  <div id="readonly-banner">
-    <span style="background:rgba(157,122,250,.2);color:var(--pu-t);padding:2px 10px;border-radius:99px;font-weight:700;font-size:11px;">👁 VIEW ONLY</span>
-    You are browsing as a viewer — editing is disabled.
-  </div>
 
   <div class="topbar">
-    <div class="tb-l">
+    <div style="display:flex;align-items:center;gap:8px;padding:0 .75rem;flex-shrink:0;">
       <div class="tb-logo"><img src="https://instasize.com/api/image/b991d8a9d15515996e724e5b54e9429bbdecce49b0f2a2eeed7aa2e5142987a1.png" alt="Logo" onerror="this.style.display='none';this.parentNode.textContent='📚'"></div>
-      <span class="tb-ttl">Fityahal Account Book</span>
+      <span class="tb-ttl">Fityahal</span>
     </div>
-    <div class="tb-r">
-      <div id="sync-status" class="sync-ok"><span class="sync-dot"></span><span id="sync-txt">Synced</span></div>
-      <span class="tb-em" id="tb-em"></span>
-      <button class="tb-btn" id="undo-btn" onclick="doUndo()" title="Undo (Ctrl+Z)" disabled>↩</button>
-      <button class="tb-btn" id="redo-btn" onclick="doRedo()" title="Redo (Ctrl+Y)" disabled>↪</button>
-      <button class="tb-btn" onclick="syncNow()">↻</button>
-      <button class="tb-btn danger" onclick="doLogout()">Out</button>
+    <div class="tb-nav">
+      <button class="nb active" onclick="showTab('dashboard',this)">Dashboard</button>
+      <button class="nb" onclick="showTab('table',this)">Overview</button>
+      <button class="nb" onclick="showTab('members',this)">Members</button>
+      <button class="nb" onclick="showTab('projects',this)">Projects</button>
+      <div style="position:relative;display:flex;"><button class="nb" onclick="showTab('notices',this)">Announcements</button><span class="notif-dot" id="notice-dot" style="display:none;"></span></div>
+      <button class="nb" onclick="showTab('nizam',this)">Nizam</button>
+      <div style="position:relative;display:flex;"><button class="nb" onclick="showTab('chat',this)">Chat</button><span class="notif-dot" id="chat-dot" style="display:none;"></span></div>
+      <div style="position:relative;display:flex;"><button class="nb" onclick="showTab('activity',this)">🔔 Notifs</button><span class="notif-dot" id="notif-dot" style="display:none;"></span></div>
+      <button class="nb" onclick="showTab('about',this)">About Us</button>
+      <button class="nb" id="bkash-nav-btn" onclick="showBkashInfo()" style="color:#e2136e;font-weight:700;display:none;">📱 bKash</button>
     </div>
-  </div>
-
-  <div class="nav">
-    <button class="nb active" onclick="showTab('dashboard',this)">Dashboard</button>
-    <button class="nb" onclick="showTab('table',this)">Payments</button>
-    <button class="nb" onclick="showTab('members',this)">Members</button>
-    <button class="nb" onclick="showTab('info',this)">Info</button>
-    <button class="nb" onclick="showTab('costs',this)">Costs</button>
-    <button class="nb" onclick="showTab('activity',this)">Activity</button>
+    <div style="display:flex;align-items:center;gap:4px;padding:0 .5rem;flex-shrink:0;">
+      <div id="sync-status" class="sync-ok" style="margin-right:2px;"><span class="sync-dot"></span><span id="sync-txt" style="font-size:10px;color:var(--tx3);"></span></div>
+      <button class="theme-btn" id="theme-btn" onclick="cycleTheme()" title="Theme">🌙</button>
+      <button class="tb-btn" id="undo-btn" onclick="doUndo()" title="Undo" disabled>↩</button>
+      <button class="tb-btn" id="redo-btn" onclick="doRedo()" title="Redo" disabled>↪</button>
+      <button class="tb-btn" onclick="syncNow()" title="Sync">↻</button>
+      <button onclick="goToProfile()" style="display:flex;flex-direction:column;align-items:center;font-size:10px;padding:5px 10px;gap:1px;background:var(--sf2);border:1px solid var(--br2);border-radius:var(--r);cursor:pointer;color:var(--tx2);min-width:46px;transition:all .18s;" onmouseover="this.style.background='var(--sf3)'" onmouseout="this.style.background='var(--sf2)'"><span style="font-size:18px;line-height:1.2;">👤</span><span>Profile</span></button>
+    </div>
   </div>
 
   <div class="main">
@@ -413,20 +617,20 @@ tfoot td.sk{text-align:left;font-family:var(--fn);font-size:12px;font-weight:600
       <div class="sr" id="stat-row"></div>
       <div class="sh">
         <div class="sh-t">Payment Overview</div>
-        <div class="sh-a">
-          <button class="btn" onclick="guardEdit(openCostMo)">+ Cost</button>
+        <div class="sh-a" id="dash-admin-btns">
           <button class="btn btn-p" onclick="guardEdit(openPayMo)">+ Payment</button>
         </div>
       </div>
       <div class="tw"><div class="ts"><table><thead id="db-h"></thead><tbody id="db-b"></tbody><tfoot id="db-f"></tfoot></table></div></div>
     </div>
 
+    <!-- OVERVIEW TAB = Payments + Costs -->
     <div id="tab-table" class="tab-panel">
       <div class="sh">
-        <div class="sh-t">Full Payment Records</div>
+        <div class="sh-t">Payments</div>
         <div class="sh-a">
           <button class="btn" onclick="window.print()">🖨 Print</button>
-          <button class="btn btn-p" onclick="guardEdit(openPayMo)">+ Payment</button>
+          <button class="btn btn-p" id="overview-pay-btn" onclick="guardEdit(openPayMo)">+ Payment</button>
         </div>
       </div>
       <div class="fb">
@@ -434,51 +638,142 @@ tfoot td.sk{text-align:left;font-family:var(--fn);font-size:12px;font-weight:600
         <select id="t-mth" onchange="renderAll()"><option value="">All months</option></select>
       </div>
       <div class="tw"><div class="ts"><table><thead id="ft-h"></thead><tbody id="ft-b"></tbody><tfoot id="ft-f"></tfoot></table></div></div>
-    </div>
 
-    <div id="tab-members" class="tab-panel">
-      <div class="sh">
-        <div class="sh-t">Members <span id="mc-cnt" style="font-size:13px;color:var(--tx3);font-weight:400;"></span></div>
-        <button class="btn btn-p" onclick="guardEdit(openAddMem)">+ Add Member</button>
-      </div>
-      <div class="mg" id="mc-grid"></div>
-    </div>
-
-    <div id="tab-info" class="tab-panel">
-      <div class="sh">
-        <div class="sh-t">Member Information</div>
-        <button class="btn btn-p" onclick="guardEdit(openAddMem)">+ Add Member</button>
-      </div>
-      <div class="ig" id="ic-grid"></div>
-    </div>
-
-    <div id="tab-costs" class="tab-panel">
-      <div class="sh">
+      <!-- Costs section - only admin sees add button, viewers see cost amounts -->
+      <div class="sh" style="margin-top:1.5rem;">
         <div class="sh-t">Monthly Costs</div>
-        <button class="btn btn-p" onclick="guardEdit(openCostMo)">+ Record Cost</button>
+        <button class="btn btn-p" id="add-cost-btn" style="display:none;" onclick="guardEdit(openCostMo)">+ Record Cost</button>
       </div>
       <div class="tw"><div class="ts">
         <table>
           <thead><tr>
             <th style="text-align:left;padding:10px 14px;">Month</th>
             <th>Cost (৳)</th><th>Collected (৳)</th><th>Net</th>
-            <th style="width:70px;"></th>
+            <th id="cost-action-col" style="width:70px;display:none;"></th>
           </tr></thead>
           <tbody id="cost-body"></tbody>
         </table>
       </div></div>
     </div>
 
+    <!-- MEMBERS TAB = Cards + Detail Info combined -->
+    <div id="tab-members" class="tab-panel">
+      <div class="sh">
+        <div class="sh-t">Members <span id="mc-cnt" style="font-size:13px;color:var(--tx3);font-weight:400;"></span></div>
+        <div class="sh-a">
+          <button class="btn" id="pending-pay-btn" style="display:none;" onclick="openPendingPayments()">⏳ Pending</button>
+          <button class="btn" id="assign-role-members-btn" style="display:none;" onclick="guardEdit(openOrgRoleMo)">⭐ Assign Role</button>
+          <button class="btn btn-sm" id="submit-pay-btn" style="display:none;" onclick="openMemberPayMo()">💳 Pay</button>
+          <button class="btn btn-p" id="add-mem-btn" style="display:none;" onclick="guardEdit(openAddMem)">+ Add Member</button>
+        </div>
+      </div>
+      <!-- Toggle between cards and info view -->
+      <div style="display:flex;gap:8px;margin-bottom:1rem;">
+        <button class="btn btn-sm" id="view-cards-btn" onclick="setMemberView('cards')" style="background:var(--ac-s);color:var(--ac-t);border-color:transparent;">Cards</button>
+        <button class="btn btn-sm" id="view-info-btn" onclick="setMemberView('info')">Info</button>
+      </div>
+      <div id="mc-grid" class="mg"></div>
+      <div id="ic-grid" class="ig" style="display:none;"></div>
+    </div>
+
+    <!-- ABOUT US TAB -->
+    <div id="tab-about" class="tab-panel">
+      <div class="sh">
+        <div class="sh-t">About Us</div>
+        <button class="btn btn-p" id="edit-about-btn" style="display:none;" onclick="guardEdit(openAboutEdit)">✏️ Edit</button>
+      </div>
+      <div id="about-content" style="background:var(--sf);border:1px solid var(--br);border-radius:var(--rl);padding:1.5rem;min-height:200px;"></div>
+    </div>
+
     <div id="tab-activity" class="tab-panel">
       <div class="sh">
-        <div class="sh-t">Activity Log</div>
-        <button class="btn btn-d" onclick="guardEdit(clearActivity)">Clear</button>
+        <div class="sh-t">🔔 Notifications</div>
+        <button class="btn btn-d" id="clear-notif-btn" style="display:none;" onclick="guardEdit(clearActivity)">Clear</button>
       </div>
       <div id="activity-list" class="activity-list"></div>
     </div>
 
+    <!-- PROFILE TAB -->
+    <div id="tab-profile" class="tab-panel">
+      <div id="profile-content"></div>
+    </div>
+
+    <!-- PROJECTS TAB -->
+    <div id="tab-projects" class="tab-panel">
+      <div class="sh">
+        <div class="sh-t">Projects</div>
+        <div class="sh-a">
+          <button class="btn btn-p" id="add-proj-btn" style="display:none;" onclick="guardEdit(()=>openProjectMo())">+ New Project</button>
+        </div>
+      </div>
+      <div id="proj-list"></div>
+    </div>
+
+    <!-- NOTICE BOARD TAB -->
+    <div id="tab-notices" class="tab-panel">
+      <div class="sh">
+        <div class="sh-t">Announcements</div>
+        <div class="sh-a">
+          <button class="btn btn-p" id="add-notice-btn" style="display:none;" onclick="guardEdit(()=>openNoticeMo())">+ Post</button>
+          <button class="btn" id="send-pnotice-btn" style="display:none;" onclick="guardEdit(openPrivateNoticeMo)">📨 Private</button>
+        </div>
+      </div>
+      <div class="notice-list" id="notice-list"></div>
+      <div id="private-notices-wrap" style="margin-top:1.5rem;display:none;">
+        <div class="sh"><div class="sh-t" style="font-size:13px;color:var(--tx3);">📬 Private Messages for You</div></div>
+        <div id="private-notices-list"></div>
+      </div>
+    </div>
+
+    <!-- NIZAM TAB -->
+    <div id="tab-nizam" class="tab-panel">
+      <div class="sh">
+        <div class="sh-t">Nizam — Rulebook</div>
+        <div class="sh-a">
+          <button class="btn" onclick="showNizamBook()">📖 Open as Book</button>
+          <button class="btn btn-p" id="edit-nizam-btn" style="display:none;" onclick="guardEdit(openNizamEdit)">✏️ Edit Rules</button>
+        </div>
+      </div>
+      <div style="background:var(--sf);border:1px solid var(--br);border-radius:var(--rl);padding:1.5rem;min-height:200px;">
+        <pre id="nizam-content" style="font-family:var(--fn);font-size:13px;color:var(--tx2);line-height:1.9;white-space:pre-wrap;margin:0;"></pre>
+        <div class="empty" id="nizam-empty" style="display:none;"><div class="ei">📖</div><div>No rules written yet.</div></div>
+      </div>
+    </div>
+
+    <!-- CHAT TAB -->
+    <div id="tab-chat" class="tab-panel" style="padding:0;">
+      <div style="padding:.75rem 1.25rem;background:var(--sf2);border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <span style="font-size:13px;font-weight:600;color:var(--tx2);">💬 Member Chat</span>
+        <div id="chat-admin-controls" style="display:none;">
+          <button class="btn btn-sm" onclick="guardEdit(openMuteModal)">🔇 Moderate</button>
+        </div>
+      </div>
+      <div id="chat-msgs" style="height:calc(100vh - 200px);max-height:520px;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:10px;"></div>
+      <div id="chat-footer" style="display:flex;gap:8px;padding:10px 1rem;border-top:1px solid var(--br);background:var(--sf2);">
+        <input class="chat-input" id="chat-input" placeholder="Type a message…"/>
+        <button class="chat-send" id="chat-send-btn" onclick="sendChatMsg()">Send</button>
+      </div>
+    </div>
+
   </div>
 </div>
+
+<!-- NIZAM BOOK OVERLAY -->
+<div id="nizam-book-overlay" style="display:none;align-items:center;justify-content:center;">
+  <div class="nizam-book">
+    <div class="book-spine">NIZAM</div>
+    <div class="book-pages">
+      <div class="book-title">📖 Nizam — Rulebook</div>
+      <div class="book-subtitle">Fityahal Organisation — Rules & Guidelines</div>
+      <hr class="book-divider">
+      <pre class="book-content" id="nizam-book-content">Loading…</pre>
+      <hr class="book-divider">
+      <div style="font-size:11px;color:#a07840;text-align:center;margin-top:1rem;font-style:italic;">Please read all rules carefully before proceeding.</div>
+      <button class="book-close-btn" onclick="closeNizamBook()">I have read the Nizam ✓</button>
+    </div>
+  </div>
+</div>
+
 
 <!-- MODALS -->
 <div class="mo" id="mo" style="display:none;" onclick="if(event.target===this)closeMo()">
@@ -487,6 +782,15 @@ tfoot td.sk{text-align:left;font-family:var(--fn);font-size:12px;font-weight:600
   <div class="mo-b" id="mo-mem" style="display:none;">
     <div class="mo-t"><span id="mo-mem-t">Add Member</span><button class="mo-x" onclick="closeMo()">✕</button></div>
     <input type="hidden" id="em-idx" value="-1"/>
+    <div class="fr" style="text-align:center;margin-bottom:.75rem;">
+      <label>Profile Photo</label>
+      <div style="position:relative;width:70px;height:70px;margin:0 auto;">
+        <div id="em-photo-preview" style="width:70px;height:70px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;cursor:pointer;border:2px dashed rgba(255,255,255,.2);overflow:hidden;" onclick="document.getElementById('em-photo-inp').click()">📷</div>
+        <input type="file" id="em-photo-inp" accept="image/*" style="display:none;" onchange="previewMemberPhoto(this)"/>
+      </div>
+      <input type="hidden" id="em-photo" value=""/>
+      <div style="font-size:10px;color:var(--tx3);margin-top:5px;">Click to upload photo</div>
+    </div>
     <div class="fg">
       <div class="fr"><label>Full Name *</label><input id="em-name" placeholder="Full name"/></div>
       <div class="fr"><label>Display Name</label><input id="em-nick" placeholder="Short name"/></div>
@@ -501,7 +805,6 @@ tfoot td.sk{text-align:left;font-family:var(--fn);font-size:12px;font-weight:600
       <div class="fr"><label>Student ID / Roll</label><input id="em-sid" placeholder="Optional"/></div>
     </div>
     <div class="fr"><label>Notes</label><textarea id="em-notes" placeholder="Any additional notes…"></textarea></div>
-    <!-- ROLE SELECTOR -->
     <div class="fr">
       <label>App Role</label>
       <div class="role-toggle">
@@ -527,9 +830,10 @@ tfoot td.sk{text-align:left;font-family:var(--fn);font-size:12px;font-weight:600
     </div>
     <div id="pay-existing" style="min-height:18px;margin-bottom:4px;padding:0 2px;"></div>
     <div class="fg">
-      <div class="fr"><label>Monthly Fee (৳)</label><input id="pay-m" type="number" min="0" step="0.01" placeholder="0.00"/></div>
-      <div class="fr"><label>Book Fund (৳)</label><input id="pay-b" type="number" min="0" step="0.01" placeholder="0.00"/></div>
+      <div class="fr"><label>Monthly Fee (৳)</label><input id="pay-m" type="number" min="0" step="0.01" placeholder="0"/></div>
+      <div class="fr"><label>Book Fund (৳)</label><input id="pay-b" type="number" min="0" step="0.01" placeholder="0"/></div>
     </div>
+    <div style="font-size:11px;color:var(--tx3);margin-bottom:.75rem;padding:0 2px;">Tip: You can enter 0 for either field. Leave both as 0 to record a ৳0 payment.</div>
     <div class="mo-f">
       <button class="btn" onclick="closeMo()">Cancel</button>
       <button class="btn btn-p" onclick="savePay()">Save Payment</button>
@@ -552,8 +856,183 @@ tfoot td.sk{text-align:left;font-family:var(--fn);font-size:12px;font-weight:600
     </div>
   </div>
 
-</div>
+  <!-- PAYMENT HISTORY MODAL -->
+  <div class="mo-b" id="mo-payhist" style="display:none;">
+    <div class="mo-t"><span id="mo-payhist-t">Payment History</span><button class="mo-x" onclick="closeMo()">✕</button></div>
+    <div id="payhist-list" style="max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;"></div>
+    <div class="mo-f">
+      <button class="btn" onclick="closeMo()">Close</button>
+      <button class="btn btn-p" onclick="guardEdit(openPayMo)">+ Add Payment</button>
+    </div>
+  </div>
 
+  <!-- MEMBER PAYMENT SUBMISSION MODAL -->
+  <div class="mo-b" id="mo-mem-pay" style="display:none;">
+    <div class="mo-t"><span>Submit Monthly Payment</span><button class="mo-x" onclick="closeMo()">✕</button></div>
+    <div style="font-size:12px;color:var(--am-t);background:var(--am-s);border:1px solid rgba(255,173,46,.2);border-radius:var(--r);padding:8px 12px;margin-bottom:1rem;">⏳ Your payment will show as <strong>Pending</strong> until an admin approves it.</div>
+    <div class="fg">
+      <div class="fr"><label>Year</label><select id="mempay-yr"></select></div>
+      <div class="fr"><label>Month</label><select id="mempay-mo"></select></div>
+    </div>
+    <div class="fg">
+      <div class="fr"><label>Monthly Fee (৳)</label><input id="mempay-m" type="number" min="0" step="0.01" placeholder="0"/></div>
+      <div class="fr"><label>Book Fund (৳)</label><input id="mempay-b" type="number" min="0" step="0.01" placeholder="0"/></div>
+    </div>
+    <div class="fr"><label>Note (optional)</label><input id="mempay-note" placeholder="Any details…"/></div>
+    <div class="mo-f">
+      <button class="btn" onclick="closeMo()">Cancel</button>
+      <button class="btn btn-p" onclick="submitMemberPayment()">Submit Payment</button>
+    </div>
+  </div>
+
+  <!-- PENDING PAYMENTS ADMIN MODAL -->
+  <div class="mo-b" id="mo-pending" style="display:none;">
+    <div class="mo-t"><span>⏳ Pending Payments</span><button class="mo-x" onclick="closeMo()">✕</button></div>
+    <div id="pending-list" style="max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;"></div>
+    <div class="mo-f"><button class="btn" onclick="closeMo()">Close</button></div>
+  </div>
+  <div class="mo-b" id="mo-notice" style="display:none;">
+    <div class="mo-t"><span id="mo-notice-t">Post Announcement</span><button class="mo-x" onclick="closeMo()">✕</button></div>
+    <input type="hidden" id="notice-edit-idx" value="-1"/>
+    <div class="fr"><label>Photo (optional)</label>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <img id="notice-photo-preview" style="display:none;width:60px;height:60px;object-fit:cover;border-radius:var(--r);">
+        <label style="cursor:pointer;padding:7px 12px;background:var(--sf3);border-radius:var(--r);font-size:12px;color:var(--tx2);">📷 Photo<input type="file" accept="image/*" style="display:none;" onchange="previewNoticePhoto(this)"></label>
+        <input type="hidden" id="notice-photo-data">
+      </div>
+    </div>
+    <div class="fr"><label>Title</label><input id="notice-title-inp" placeholder="Announcement title…"/></div>
+    <div class="fr"><label>Body</label><textarea id="notice-body-inp" placeholder="Write the announcement…" style="min-height:110px;"></textarea></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+      <input type="checkbox" id="notice-pin-inp" style="width:16px;height:16px;cursor:pointer;">
+      <label for="notice-pin-inp" style="font-size:13px;cursor:pointer;color:var(--tx);">📌 Pin this announcement</label>
+    </div>
+    <div class="mo-f">
+      <button class="btn" onclick="closeMo()">Cancel</button>
+      <button class="btn btn-p" onclick="saveNotice()">Post</button>
+    </div>
+  </div>
+
+  <!-- PRIVATE NOTICE MODAL -->
+  <div class="mo-b" id="mo-pnotice" style="display:none;">
+    <div class="mo-t"><span>Send Private Notice</span><button class="mo-x" onclick="closeMo()">✕</button></div>
+    <div class="fr"><label>To Member</label><select id="pnotice-to"><option value="">Select member…</option></select></div>
+    <div class="fr"><label>Message</label><textarea id="pnotice-body" placeholder="Private message…" style="min-height:100px;"></textarea></div>
+    <div class="mo-f">
+      <button class="btn" onclick="closeMo()">Cancel</button>
+      <button class="btn btn-p" onclick="sendPrivateNotice()">Send</button>
+    </div>
+  </div>
+
+  <!-- ABOUT US MODAL -->
+  <div class="mo-b" id="mo-about" style="display:none;">
+    <div class="mo-t"><span>Edit About Us</span><button class="mo-x" onclick="closeMo()">✕</button></div>
+    <div class="fr"><label>Cover Photo</label>
+      <div style="text-align:center;margin-bottom:6px;">
+        <img id="about-photo-preview" style="display:none;width:100%;max-height:140px;object-fit:cover;border-radius:var(--r);margin-bottom:6px;">
+        <label style="cursor:pointer;display:inline-block;padding:7px 14px;background:var(--sf3);border-radius:var(--r);font-size:12px;color:var(--tx2);">📷 Upload Photo<input type="file" accept="image/*" style="display:none;" onchange="previewAboutPhoto(this)"></label>
+      </div>
+    </div>
+    <div class="fr"><label>Headline</label><input id="about-headline-inp" placeholder="e.g. Fityahal — Since 2020"/></div>
+    <div class="fr"><label>About / Description</label><textarea id="about-inp" placeholder="Write about Fityahal organisation…" style="min-height:140px;"></textarea></div>
+    <div class="fr"><label>Facebook Page Link</label><input id="about-fbpage-inp" type="url" placeholder="https://facebook.com/..."/></div>
+    <div class="fr"><label>Facebook Group Link</label><input id="about-fbgroup-inp" type="url" placeholder="https://facebook.com/groups/..."/></div>
+    <div class="mo-f">
+      <button class="btn" onclick="closeMo()">Cancel</button>
+      <button class="btn btn-p" onclick="saveAbout()">Save</button>
+    </div>
+  </div>
+
+  <!-- NIZAM MODAL -->
+  <div class="mo-b" id="mo-nizam" style="display:none;">
+    <div class="mo-t"><span>Edit Rulebook</span><button class="mo-x" onclick="closeMo()">✕</button></div>
+    <div class="fr"><label>Rules</label><textarea id="nizam-inp" placeholder="Write the organisation rules…" style="min-height:200px;"></textarea></div>
+    <div class="mo-f">
+      <button class="btn" onclick="closeMo()">Cancel</button>
+      <button class="btn btn-p" onclick="saveNizam()">Save Rules</button>
+    </div>
+  </div>
+
+  <!-- ORG ROLE MODAL -->
+  <div class="mo-b" id="mo-orgrole" style="display:none;">
+    <div class="mo-t"><span>Assign Org Role</span><button class="mo-x" onclick="closeMo()">✕</button></div>
+    <div class="fr"><label>Member</label><select id="orgrole-mem"><option value="">Select member…</option></select></div>
+    <div class="fr"><label>Role</label>
+      <select id="orgrole-role">
+        <option value="">None</option>
+        <option value="Alif">👑 Alif — Head</option>
+        <option value="Mutabbiq">⚖️ Mutabbiq — Rule Enforcer</option>
+        <option value="Khazin">💰 Khazin — Treasurer</option>
+      </select>
+    </div>
+    <div class="mo-f">
+      <button class="btn" onclick="closeMo()">Cancel</button>
+      <button class="btn btn-p" onclick="saveOrgRole()">Assign</button>
+    </div>
+  </div>
+
+  <!-- CHAT MUTE MODAL -->
+  <div class="mo-b" id="mo-mute" style="display:none;">
+    <div class="mo-t"><span>Chat Moderation</span><button class="mo-x" onclick="closeMo()">✕</button></div>
+    <div class="fr"><label>Member</label><select id="mute-mem"><option value="">Select member…</option></select></div>
+    <div class="fr"><label>Action</label>
+      <select id="mute-action">
+        <option value="mute">🔇 Mute</option>
+        <option value="suspend">⏸ Suspend (temp)</option>
+        <option value="ban">🚫 Permanent Ban</option>
+        <option value="unmute">✅ Remove restriction</option>
+      </select>
+    </div>
+    <div class="mo-f">
+      <button class="btn" onclick="closeMo()">Cancel</button>
+      <button class="btn btn-p" onclick="applyMute()">Apply</button>
+    </div>
+  </div>
+
+  <!-- PROJECT MODAL -->
+  <div class="mo-b" id="mo-project" style="display:none;">
+    <div class="mo-t"><span id="mo-proj-t">New Project</span><button class="mo-x" onclick="closeMo()">✕</button></div>
+    <input type="hidden" id="proj-edit-idx" value="-1"/>
+    <div class="fr"><label>Project Name *</label><input id="proj-name-inp" placeholder="Project name…"/></div>
+    <div class="fr"><label>Description</label><input id="proj-desc-inp" placeholder="Short description…"/></div>
+    <div class="fr"><label>Status</label>
+      <select id="proj-status-inp">
+        <option value="active">🟢 Active</option>
+        <option value="done">✅ Completed</option>
+      </select>
+    </div>
+    <div class="mo-f">
+      <button class="btn" onclick="closeMo()">Cancel</button>
+      <button class="btn btn-p" onclick="saveProject()">Save</button>
+    </div>
+  </div>
+
+  <!-- ADD EXPENSE MODAL -->
+  <div class="mo-b" id="mo-projexp" style="display:none;">
+    <div class="mo-t"><span>Add Expense Item</span><button class="mo-x" onclick="closeMo()">✕</button></div>
+    <input type="hidden" id="projexp-pidx" value="0"/>
+    <div class="fr"><label>Item Description</label><input id="projexp-item" placeholder="e.g. Chairs, Printing…"/></div>
+    <div class="fr"><label>Amount (৳)</label><input id="projexp-amt" type="number" min="0" step="0.01" placeholder="0.00"/></div>
+    <div class="mo-f">
+      <button class="btn" onclick="closeMo()">Cancel</button>
+      <button class="btn btn-p" onclick="saveProjExp()">Add</button>
+    </div>
+  </div>
+
+  <!-- ADD COLLECTION MODAL -->
+  <div class="mo-b" id="mo-projcol" style="display:none;">
+    <div class="mo-t"><span>Add Collection Entry</span><button class="mo-x" onclick="closeMo()">✕</button></div>
+    <input type="hidden" id="projcol-pidx" value="0"/>
+    <div class="fr"><label>From / Source</label><input id="projcol-from" placeholder="e.g. Member name, Donor…"/></div>
+    <div class="fr"><label>Amount (৳)</label><input id="projcol-amt" type="number" min="0" step="0.01" placeholder="0.00"/></div>
+    <div class="mo-f">
+      <button class="btn" onclick="closeMo()">Cancel</button>
+      <button class="btn btn-p" onclick="saveProjCol()">Add</button>
+    </div>
+  </div>
+
+
+</div>
 <script>
 // ══ CONFIG ══════════════════════════════════════════════════════════════════
 const CONFIG={
@@ -561,8 +1040,8 @@ const CONFIG={
   API_KEY:'AIzaSyCziWiqTJOKll1k4u8or9uRdoQ_H7VWWHU',
   SCOPES:'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.email',
   SHEET_MEMBERS:'Members',SHEET_PAYMENTS:'Payments',SHEET_COSTS:'Costs',
-  // ── ACCOUNTS: add friends here with their email, password, and role ──────
-  // role: 'admin' = full edit access | 'viewer' = read-only
+  SHEET_NOTICES:'Notices',SHEET_CHAT:'Chat',SHEET_NIZAM:'Nizam',
+  SHEET_PROJECTS:'Projects',SHEET_ORGROLES:'OrgRoles',SHEET_PENDING:'PendingPays',
   ACCOUNTS:[
     {email:'fityahalofficial@gmail.com', pass:'fityahalonduty', role:'admin'},
     {email:'md.k.shamim06@gmail.com', pass:'shamimonduty', role:'admin'},
@@ -571,7 +1050,6 @@ const CONFIG={
     {email:'fathinahmedabdullah@gmail.com', pass:'fatinview', role:'viewer'},
     {email:'chyshahi2006@gmail.com', pass:'shahiview', role:'viewer'},
     {email:'samisheikh1084@gmail.com', pass:'samiview', role:'viewer'},
-    // {email:'friend@gmail.com', pass:'abdullahview', role:'viewer'},
     {email:'vtofficail00@gmail.com', pass:'mahfuzview', role:'viewer'},
     {email:'tarek104885@gmail.com', pass:'tarekview', role:'viewer'},
     {email:'muntasir0034@gmail.com', pass:'muntasirview', role:'viewer'},
@@ -583,8 +1061,17 @@ const CONFIG={
 let ACCESS_TOKEN=null, SHEET_ID='1_bEe_QbRq02bbJ_gHpw5DiGjXE_2rmznJpo98h5-cac';
 localStorage.setItem('bft_sheet_id',SHEET_ID);
 let MEM=[],PAY={},COSTS={};
+// Shared data - loaded FROM Google Sheets, not localStorage
+let NOTICES=[],PRIVATE_NOTICES={},NIZAM='',CHAT_MSGS=[],PROJECTS=[],ORG_ROLES={},PENDING_PAYS=[];
+// Local-only data
 let ACTIVITY=JSON.parse(localStorage.getItem('bft_activity')||'[]');
+let CHAT_MUTED=JSON.parse(localStorage.getItem('bft_muted')||'{}');
+let BORROWED_BOOKS=JSON.parse(localStorage.getItem('bft_books')||'{}');
+let MEMBER_PHOTOS=JSON.parse(localStorage.getItem('bft_member_photos')||'{}');
 let CURRENT_ROLE='viewer', syncTimer=null;
+let CURRENT_EMAIL='';
+let _chatPollTimer=null;
+const SUPREME_ADMIN='fityahalofficial@gmail.com';
 
 // ══ UNDO/REDO ════════════════════════════════════════════════════════════════
 let HISTORY=[],FUTURE=[],undoTimer=null;
@@ -642,21 +1129,58 @@ function cmCancel(){document.getElementById('confirm-modal').style.display='none
 
 // ══ ACTIVITY LOG ══════════════════════════════════════════════════════════════
 function logActivity(icon,txt){
-  ACTIVITY.unshift({icon,txt,time:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})});
+  const time=new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+  ACTIVITY.unshift({icon,txt,time});
   if(ACTIVITY.length>100)ACTIVITY.pop();
   localStorage.setItem('bft_activity',JSON.stringify(ACTIVITY));
+  // Show notification dot on Notifications tab if not currently viewing it
+  const notifTab=document.getElementById('tab-activity');
+  if(!notifTab||!notifTab.classList.contains('active')){
+    const dot=document.getElementById('notif-dot');
+    if(dot) dot.style.display='';
+  }
 }
 function clearActivity(){ACTIVITY=[];localStorage.setItem('bft_activity','[]');renderActivity();toast('Activity log cleared');}
 function renderActivity(){
   const el=document.getElementById('activity-list');
-  if(!ACTIVITY.length){el.innerHTML='<div class="empty"><div class="ei">📋</div><div>No activity yet.</div></div>';return;}
-  el.innerHTML=ACTIVITY.map(a=>`<div class="act-item"><div class="act-ico">${a.icon}</div><div class="act-txt">${a.txt}</div><div class="act-time">${a.time}</div></div>`).join('');
+  if(!ACTIVITY.length){
+    el.innerHTML='<div class="empty"><div class="ei">🔔</div><div>No notifications yet.</div></div>';
+    return;
+  }
+  el.innerHTML=ACTIVITY.map(a=>`
+    <div class="act-item">
+      <div class="act-ico">${a.icon}</div>
+      <div class="act-txt">${a.txt}</div>
+      <div class="act-time">${a.time}</div>
+    </div>`).join('');
+}
+
+function goToProfile(){
+  // Profile is shown as a tab panel but accessed via the action button, not nav
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tb-nav .nb').forEach(b=>b.classList.remove('active'));
+  const panel=document.getElementById('tab-profile');
+  if(panel)panel.classList.add('active');
+  renderProfile();
 }
 
 // ══ GUARD EDIT ════════════════════════════════════════════════════════════════
 function guardEdit(fn,...args){
   if(CURRENT_ROLE==='viewer'){toast('👁 View only — editing is disabled','t-warn');return;}
   fn(...args);
+}
+
+function isBannedOrSuspended(email){
+  const status=CHAT_MUTED[email||CURRENT_EMAIL];
+  return status==='ban'||status==='suspend';
+}
+
+function checkNotRestricted(){
+  const email=CURRENT_EMAIL||sessionStorage.getItem('bft_email')||'';
+  const status=CHAT_MUTED[email];
+  if(status==='ban'){toast('🚫 You are permanently banned','t-err');return false;}
+  if(status==='suspend'){toast('⏸ You are suspended — contact admin','t-warn');return false;}
+  return true;
 }
 
 // ══ MONTH HELPERS ════════════════════════════════════════════════════════════
@@ -714,23 +1238,46 @@ function setMemberRole(role){
 
 let tokenClient=null, idClient=null;
 
+function _gBtnHtml(){return '<svg width="18" height="18" viewBox="0 0 18 18" style="flex-shrink:0"><path fill="#fff" d="M9 3.48c1.69 0 2.83.73 3.48 1.34l2.54-2.48C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.96l2.91 2.26C4.6 5.05 6.62 3.48 9 3.48z"/><path fill="#fff" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#fff" d="M3.88 10.78A5.54 5.54 0 0 1 3.58 9c0-.62.11-1.22.29-1.78L.96 4.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.04l2.92-2.26z"/><path fill="#fff" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.4-1.57-5.12-3.74L.87 13.04C2.35 15.98 5.48 18 9 18z"/></svg> Sign in with Google';}
+
+function showLoginError(msg){
+  const el=document.getElementById('l-err-config');
+  if(el){el.innerHTML='⚙️ '+msg;el.style.display='block';}
+  const btn=document.getElementById('google-signin-btn');
+  if(btn){btn.disabled=false;btn.innerHTML=_gBtnHtml();}
+}
+
 function startGoogleLogin(){
-  // First request an access token (for Sheets API)
-  // We also need the user's email — we get that via the userinfo endpoint after we have a token
   document.getElementById('l-err-pw').style.display='none';
-  document.getElementById('google-signin-btn').disabled=true;
-  document.getElementById('google-signin-btn').textContent='Opening Google…';
-  tokenClient.requestAccessToken({prompt:'select_account'});
+  const errEl=document.getElementById('l-err-config');
+  if(errEl)errEl.style.display='none';
+  if(!window.google||!google.accounts||!google.accounts.oauth2){
+    showLoginError('Google services not loaded. Check internet connection and refresh the page.');return;
+  }
+  if(!tokenClient){
+    showLoginError('Sign-in not ready. If you just deployed this app, add <strong>'+location.origin+'</strong> to your Google Cloud Console OAuth Client → Authorized JavaScript Origins. Then wait 5 min and refresh.');return;
+  }
+  const btn=document.getElementById('google-signin-btn');
+  btn.disabled=true;
+  btn.textContent='Opening Google…';
+  try{
+    tokenClient.requestAccessToken({prompt:'select_account'});
+  }catch(e){
+    const b=document.getElementById('google-signin-btn');
+    if(b){b.disabled=false;b.innerHTML=_gBtnHtml();}
+    showLoginError('Sign-in failed: '+e.message);
+  }
 }
 
 function doLogout(){
   ACCESS_TOKEN=null;sessionStorage.clear();HISTORY=[];FUTURE=[];
+  if(typeof _autoSyncInterval!=='undefined'&&_autoSyncInterval)clearInterval(_autoSyncInterval);
+  if(typeof _chatPollTimer!=='undefined'&&_chatPollTimer)clearInterval(_chatPollTimer);
   document.getElementById('app').classList.remove('show');
   document.getElementById('picker-screen').style.display='none';
   document.getElementById('login-screen').style.display='flex';
-  document.getElementById('readonly-banner').style.display='none';
   const btn=document.getElementById('google-signin-btn');
-  if(btn){btn.disabled=false;btn.innerHTML='<svg width="18" height="18" viewBox="0 0 18 18"><path fill="#fff" d="M9 3.48c1.69 0 2.83.73 3.48 1.34l2.54-2.48C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.96l2.91 2.26C4.6 5.05 6.62 3.48 9 3.48z"/><path fill="#fff" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#fff" d="M3.88 10.78A5.54 5.54 0 0 1 3.58 9c0-.62.11-1.22.29-1.78L.96 4.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.04l2.92-2.26z"/><path fill="#fff" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.4-1.57-5.12-3.74L.87 13.04C2.35 15.98 5.48 18 9 18z"/></svg> Sign in with Google';}
+  if(btn){btn.disabled=false;btn.innerHTML=_gBtnHtml();}
   // Also revoke current Google session so next login shows account picker
   if(window.google&&google.accounts&&google.accounts.oauth2)google.accounts.oauth2.revoke(sessionStorage.getItem('bft_email')||'',()=>{});
 }
@@ -740,24 +1287,37 @@ function initGoogleAuth(){
   try{
     tokenClient=google.accounts.oauth2.initTokenClient({
       client_id:CONFIG.CLIENT_ID,
-      scope:CONFIG.SCOPES+' https://www.googleapis.com/auth/userinfo.email',
-      callback:handleToken
+      scope:CONFIG.SCOPES,
+      callback:handleToken,
+      error_callback:(err)=>{
+        console.error('OAuth error:',err);
+        const type=(err&&err.type)?err.type:'';
+        if(type==='popup_closed'||type==='popup_failed_to_open'){
+          // User closed popup or popup blocked - just re-enable button
+          const b=document.getElementById('google-signin-btn');
+          if(b){b.disabled=false;b.innerHTML=_gBtnHtml();}
+        } else {
+          showLoginError('Google sign-in error. Make sure <strong>'+location.origin+'</strong> is added to your OAuth Client Authorized JavaScript Origins in Google Cloud Console.');
+        }
+      }
     });
-    // Auto-reconnect if session exists
     if(sessionStorage.getItem('bft_auth')==='1'){
       CURRENT_ROLE=sessionStorage.getItem('bft_role')||'viewer';
       document.getElementById('login-screen').style.display='none';
       showLoad('Reconnecting…');
       tokenClient.requestAccessToken({prompt:''});
     }
-  }catch(e){console.error('GIS init error',e);}
+  }catch(e){
+    console.error('GIS init error',e);
+    showLoginError('Google Sign-In failed to initialise: '+e.message);
+  }
 }
 
 async function handleToken(resp){
   const btn=document.getElementById('google-signin-btn');
   if(resp.error){
     hideLoad();
-    if(btn){btn.disabled=false;btn.innerHTML='<svg width="18" height="18" viewBox="0 0 18 18"><path fill="#fff" d="M9 3.48c1.69 0 2.83.73 3.48 1.34l2.54-2.48C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.96l2.91 2.26C4.6 5.05 6.62 3.48 9 3.48z"/><path fill="#fff" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#fff" d="M3.88 10.78A5.54 5.54 0 0 1 3.58 9c0-.62.11-1.22.29-1.78L.96 4.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.04l2.92-2.26z"/><path fill="#fff" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.4-1.57-5.12-3.74L.87 13.04C2.35 15.98 5.48 18 9 18z"/></svg> Sign in with Google';}
+    if(btn){btn.disabled=false;btn.innerHTML=_gBtnHtml();}
     if(resp.error!=='access_denied')toast('Google auth failed: '+resp.error,'t-err');
     document.getElementById('login-screen').style.display='flex';
     return;
@@ -767,8 +1327,10 @@ async function handleToken(resp){
   // If we already know the role from session, skip email lookup
   if(sessionStorage.getItem('bft_auth')==='1'&&sessionStorage.getItem('bft_email')){
     CURRENT_ROLE=sessionStorage.getItem('bft_role')||'viewer';
-    document.getElementById('tb-em').textContent=sessionStorage.getItem('bft_email');
-    if(CURRENT_ROLE==='viewer')document.getElementById('readonly-banner').style.display='flex';
+    CURRENT_EMAIL=sessionStorage.getItem('bft_email')||'';
+    // Supreme admin always gets admin role regardless of saved session role
+    if(CURRENT_EMAIL.toLowerCase()===SUPREME_ADMIN.toLowerCase()) CURRENT_ROLE='admin';
+    // tb-em removed
     bootApp();return;
   }
 
@@ -783,12 +1345,13 @@ async function handleToken(resp){
     const adminAcc=CONFIG.ACCOUNTS.find(a=>a.email.toLowerCase()===email);
     if(adminAcc){
       CURRENT_ROLE=adminAcc.role;
+      CURRENT_EMAIL=email;
       sessionStorage.setItem('bft_email',email);
       sessionStorage.setItem('bft_role',adminAcc.role);
       sessionStorage.setItem('bft_auth','1');
       document.getElementById('login-screen').style.display='none';
-      document.getElementById('tb-em').textContent=email;
-      if(CURRENT_ROLE==='viewer')document.getElementById('readonly-banner').style.display='flex';
+      // tb-em removed
+      if(CURRENT_ROLE==='viewer')
       bootApp();return;
     }
 
@@ -799,12 +1362,12 @@ async function handleToken(resp){
       const memberMatch=MEM.find(m=>m.email&&m.email.toLowerCase().trim()===email);
       if(memberMatch){
         CURRENT_ROLE='viewer';
+        CURRENT_EMAIL=email;
         sessionStorage.setItem('bft_email',email);
         sessionStorage.setItem('bft_role','viewer');
         sessionStorage.setItem('bft_auth','1');
         document.getElementById('login-screen').style.display='none';
-        document.getElementById('tb-em').textContent=email;
-        document.getElementById('readonly-banner').style.display='flex';
+        // tb-em removed
         bootApp();return;
       }
     }
@@ -814,7 +1377,7 @@ async function handleToken(resp){
     ACCESS_TOKEN=null;
     document.getElementById('l-err-pw').style.display='block';
     document.getElementById('login-screen').style.display='flex';
-    if(btn){btn.disabled=false;btn.innerHTML='<svg width="18" height="18" viewBox="0 0 18 18"><path fill="#fff" d="M9 3.48c1.69 0 2.83.73 3.48 1.34l2.54-2.48C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.96l2.91 2.26C4.6 5.05 6.62 3.48 9 3.48z"/><path fill="#fff" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#fff" d="M3.88 10.78A5.54 5.54 0 0 1 3.58 9c0-.62.11-1.22.29-1.78L.96 4.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.04l2.92-2.26z"/><path fill="#fff" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.4-1.57-5.12-3.74L.87 13.04C2.35 15.98 5.48 18 9 18z"/></svg> Try a different account';}
+    if(btn){btn.disabled=false;btn.innerHTML=_gBtnHtml();}
     google.accounts.oauth2.revoke(email,()=>{});
   }catch(e){
     hideLoad();toast('Could not verify account','t-err');
@@ -844,20 +1407,82 @@ async function initSheetHeaders(){
   await sheetsUpdate(`${CONFIG.SHEET_MEMBERS}!A1:I1`,[['name','nick','phone','email','addr','join','sid','notes','role']]);
   await sheetsUpdate(`${CONFIG.SHEET_PAYMENTS}!A1:D1`,[['member','month','monthly','book']]);
   await sheetsUpdate(`${CONFIG.SHEET_COSTS}!A1:C1`,[['month','amount','description']]);
+  // Create extra tabs for shared data
+  await ensureSheetTabs();
+  await sheetsUpdate(`${CONFIG.SHEET_NOTICES}!A1:G1`,[['title','body','by','time','private_to','pinned','photo']]);
+  await sheetsUpdate(`${CONFIG.SHEET_CHAT}!A1:D1`,[['name','email','time','message']]);
+  await sheetsUpdate(`${CONFIG.SHEET_NIZAM}!A1:A1`,[['content']]);
+  await sheetsUpdate(`${CONFIG.SHEET_PROJECTS}!A1:A1`,[['json']]);
+  await sheetsUpdate(`${CONFIG.SHEET_ORGROLES}!A1:B1`,[['member','role']]);
+  await sheetsUpdate(`${CONFIG.SHEET_PENDING}!A1:G1`,[['id','memberName','memberEmail','key','m','b','status']]);
+}
+
+async function ensureSheetTabs(){
+  try{
+    const meta=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`,{headers:{Authorization:`Bearer ${ACCESS_TOKEN}`}});
+    const data=await meta.json();
+    const existing=(data.sheets||[]).map(s=>s.properties.title);
+    const needed=[CONFIG.SHEET_NOTICES,CONFIG.SHEET_CHAT,CONFIG.SHEET_NIZAM,CONFIG.SHEET_PROJECTS,CONFIG.SHEET_ORGROLES,CONFIG.SHEET_PENDING];
+    const toAdd=needed.filter(n=>!existing.includes(n));
+    if(!toAdd.length)return;
+    const requests=toAdd.map(title=>({addSheet:{properties:{title}}}));
+    await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}:batchUpdate`,{
+      method:'POST',headers:{Authorization:`Bearer ${ACCESS_TOKEN}`,'Content-Type':'application/json'},
+      body:JSON.stringify({requests})
+    });
+  }catch(e){console.warn('ensureSheetTabs:',e);}
 }
 
 // ══ DATA SYNC ═════════════════════════════════════════════════════════════════
 async function loadFromSheet(){
   setSyncStatus('ing','Syncing…');
   try{
+    // Ensure tabs exist first
+    await ensureSheetTabs();
+    // Core data
     const mr=await sheetsGet(`${CONFIG.SHEET_MEMBERS}!A2:I1000`);
     MEM=(mr.values||[]).filter(r=>r[0]).map(r=>({name:r[0]||'',nick:r[1]||r[0]||'',phone:r[2]||'',email:r[3]||'',addr:r[4]||'',join:r[5]||'',sid:r[6]||'',notes:r[7]||'',role:r[8]||'viewer'}));
     const pr=await sheetsGet(`${CONFIG.SHEET_PAYMENTS}!A2:D100000`);
     PAY={};(pr.values||[]).filter(r=>r[0]&&r[1]).forEach(r=>{if(!PAY[r[0]])PAY[r[0]]={};PAY[r[0]][r[1]]={m:parseFloat(r[2])||0,b:parseFloat(r[3])||0};});
     const cr=await sheetsGet(`${CONFIG.SHEET_COSTS}!A2:C1000`);
     COSTS={};(cr.values||[]).filter(r=>r[0]).forEach(r=>{COSTS[r[0]]=parseFloat(r[1])||0;});
+    // Shared feature data
+    await loadSharedData();
     setSyncStatus('ok','Synced');return true;
   }catch(e){setSyncStatus('err','Sync failed');toast('Failed to load from Sheet','t-err');console.error(e);return false;}
+}
+
+async function loadSharedData(){
+  try{
+    // Notices: title,body,by,time,private_to
+    const nr=await sheetsGet(`${CONFIG.SHEET_NOTICES}!A2:G2000`);
+    const allNotices=(nr.values||[]).filter(r=>r[0]);
+    NOTICES=allNotices.filter(r=>!r[4]).map(r=>({title:r[0]||'',body:r[1]||'',by:r[2]||'',time:r[3]||'',pinned:r[5]==='1',photo:r[6]||''}));
+    PRIVATE_NOTICES={};
+    allNotices.filter(r=>r[4]).forEach(r=>{const to=r[4];if(!PRIVATE_NOTICES[to])PRIVATE_NOTICES[to]=[];PRIVATE_NOTICES[to].push({body:r[1]||'',time:r[3]||''});});
+    // Nizam
+    const nizr=await sheetsGet(`${CONFIG.SHEET_NIZAM}!A2:C2`);
+    const nizRow=(nizr.values||[])[0]||[];
+    NIZAM=nizRow[0]||'';
+    // Load About Us from col B
+    const aboutStr=nizRow[1]||'';
+    loadAboutFromStr(aboutStr||localStorage.getItem('bft_about')||'');
+    // Load CHAT_MUTED from col C
+    const mutedStr=nizRow[2]||'';
+    if(mutedStr)try{CHAT_MUTED=JSON.parse(mutedStr);}catch(e){}
+    // Chat - last 200 msgs
+    const chatr=await sheetsGet(`${CONFIG.SHEET_CHAT}!A2:D10000`);
+    CHAT_MSGS=((chatr.values||[]).filter(r=>r[0]&&r[3]).map(r=>({name:r[0]||'',email:r[1]||'',time:r[2]||'',txt:r[3]||''}))).slice(-200);
+    // Projects - stored as JSON in one cell
+    const projr=await sheetsGet(`${CONFIG.SHEET_PROJECTS}!A2:A2`);
+    try{PROJECTS=JSON.parse(((projr.values||[])[0]||['[]'])[0]);}catch(e){PROJECTS=[];}
+    // OrgRoles: member,role
+    const orr=await sheetsGet(`${CONFIG.SHEET_ORGROLES}!A2:B200`);
+    ORG_ROLES={};(orr.values||[]).filter(r=>r[0]&&r[1]).forEach(r=>{ORG_ROLES[r[0]]=r[1];});
+    // Pending Payments: id,memberName,memberEmail,key,m,b,status
+    const ppr=await sheetsGet(`${CONFIG.SHEET_PENDING}!A2:G2000`);
+    PENDING_PAYS=(ppr.values||[]).filter(r=>r[0]).map(r=>({id:r[0]||'',memberName:r[1]||'',memberEmail:r[2]||'',key:r[3]||'',m:parseFloat(r[4])||0,b:parseFloat(r[5])||0,status:r[6]||'pending',submittedAt:r[0]||''}));
+  }catch(e){console.warn('loadSharedData partial error:',e);}
 }
 async function saveToSheet(){
   if(CURRENT_ROLE!=='admin')return;
@@ -874,8 +1499,72 @@ async function saveToSheet(){
     setSyncStatus('ok','Saved ✓');setTimeout(()=>setSyncStatus('ok','Synced'),1500);
   }catch(e){setSyncStatus('err','Save failed');toast('Save failed','t-err');console.error(e);}
 }
+
+async function saveNotices(){
+  if(CURRENT_ROLE!=='admin'){toast('Admin only','t-err');return;}
+  try{
+    await sheetsClear(`${CONFIG.SHEET_NOTICES}!A2:G10000`);
+    const rows=[];
+    NOTICES.forEach(n=>rows.push([n.title||'',n.body||'',n.by||'',n.time||'','',n.pinned?'1':'',n.photo||'']));
+    Object.entries(PRIVATE_NOTICES).forEach(([email,msgs])=>{msgs.forEach(m=>rows.push(['Private',''+m.body,'Admin',m.time||'',email]));});
+    if(rows.length)await sheetsUpdate(`${CONFIG.SHEET_NOTICES}!A2:G${1+rows.length}`,rows);
+  }catch(e){console.error('saveNotices',e);toast('Notice save failed','t-err');}
+}
+
+async function saveNizamToSheet(){
+  if(CURRENT_ROLE!=='admin'){toast('Admin only','t-err');return;}
+  try{
+    await sheetsClear(`${CONFIG.SHEET_NIZAM}!A2:A2`);
+    await sheetsUpdate(`${CONFIG.SHEET_NIZAM}!A2:A2`,[[NIZAM]]);
+  }catch(e){console.error('saveNizam',e);toast('Nizam save failed','t-err');}
+}
+
+async function saveChatMsg(msg){
+  // All members can send chat — no role restriction
+  try{
+    const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(CONFIG.SHEET_CHAT+'!A:D')}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,{
+      method:'POST',headers:{Authorization:`Bearer ${ACCESS_TOKEN}`,'Content-Type':'application/json'},
+      body:JSON.stringify({values:[[msg.name,msg.email,msg.time,msg.txt]]})
+    });
+    if(!res.ok)throw new Error('chat append failed '+res.status);
+  }catch(e){console.error('saveChatMsg',e);toast('Message failed to send','t-err');}
+}
+
+async function saveProjectsToSheet(){
+  if(CURRENT_ROLE!=='admin'){toast('Admin only','t-err');return;}
+  try{
+    await sheetsClear(`${CONFIG.SHEET_PROJECTS}!A2:A2`);
+    await sheetsUpdate(`${CONFIG.SHEET_PROJECTS}!A2:A2`,[[JSON.stringify(PROJECTS)]]);
+  }catch(e){console.error('saveProjects',e);}
+}
+
+async function saveOrgRolesToSheet(){
+  if(CURRENT_ROLE!=='admin'){toast('Admin only','t-err');return;}
+  try{
+    await sheetsClear(`${CONFIG.SHEET_ORGROLES}!A2:B1000`);
+    const rows=Object.entries(ORG_ROLES).map(([k,v])=>[k,v]);
+    if(rows.length)await sheetsUpdate(`${CONFIG.SHEET_ORGROLES}!A2:B${1+rows.length}`,rows);
+  }catch(e){console.error('saveOrgRoles',e);}
+}
+
+async function savePendingToSheet(){
+  // Members can submit pending pays, admins can approve/reject
+  try{
+    await sheetsClear(`${CONFIG.SHEET_PENDING}!A2:G5000`);
+    const rows=PENDING_PAYS.map(p=>[p.id,p.memberName,p.memberEmail,p.key,p.m,p.b,p.status]);
+    if(rows.length)await sheetsUpdate(`${CONFIG.SHEET_PENDING}!A2:G${1+rows.length}`,rows);
+  }catch(e){console.error('savePending',e);}
+}
+
 function flush(){if(CURRENT_ROLE!=='admin')return;if(syncTimer)clearTimeout(syncTimer);syncTimer=setTimeout(()=>{syncTimer=null;saveToSheet();},800);}
-async function syncNow(){if(syncTimer){clearTimeout(syncTimer);syncTimer=null;}showLoad('Syncing…');await loadFromSheet();hideLoad();setupMthFilter();renderAll();toast('Synced!');}
+async function syncNow(){
+  if(syncTimer){clearTimeout(syncTimer);syncTimer=null;}
+  showLoad('Syncing…');
+  await loadFromSheet();
+  hideLoad();setupMthFilter();renderAll();
+  renderNoticeBoard();renderNizam();renderProjects();renderChat();
+  toast('Synced!');
+}
 function openSheetInBrowser(){window.open(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`,'_blank');}
 
 // ══ SHEET PICKER ══════════════════════════════════════════════════════════════
@@ -904,6 +1593,7 @@ async function bootApp(){
   const ok=await loadFromSheet();hideLoad();
   document.getElementById('app').classList.add('show');
   setupMthFilter();renderAll();updateUndoUI();
+  renderNoticeBoard();renderNizam();renderProjects();renderChat();
   if(!ok)toast('Loaded with errors','t-err');
   const main=document.querySelector('.main');
   const existingBanner=document.getElementById('sheet-banner');
@@ -913,26 +1603,96 @@ async function bootApp(){
     b.innerHTML=`📊 Synced with Google Sheets — <a href="https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit" target="_blank">Open Sheet ↗</a>`;
     main.prepend(b);
   }
-  // Auto-sync every 60 seconds
+  // Enforce supreme admin — always admin, never readonly
+  if(CURRENT_EMAIL.toLowerCase()===SUPREME_ADMIN.toLowerCase()){
+    CURRENT_ROLE='admin';
+    sessionStorage.setItem('bft_role','admin');
+  }
+  // Auto-poll ALL shared data every 15 seconds from Sheets
   if(_autoSyncInterval)clearInterval(_autoSyncInterval);
   _autoSyncInterval=setInterval(async()=>{
-    if(syncTimer)return; // skip if a save is already pending
-    await loadFromSheet();
-    setupMthFilter();renderAll();
-  },30000);
+    if(syncTimer)return;
+    await loadSharedData();
+    const activeTab=document.querySelector('.tab-panel.active');
+    const activeId=activeTab?activeTab.id:'';
+    if(activeId==='tab-chat')renderChat();
+    else if(activeId==='tab-notices')renderNoticeBoard();
+    else if(activeId==='tab-nizam')renderNizam();
+    else if(activeId==='tab-projects')renderProjects();
+    renderMC();
+  },5000);
+  // Chat polls faster (every 5s)
+  _lastChatLen=CHAT_MSGS.length;
+  _lastNoticeLen=NOTICES.filter(n=>!n.private_to).length;
+  startChatPoll();
+  // Profile
+  renderProfile();
+  requestNotifPermission();
+  // Show pending payment alert for admins
+  setTimeout(()=>{
+    const pending=PENDING_PAYS.filter(p=>p.status==='pending');
+    if(pending.length&&CURRENT_ROLE==='admin'){
+      pushNotif('⏳',`${pending.length} pending payment${pending.length>1?'s':''} await your approval`);
+    }
+  },2000);
+  // Show bKash in nav for non-supreme members
+  const bkBtn=document.getElementById('bkash-nav-btn');
+  if(bkBtn)bkBtn.style.display=CURRENT_EMAIL.toLowerCase()===SUPREME_ADMIN.toLowerCase()?'none':'';
+  // About Us - loaded via loadSharedData → loadAboutFromStr
+  renderAbout();
+  // First login nizam
+  const loginKey='bft_first_login_'+CURRENT_EMAIL;
+  if(!localStorage.getItem(loginKey)){
+    localStorage.setItem(loginKey,'1');
+    setTimeout(()=>showNizamBook(),1200);
+  }
 }
 
 // ══ TABS ══════════════════════════════════════════════════════════════════════
 function showTab(id,btn){
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+id).classList.add('active');
-  btn.classList.add('active');
-  if(id==='activity')renderActivity();else renderAll();
+  document.querySelectorAll('.tb-nav .nb').forEach(b=>b.classList.remove('active'));
+  const panel=document.getElementById('tab-'+id);
+  if(panel)panel.classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(id==='activity'){
+    const dot=document.getElementById('notif-dot');
+    if(dot)dot.style.display='none';
+    renderActivity();
+  }
+  else if(id==='notices'){loadSharedData().then(()=>renderNoticeBoard());}
+  else if(id==='nizam'){loadSharedData().then(()=>renderNizam());}
+  else if(id==='chat'){
+    document.getElementById('chat-dot').style.display='none';
+    loadSharedData().then(()=>renderChat());
+  }
+  else if(id==='projects'){loadSharedData().then(()=>renderProjects());}
+  else if(id==='profile')renderProfile();
+  else if(id==='about')renderAbout();
+  else renderAll();
 }
 
+function setMemberView(v){
+  const cards=document.getElementById('mc-grid');
+  const info=document.getElementById('ic-grid');
+  const cb=document.getElementById('view-cards-btn');
+  const ib=document.getElementById('view-info-btn');
+  if(v==='cards'){
+    if(cards)cards.style.display='';
+    if(info)info.style.display='none';
+    if(cb){cb.style.background='var(--ac-s)';cb.style.color='var(--ac-t)';cb.style.borderColor='transparent';}
+    if(ib){ib.style.background='';ib.style.color='';ib.style.borderColor='';}
+  } else {
+    if(cards)cards.style.display='none';
+    if(info)info.style.display='';
+    if(ib){ib.style.background='var(--ac-s)';ib.style.color='var(--ac-t)';ib.style.borderColor='transparent';}
+    if(cb){cb.style.background='';cb.style.color='';cb.style.borderColor='';}
+    renderIC();
+  }
+}
 // ══ RENDER ════════════════════════════════════════════════════════════════════
 function renderAll(){
+  const isAdmin=CURRENT_ROLE==='admin';
   renderStats();
   const allKeys=activeMonthKeys();
   rTable('db-h','db-b','db-f',allKeys,MEM,'M','B');
@@ -942,6 +1702,18 @@ function renderAll(){
   const fl=MEM.filter(r=>(r.nick||r.name).toLowerCase().includes(q.toLowerCase())||r.name.toLowerCase().includes(q.toLowerCase()));
   rTable('ft-h','ft-b','ft-f',keys,fl,'Monthly','Book Fund');
   renderMC();renderIC();renderCosts();
+  // Viewer visibility: hide admin-only UI elements
+  const adminOnlyEls=['add-cost-btn','overview-pay-btn','add-proj-btn','clear-notif-btn'];
+  adminOnlyEls.forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=isAdmin?'':'none';});
+  // cost action column - only admin sees edit button column
+  const costCol=document.getElementById('cost-action-col');
+  if(costCol)costCol.style.display=isAdmin?'':'none';
+  // About edit
+  const aboutBtn=document.getElementById('edit-about-btn');
+  if(aboutBtn)aboutBtn.style.display=isAdmin?'':'none';
+  // Nizam edit
+  const nizBtn=document.getElementById('edit-nizam-btn');
+  if(nizBtn)nizBtn.style.display=isAdmin?'':'none';
 }
 function renderStats(){
   let col=0,cost=0,act=0;
@@ -984,25 +1756,64 @@ function rTable(hId,bId,fId,keys,list,ml,bl){
 }
 function renderMC(){
   document.getElementById('mc-cnt').textContent=`(${MEM.length})`;
+  const isAdmin=CURRENT_ROLE==='admin';
+  const isSupreme=CURRENT_EMAIL.toLowerCase()===SUPREME_ADMIN.toLowerCase();
+  const myMem=MEM.find(m=>m.email&&m.email.toLowerCase()===CURRENT_EMAIL.toLowerCase());
+  // Viewer visibility for header buttons
+  const pendBtn=document.getElementById('pending-pay-btn');
+  const assignBtn=document.getElementById('assign-role-members-btn');
+  const addBtn=document.getElementById('add-mem-btn');
+  const submitPayBtn=document.getElementById('submit-pay-btn');
+  if(pendBtn)pendBtn.style.display=isAdmin?'':'none';
+  if(assignBtn)assignBtn.style.display=isAdmin?'':'none';
+  if(addBtn)addBtn.style.display=isAdmin?'':'none';
+  if(submitPayBtn)submitPayBtn.style.display=(!isAdmin&&myMem)?'':'none';
+
   if(!MEM.length){document.getElementById('mc-grid').innerHTML='<div class="empty"><div class="ei">👥</div><div>No members yet.</div></div>';return;}
-  const allKeys=activeMonthKeys(),isAdmin=CURRENT_ROLE==='admin';let h='';
-  MEM.forEach((r,i)=>{
+  const allKeys=activeMonthKeys();
+  const currentEmail=CURRENT_EMAIL||sessionStorage.getItem('bft_email')||'';
+  let h='';
+  MEM.filter(r=>!(r.email&&r.email.toLowerCase()===SUPREME_ADMIN.toLowerCase())).forEach((r,_idx)=>{
+    // Get original index for button actions
+    const i=MEM.findIndex(m=>m.name===r.name);
     const mp=gp(r.name);let tm=0,tb=0,act=0;
     Object.values(mp).forEach(p=>{tm+=p.m;tb+=p.b;if(p.m>0||p.b>0)act++;});
     const badge=act>0?`<span class="badge b-par">${act} mo</span>`:`<span class="badge b-none">—</span>`;
     const roleBadge=`<span class="mc-role-badge ${r.role==='admin'?'rb-admin':'rb-viewer'}">${r.role==='admin'?'🔑 Admin':'👁 Viewer'}</span>`;
+    const orgRole=ORG_ROLES[r.name];
+    const orgBadge=orgRole?`<span class="org-role-badge ${ORG_ROLE_CLASS[orgRole]||'orb-alif'}">${ORG_ROLE_ICONS[orgRole]||'⭐'} ${orgRole}</span>`:'';
     const chips=allKeys.map(k=>{const p=gpk(r.name,k);const paid=p.m>0||p.b>0;return`<div class="chip ${paid?'paid':'nopaid'}" title="${keyToFull(k)}: ৳${(p.m+p.b).toFixed(2)}">${keyToShort(k).replace(' ','<br>')}</div>`;}).join('');
-    h+=`<div class="mc">
+    const isMe=r.email&&r.email.toLowerCase()===currentEmail.toLowerCase();
+    let glowClass='';
+    if(isAdmin||isMe){const glow=getPaymentGlow(r.name);if(glow)glowClass='glow-'+glow;}
+    const hasBk=hasBorrowedBook(r.name);
+    if(hasBk&&!glowClass)glowClass='glow-white';
+    const isElite=!!orgRole;
+    const photo=MEMBER_PHOTOS[r.name]||r.photo||'';
+    const avContent=photo?`<img src="${photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`:`${ini(r.name)}`;
+    const pendingCount=PENDING_PAYS.filter(p=>p.memberName===r.name&&p.status==='pending').length;
+    const pendBadge=pendingCount>0&&isAdmin?`<span style="background:var(--am-s);color:var(--am-t);border:1px solid rgba(255,173,46,.25);padding:2px 7px;border-radius:99px;font-size:9px;font-weight:700;">⏳${pendingCount}</span>`:'';
+    // Supreme admin can do anything; admin can do most things except what supreme has locked
+    const memberIsSupreme=r.email&&r.email.toLowerCase()===SUPREME_ADMIN.toLowerCase();
+    const canModifyMember=isAdmin&&(!memberIsSupreme||isSupreme);
+    h+=`<div class="mc ${glowClass}${isElite?' elite':''}">
       <div class="mc-top">
-        <div class="mc-av">${ini(r.name)}</div>
+        <div class="mc-av">${avContent}</div>
         <div style="flex:1;min-width:0;">
-          <div class="mc-nm">${r.name}${r.nick&&r.nick!==r.name?` <span style="font-size:11px;color:var(--tx3);font-weight:400;">(${r.nick})</span>`:''}</div>
+          <div class="mc-nm">${r.name}${r.nick&&r.nick!==r.name?` <span style="font-size:11px;color:var(--tx3);font-weight:400;">(${r.nick})</span>`:''} ${pendBadge}</div>
           <div class="mc-mt">${r.email||r.phone||'No contact info'}</div>
-          ${roleBadge}
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;">${roleBadge}${orgBadge}${hasBk?'<span class="mc-role-badge" style="background:rgba(220,230,255,.12);color:#ddeeff;border:1px solid rgba(220,230,255,.25);">📚 Has Book</span>':''}</div>
         </div>
         ${badge}
       </div>
-      ${isAdmin?`<div class="mc-ac"><button class="btn btn-sm btn-g" onclick="openPayMo(${i})">+ Pay</button><button class="btn btn-sm" onclick="openEditMem(${i})">Edit</button><button class="btn btn-sm btn-d" onclick="confirmDelMem(${i})">Remove</button></div>`:''}
+      <div class="mc-ac">
+        ${isAdmin?`<button class="btn btn-sm btn-g" onclick="openPayMo(${i})">+ Pay</button>
+          <button class="btn btn-sm" onclick="openPayHist(${i})">History</button>`:''}
+        ${canModifyMember?`<button class="btn btn-sm" onclick="openEditMem(${i})">Edit</button>
+          <button class="btn btn-sm btn-pu" onclick="toggleBookBorrow('${r.name}')">${hasBk?'📗 Return':'📕 Borrow'}</button>
+          <button class="btn btn-sm btn-d" onclick="confirmDelMem(${i})">Remove</button>`:''}
+        ${isAdmin&&pendingCount>0?`<button class="btn btn-sm" style="color:var(--am-t);" onclick="openPendingPayments()">⏳(${pendingCount})</button>`:''}
+      </div>
       <div class="mc-st">
         <div class="mc-s"><div class="mc-sl">Monthly</div><div class="mc-sv" style="color:var(--ac-t);">৳${tm.toFixed(0)}</div></div>
         <div class="mc-s"><div class="mc-sl">Book Fund</div><div class="mc-sv" style="color:var(--pu-t);">৳${tb.toFixed(0)}</div></div>
@@ -1040,8 +1851,9 @@ function renderIC(){
   document.getElementById('ic-grid').innerHTML=h;
 }
 function renderCosts(){
-  const allKeys=activeMonthKeys(),isAdmin=CURRENT_ROLE==='admin';let h='';
-  allKeys.forEach(k=>{
+  const isAdmin=CURRENT_ROLE==='admin';
+  let h='';
+  activeMonthKeys().forEach(k=>{
     let col=0;MEM.forEach(r=>{const p=gpk(r.name,k);col+=p.m+p.b;});
     const cost=COSTS[k]||0,net=col-cost;
     h+=`<tr>
@@ -1049,7 +1861,7 @@ function renderCosts(){
       <td class="amt" style="color:var(--rd-t);">${cost>0?tkp(cost):'—'}</td>
       <td class="amt">${tkp(col)}</td>
       <td class="amt" style="color:${net>=0?'var(--gn-t)':'var(--rd-t)'};">${tkp(net)}</td>
-      <td style="text-align:center;">${isAdmin?`<button class="btn btn-sm btn-gh" onclick="editCost('${k}')">Edit</button>`:''}</td>
+      ${isAdmin?`<td style="text-align:center;"><button class="btn btn-sm btn-gh" onclick="editCost('${k}')">Edit</button></td>`:''}
     </tr>`;
   });
   document.getElementById('cost-body').innerHTML=h;
@@ -1063,6 +1875,9 @@ function openAddMem(){
   document.getElementById('mo-mem-t').textContent='Add Member';
   ['em-name','em-nick','em-phone','em-email','em-addr','em-sid','em-notes'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('em-join').value=new Date().toISOString().slice(0,10);
+  document.getElementById('em-photo').value='';
+  const prev=document.getElementById('em-photo-preview');
+  prev.innerHTML='📷';prev.style.fontSize='22px';
   setMemberRole('viewer');
   openMo('mo-mem');
 }
@@ -1079,14 +1894,36 @@ function openEditMem(idx){
   document.getElementById('em-join').value=r.join||'';
   document.getElementById('em-notes').value=r.notes||'';
   setMemberRole(r.role||'viewer');
+  // Load photo
+  const photo=MEMBER_PHOTOS[r.name]||r.photo||'';
+  document.getElementById('em-photo').value=photo;
+  const prev=document.getElementById('em-photo-preview');
+  if(photo){
+    prev.innerHTML=`<img src="${photo}" style="width:70px;height:70px;object-fit:cover;border-radius:50%;">`;
+    prev.style.fontSize='0';
+  } else {
+    prev.innerHTML='📷';prev.style.fontSize='22px';
+  }
   openMo('mo-mem');
 }
 function saveMem(){
   const name=document.getElementById('em-name').value.trim();
   if(!name){toast('Name is required','t-err');return;}
   const idx=parseInt(document.getElementById('em-idx').value);
-  const role=document.getElementById('em-role').value||'viewer';
-  const obj={name,nick:document.getElementById('em-nick').value.trim()||name,phone:document.getElementById('em-phone').value.trim(),email:document.getElementById('em-email').value.trim(),addr:document.getElementById('em-addr').value.trim(),join:document.getElementById('em-join').value,sid:document.getElementById('em-sid').value.trim(),notes:document.getElementById('em-notes').value.trim(),role};
+  let role=document.getElementById('em-role').value||'viewer';
+  const email=document.getElementById('em-email').value.trim();
+  // Supreme admin protection: fityahalofficial cannot be set to viewer by anyone
+  if(email.toLowerCase()===SUPREME_ADMIN.toLowerCase())role='admin';
+  // Only supreme admin can change other admins' roles
+  if(CURRENT_EMAIL.toLowerCase()!==SUPREME_ADMIN.toLowerCase()){
+    // non-supreme admins cannot demote each other
+    if(idx>=0&&MEM[idx]&&MEM[idx].email&&MEM[idx].email.toLowerCase()===SUPREME_ADMIN.toLowerCase()){
+      toast('⚠ Cannot modify the supreme admin','t-err');return;
+    }
+  }
+  const photo=document.getElementById('em-photo').value||'';
+  const obj={name,nick:document.getElementById('em-nick').value.trim()||name,phone:document.getElementById('em-phone').value.trim(),email,addr:document.getElementById('em-addr').value.trim(),join:document.getElementById('em-join').value,sid:document.getElementById('em-sid').value.trim(),notes:document.getElementById('em-notes').value.trim(),role,photo};
+  if(photo){MEMBER_PHOTOS[name]=photo;localStorage.setItem('bft_member_photos',JSON.stringify(MEMBER_PHOTOS));}
   if(idx===-1){snapshot('Add member: '+name);MEM.push(obj);ep(name);logActivity('👤','Added member: '+name+' ('+role+')');toast('Member added!');}
   else{const old=MEM[idx].name;snapshot('Edit member: '+name);if(old!==name&&PAY[old]){PAY[name]=PAY[old];delete PAY[old];}MEM[idx]=obj;ep(name);logActivity('✏️','Updated: '+name);toast('Member updated!');}
   flush();closeMo();renderAll();
@@ -1139,7 +1976,7 @@ function savePay(){
   const mi=document.getElementById('pay-mem').value,mk=getPayKey();
   if(mi===''||!mk){toast('Select member, year and month','t-err');return;}
   const m=parseFloat(document.getElementById('pay-m').value)||0,b=parseFloat(document.getElementById('pay-b').value)||0;
-  if(!m&&!b){toast('Enter at least one amount','t-err');return;}
+  // Allow zero amounts (to clear/reset a payment entry)
   const name=MEM[parseInt(mi)].name;
   snapshot('Payment: '+name+' '+keyToFull(mk));
   ep(name);PAY[name][mk]={m,b};
@@ -1186,13 +2023,966 @@ function setupMthFilter(){
   if(cur)sel.value=cur;
 }
 
-// ══ INIT ══════════════════════════════════════════════════════════════════════
+// ══ THEME ════════════════════════════════════════════════════════════════════
+const THEMES=['dark','light','night'];
+let _themeIdx=0;
+function cycleTheme(){
+  _themeIdx=(_themeIdx+1)%THEMES.length;
+  applyTheme(THEMES[_themeIdx]);
+}
+function applyTheme(t){
+  document.body.className=t==='dark'?'':'theme-'+t;
+  localStorage.setItem('bft_theme',t);
+  _themeIdx=THEMES.indexOf(t);
+  const icons={dark:'🌙',light:'☀️',night:'🌑'};
+  const btn=document.getElementById('theme-btn');
+  if(btn)btn.textContent=icons[t]||'🌙';
+}
+(function(){applyTheme(localStorage.getItem('bft_theme')||'dark');})();
+
+// ══ PAYMENT COLOR GLOW ═══════════════════════════════════════════════════════
+function getPaymentGlow(memberName){
+  const now=new Date();
+  const allKeys=activeMonthKeys();
+  const mp=gp(memberName);
+  // Find most recent unpaid month
+  let overdueMonths=0;
+  for(let i=allKeys.length-1;i>=0;i--){
+    const k=allKeys[i];
+    const [y,mo]=k.split('-').map(Number);
+    const d=new Date(y,mo-1,1);
+    if(d>now) continue;
+    const p=mp[k];
+    if(!p||(!p.m&&!p.b)) overdueMonths++;
+    else break;
+  }
+  if(overdueMonths>=3) return 'red';
+  if(overdueMonths===2) return 'yellow';
+  if(overdueMonths===0){
+    // Check 1 month left warning: next month is due
+    const nextKey=mkKey(now.getFullYear(),now.getMonth()+1);
+    const np=mp[nextKey];
+    if(!np||(!np.m&&!np.b)) return 'green';
+  }
+  return null;
+}
+function hasBorrowedBook(memberName){ return !!BORROWED_BOOKS[memberName]; }
+
+// ══ ORG ROLES ════════════════════════════════════════════════════════════════
+function openOrgRoleMo(){
+  const sel=document.getElementById('orgrole-mem');
+  sel.innerHTML='<option value="">Select member…</option>';
+  MEM.forEach((r,i)=>{const o=document.createElement('option');o.value=i;o.textContent=r.name;sel.appendChild(o);});
+  document.getElementById('orgrole-role').value='';
+  openMo('mo-orgrole');
+}
+async function saveOrgRole(){
+  const mi=document.getElementById('orgrole-mem').value;
+  const role=document.getElementById('orgrole-role').value;
+  if(mi===''){toast('Select a member','t-err');return;}
+  const name=MEM[parseInt(mi)].name;
+  if(role==='Alif'&&CURRENT_EMAIL.toLowerCase()!==SUPREME_ADMIN.toLowerCase()){
+    toast('⚠ Only the supreme admin can assign Alif role','t-err');return;
+  }
+  if(role) ORG_ROLES[name]=role;
+  else delete ORG_ROLES[name];
+  await saveOrgRolesToSheet();
+  logActivity('⭐','Assigned org role: '+name+' → '+(role||'none'));
+  toast('Role assigned!');closeMo();renderAll();
+}
+const ORG_ROLE_ICONS={Alif:'👑',Mutabbiq:'⚖️',Khazin:'💰'};
+const ORG_ROLE_CLASS={Alif:'orb-alif',Mutabbiq:'orb-mutabbiq',Khazin:'orb-khazin'};
+
+// ══ PAYMENT HISTORY VIEW ══════════════════════════════════════════════════════
+function openPayHist(mIdx){
+  const r=MEM[mIdx];
+  document.getElementById('mo-payhist-t').textContent=r.name+' — Payment History';
+  refreshPayHistModal(r.name);
+  openMo('mo-payhist');
+}
+
+function refreshPayHistModal(memberName){
+  const mp=gp(memberName);
+  const keys=Object.keys(mp).filter(k=>mp[k]&&(mp[k].m||mp[k].b)).sort(keySort);
+  const isAdmin=CURRENT_ROLE==='admin';
+  let h='';
+  if(!keys.length){
+    h='<div class="empty"><div class="ei">💸</div><div>No payments yet.</div></div>';
+  } else {
+    keys.forEach(k=>{
+      const p=mp[k];
+      const safeKey=k.replace(/'/g,"\\'");
+      const safeName=memberName.replace(/'/g,"\\'");
+      h+=`<div class="pay-hist-item">
+        <span class="pay-hist-key">${keyToFull(k)}</span>
+        <span class="pay-hist-amt">৳${(p.m+p.b).toFixed(2)}</span>
+        ${isAdmin?`<button class="pay-hist-del" onclick="removePayEntry('${safeName}','${safeKey}')">✕ Remove</button>`:''}
+      </div>`;
+    });
+  }
+  document.getElementById('payhist-list').innerHTML=h;
+}
+
+function removePayEntry(name,k){
+  if(!PAY[name]||!PAY[name][k])return;
+  snapshot('Remove payment: '+name+' '+keyToFull(k));
+  delete PAY[name][k];
+  flush();
+  toast('Payment removed');
+  logActivity('🗑️','Removed payment: '+name+' '+keyToFull(k));
+  refreshPayHistModal(name);
+  renderAll();
+}
+
+// ══ NOTICE BOARD ═════════════════════════════════════════════════════════════
+function openNoticeMo(editIdx=-1){
+  document.getElementById('notice-edit-idx').value=editIdx;
+  if(editIdx>=0){
+    const n=NOTICES[editIdx];
+    document.getElementById('notice-title-inp').value=n.title;
+    document.getElementById('notice-body-inp').value=n.body;
+    document.getElementById('mo-notice-t').textContent='Edit Announcement';
+  } else {
+    document.getElementById('notice-title-inp').value='';
+    document.getElementById('notice-body-inp').value='';
+    document.getElementById('mo-notice-t').textContent='Post Announcement';
+  }
+  openMo('mo-notice');
+}
+
+function previewNoticePhoto(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const d=e.target.result;
+    document.getElementById('notice-photo-data').value=d;
+    const prev=document.getElementById('notice-photo-preview');
+    prev.src=d;prev.style.display='';
+  };
+  reader.readAsDataURL(file);
+}
+function saveNotice(){
+  const title=document.getElementById('notice-title-inp').value.trim();
+  const body=document.getElementById('notice-body-inp').value.trim();
+  if(!title||!body){toast('Title and message required','t-err');return;}
+  const idx=parseInt(document.getElementById('notice-edit-idx').value);
+  const pinned=document.getElementById('notice-pin-inp')?.checked||false;
+  const photo=document.getElementById('notice-photo-data')?.value||'';
+  const entry={title,body,by:CURRENT_EMAIL||'Admin',
+    time:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),
+    pinned,photo:(idx>=0&&!photo)?(NOTICES[idx]?.photo||''):photo};
+  if(idx>=0) NOTICES[idx]=entry;
+  else NOTICES.unshift(entry);
+  // Re-sort after adding
+  NOTICES.sort((a,b)=>{if(a.pinned&&!b.pinned)return -1;if(!a.pinned&&b.pinned)return 1;return b.time.localeCompare(a.time);});
+  saveNotices().then(()=>{
+    logActivity('📢','Notice posted: '+title);
+    toast('Announcement posted!');closeMo();renderNoticeBoard();
+    pushNotif('📢','New notice: '+title);
+  });
+}
+async function deleteNotice(idx){
+  const ok=await confirm2('Delete Notice','Remove this notice?','🗑️',true);
+  if(!ok)return;
+  NOTICES.splice(idx,1);
+  await saveNotices();
+  renderNoticeBoard();toast('Announcement removed');
+}
+
+function togglePin(idx){
+  NOTICES[idx].pinned=!NOTICES[idx].pinned;
+  NOTICES.sort((a,b)=>{if(a.pinned&&!b.pinned)return -1;if(!a.pinned&&b.pinned)return 1;return b.time.localeCompare(a.time);});
+  saveNotices().then(()=>renderNoticeBoard());
+}
+
+async function deletePrivateNotice(toEmail,msgIdx){
+  if(!PRIVATE_NOTICES[toEmail])return;
+  PRIVATE_NOTICES[toEmail].splice(msgIdx,1);
+  if(!PRIVATE_NOTICES[toEmail].length)delete PRIVATE_NOTICES[toEmail];
+  await saveNotices();
+  renderNoticeBoard();
+  toast('Notice deleted');
+}
+function renderNoticeBoard(){
+  const isAdmin=CURRENT_ROLE==='admin';
+  const isSupreme=CURRENT_EMAIL.toLowerCase()===SUPREME_ADMIN.toLowerCase();
+  const addBtn=document.getElementById('add-notice-btn');
+  const pnBtn=document.getElementById('send-pnotice-btn');
+  if(addBtn)addBtn.style.display=isAdmin?'':'none';
+  if(pnBtn)pnBtn.style.display=isAdmin?'':'none';
+  const el=document.getElementById('notice-list');
+  if(!NOTICES.length){el.innerHTML='<div class="empty"><div class="ei">📢</div><div>No announcements yet.</div></div>';}
+  else{
+    el.innerHTML=NOTICES.map((n,i)=>`<div class="notice-item" style="${n.pinned?'border:1.5px solid var(--am);':''}">
+      ${n.pinned?'<div style="font-size:10px;font-weight:800;color:var(--am-t);margin-bottom:6px;letter-spacing:.5px;">📌 PINNED</div>':''}
+      ${n.photo?`<img src="${n.photo}" style="width:100%;max-height:180px;object-fit:cover;border-radius:var(--r);margin-bottom:10px;">`:''}
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">
+        <div class="ni-title">${n.title}</div>
+        <div style="display:flex;gap:6px;flex-shrink:0;">${isAdmin?`<button class="btn btn-sm btn-gh" onclick="togglePin(${i})" title="${n.pinned?'Unpin':'Pin'}">📌</button><button class="btn btn-sm btn-gh" onclick="openNoticeMo(${i})">Edit</button><button class="btn btn-sm btn-d" onclick="deleteNotice(${i})">✕</button>`:''}</div>
+      </div>
+      <div class="ni-body">${n.body}</div>
+      <div class="ni-meta"><span class="ni-tag">📢 ${n.by||'Admin'}</span><span>${n.time}</span></div>
+    </div>`).join('');
+  }
+  // Private notices — supreme admin sees all, others see their own
+  const email=(CURRENT_EMAIL||sessionStorage.getItem('bft_email')||'').toLowerCase();
+  let myPN=[];
+  if(isSupreme){
+    // Supreme admin sees all private notices
+    Object.entries(PRIVATE_NOTICES).forEach(([to,msgs])=>{
+      msgs.forEach(m=>myPN.push({...m,to}));
+    });
+    myPN.sort((a,b)=>b.time.localeCompare(a.time));
+  } else {
+    myPN=PRIVATE_NOTICES[email]||[];
+  }
+  const pnWrap=document.getElementById('private-notices-wrap');
+  const pnList=document.getElementById('private-notices-list');
+  if(pnWrap){
+    if(myPN.length){
+      pnWrap.style.display='';
+      if(pnList)pnList.innerHTML=myPN.map((n,i)=>{
+        const delBtn=`<button class="btn btn-sm btn-d" style="padding:2px 7px;font-size:11px;" onclick="deletePrivateNotice('${n.toKey||n.to||email}',${n.msgIdx!==undefined?n.msgIdx:i})">✕</button>`;
+        return `<div class="notice-item" style="border-left:3px solid var(--pu);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span class="pn-badge">${isSupreme&&n.to?'To: '+n.to:'Private'}</span>
+            ${delBtn}
+          </div>
+          <div class="pn-msg">${n.body}</div>
+          <div class="pn-time">${n.time}</div>
+        </div>`;
+      }).join('');
+    } else {
+      pnWrap.style.display='none';
+    }
+  }
+}
+function openPrivateNoticeMo(){
+  const sel=document.getElementById('pnotice-to');
+  sel.innerHTML='<option value="">Select member…</option>';
+  MEM.forEach(r=>{if(r.email){const o=document.createElement('option');o.value=r.email;o.textContent=r.name;sel.appendChild(o);}});
+  document.getElementById('pnotice-body').value='';
+  openMo('mo-pnotice');
+}
+function sendPrivateNotice(){
+  const to=document.getElementById('pnotice-to').value;
+  const body=document.getElementById('pnotice-body').value.trim();
+  if(!to||!body){toast('Select recipient and write message','t-err');return;}
+  if(!PRIVATE_NOTICES[to])PRIVATE_NOTICES[to]=[];
+  PRIVATE_NOTICES[to].unshift({body,time:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})});
+  saveNotices().then(()=>{
+    logActivity('📨','Private notice sent to '+to);
+    toast('Private notice sent!');closeMo();
+  });
+}
+
+// ══ NIZAM / RULEBOOK ══════════════════════════════════════════════════════════
+function openNizamEdit(){
+  document.getElementById('nizam-inp').value=NIZAM;
+  openMo('mo-nizam');
+}
+function saveNizam(){
+  NIZAM=document.getElementById('nizam-inp').value;
+  saveNizamToSheet().then(()=>{
+    logActivity('📖','Nizam updated');
+    toast('Rules saved!');closeMo();renderNizam();
+    // Also update book overlay if open
+    const bookContent=document.getElementById('nizam-book-content');
+    if(bookContent)bookContent.textContent=NIZAM||'No rules yet.';
+  });
+}
+function renderNizam(){
+  const isAdmin=CURRENT_ROLE==='admin';
+  const btn=document.getElementById('edit-nizam-btn');
+  if(btn)btn.style.display=isAdmin?'':'none';
+  const content=document.getElementById('nizam-content');
+  const empty=document.getElementById('nizam-empty');
+  if(NIZAM){
+    if(content){content.textContent=NIZAM;content.style.display='';}
+    if(empty)empty.style.display='none';
+  } else {
+    if(content)content.style.display='none';
+    if(empty)empty.style.display='';
+  }
+}
+
+// ══ CHAT ═════════════════════════════════════════════════════════════════════
+let _chatLastCount=0;
+function initChatInput(){
+  const inp=document.getElementById('chat-input');
+  if(inp&&!inp._listenerAttached){
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChatMsg();}});
+    inp._listenerAttached=true;
+  }
+}
+async function sendChatMsg(){
+  const el=document.getElementById('chat-input');
+  if(!el)return;
+  const txt=el.value.trim();if(!txt){el.focus();return;}
+  const email=CURRENT_EMAIL||sessionStorage.getItem('bft_email')||'unknown';
+  const muted=CHAT_MUTED[email];
+  if(muted==='ban'){toast('You are permanently banned from chat','t-err');return;}
+  if(muted==='suspend'){toast('You are temporarily suspended from chat','t-warn');return;}
+  if(muted==='mute'){toast('You have been muted','t-warn');return;}
+  const me=MEM.find(r=>r.email&&r.email.toLowerCase()===email.toLowerCase());
+  const displayName=me?me.nick||me.name:email;
+  const msg={name:displayName,email,time:new Date().toISOString(),txt};
+  el.value='';
+  // Optimistically add locally and render
+  CHAT_MSGS.push(msg);
+  renderChat();
+  // Save to Sheets
+  await saveChatMsg(msg);
+}
+
+function formatChatTime(isoStr){
+  const d=new Date(isoStr);
+  const date=d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  const time=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  return `${time} · ${date}`;
+}
+
+function renderChat(){
+  const email=CURRENT_EMAIL||sessionStorage.getItem('bft_email')||'';
+  const isAdmin=CURRENT_ROLE==='admin';
+  const myMem=MEM.find(r=>r.email&&r.email.toLowerCase()===email.toLowerCase());
+  const myOrgRole=myMem?ORG_ROLES[myMem.name]:'';
+  // Header controls
+  document.getElementById('chat-admin-controls').style.display=isAdmin?'':'none';
+  // Mute check
+  const muted=CHAT_MUTED[email];
+  const footer=document.getElementById('chat-footer');
+  if(muted&&muted!=='unmute'){
+    if(!footer.querySelector('.muted-notice')){
+      footer.innerHTML=`<div class="muted-notice" style="flex:1;text-align:center;color:var(--rd-t);font-size:13px;padding:8px;">🚫 You are ${muted==='ban'?'permanently banned':muted==='suspend'?'suspended':'muted'} from this chat.</div>`;
+    }
+  } else {
+    // Only rebuild footer if input doesn't exist yet
+    if(!document.getElementById('chat-input')){
+      footer.innerHTML=`<input class="chat-input" id="chat-input" placeholder="Type a message…"/><button class="chat-send" onclick="sendChatMsg()">Send</button>`;
+      const inp=document.getElementById('chat-input');
+      inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChatMsg();}});
+    }
+  }
+  const el=document.getElementById('chat-msgs');
+  if(!CHAT_MSGS.length){el.innerHTML='<div class="empty"><div class="ei">💬</div><div>No messages yet. Say hello!</div></div>';return;}
+  const wasAtBottom=el.scrollTop+el.clientHeight>=el.scrollHeight-20;
+  el.innerHTML=CHAT_MSGS.map(m=>{
+    const mine=m.email===email;
+    const ts=formatChatTime(m.time);
+    const memberObj=MEM.find(r=>r.email&&r.email.toLowerCase()===m.email.toLowerCase());
+    const photo=memberObj?MEMBER_PHOTOS[memberObj.name]||memberObj.photo||'':'';
+    const avatarHtml=photo
+      ?`<img src="${photo}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
+      :`<div style="width:28px;height:28px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0;">${ini(m.name)}</div>`;
+    const senderIsSupreme=m.email&&m.email.toLowerCase()===SUPREME_ADMIN.toLowerCase();
+    const isSupremeUser=CURRENT_EMAIL.toLowerCase()===SUPREME_ADMIN.toLowerCase();
+    const canDelete=(!senderIsSupreme||isSupremeUser)&&(mine||(isAdmin&&!mine));
+    const delBtn=canDelete?`<button title="Delete for everyone" onclick="deleteChatMsg('${m.time}','${m.email}')" style="background:none;border:none;color:var(--rd-t);cursor:pointer;font-size:11px;padding:0 4px;opacity:.4;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.4">✕</button>`:'';
+    return `<div class="chat-msg ${mine?'msg-mine':'msg-other'}" style="display:flex;gap:7px;align-items:flex-end;${mine?'flex-direction:row-reverse;':''}">
+      ${!mine?avatarHtml:''}
+      <div style="max-width:72%;">
+        ${!mine?`<div style="font-size:10px;font-weight:700;color:var(--ac-t);margin-bottom:3px;">${m.name} </div>`:''}
+        <div class="msg-bubble">${m.txt}</div>
+        <div class="msg-meta">${ts} ${delBtn}</div>
+      </div>
+    </div>`;
+  }).join('');
+  if(wasAtBottom||CHAT_MSGS.length<=3)el.scrollTop=el.scrollHeight;
+  initChatInput();
+}
+
+
+async function deleteChatMsg(time,senderEmail){
+  if(CURRENT_ROLE!=='admin'&&CURRENT_EMAIL!==senderEmail){toast('Not allowed','t-err');return;}
+  CHAT_MSGS=CHAT_MSGS.filter(m=>!(m.time===time&&m.email===senderEmail));
+  // Re-save all chat to sheet
+  try{
+    await sheetsClear(`${CONFIG.SHEET_CHAT}!A2:D100000`);
+    if(CHAT_MSGS.length){
+      const rows=CHAT_MSGS.map(m=>[m.name,m.email,m.time,m.txt]);
+      await sheetsUpdate(`${CONFIG.SHEET_CHAT}!A2:D${1+rows.length}`,rows);
+    }
+  }catch(e){console.error('deleteChatMsg',e);}
+  renderChat();
+}
+
+let _lastChatLen=0, _lastNoticeLen=0;
+function startChatPoll(){
+  if(_chatPollTimer)clearInterval(_chatPollTimer);
+  _chatPollTimer=setInterval(async()=>{
+    try{
+      // Poll chat messages
+      const chatr=await sheetsGet(`${CONFIG.SHEET_CHAT}!A2:D10000`);
+      const fresh=((chatr.values||[]).filter(r=>r[0]&&r[3]).map(r=>({name:r[0]||'',email:r[1]||'',time:r[2]||'',txt:r[3]||''}))).slice(-200);
+      if(fresh.length!==_lastChatLen){
+        const isNew=fresh.length>_lastChatLen&&_lastChatLen>0;
+        _lastChatLen=fresh.length;
+        CHAT_MSGS=fresh;
+        const chatTab=document.getElementById('tab-chat');
+        if(chatTab&&chatTab.classList.contains('active')){
+          renderChat();
+        } else {
+          document.getElementById('chat-dot').style.display='';
+          // Show popup for new messages from others
+          if(isNew){
+            const lastMsg=fresh[fresh.length-1];
+            if(lastMsg&&lastMsg.email!==CURRENT_EMAIL){
+              pushNotif('💬',lastMsg.name+': '+lastMsg.txt.slice(0,60));
+            }
+          }
+        }
+      }
+      // Poll notices for new announcements
+      const nr=await sheetsGet(`${CONFIG.SHEET_NOTICES}!A2:G2000`);
+      const allN=(nr.values||[]).filter(r=>r[0]&&!r[4]);
+      if(allN.length>_lastNoticeLen&&_lastNoticeLen>0){
+        const newest=allN[0];
+        pushNotif('📢','New announcement: '+(newest[0]||''));
+        // Reload notices
+        await loadSharedData();
+        const noticeTab=document.getElementById('tab-notices');
+        if(noticeTab&&noticeTab.classList.contains('active'))renderNoticeBoard();
+        else document.getElementById('notice-dot').style.display='';
+      }
+      _lastNoticeLen=allN.length;
+    }catch(e){}
+  },4000);
+}
+function openMuteModal(){
+  const sel=document.getElementById('mute-mem');
+  sel.innerHTML='<option value="">Select member…</option>';
+  MEM.forEach(r=>{if(r.email){const o=document.createElement('option');o.value=r.email;o.textContent=r.name+(CHAT_MUTED[r.email]?' ('+CHAT_MUTED[r.email]+')':'');sel.appendChild(o);}});
+  openMo('mo-mute');
+}
+async function applyMute(){
+  const email=document.getElementById('mute-mem').value;
+  const action=document.getElementById('mute-action').value;
+  if(!email){toast('Select a member','t-err');return;}
+  if(email.toLowerCase()===SUPREME_ADMIN.toLowerCase()&&CURRENT_EMAIL.toLowerCase()!==SUPREME_ADMIN.toLowerCase()){
+    toast('⚠ Cannot moderate the supreme admin','t-err');return;
+  }
+  if(action==='unmute') delete CHAT_MUTED[email];
+  else CHAT_MUTED[email]=action;
+  localStorage.setItem('bft_muted',JSON.stringify(CHAT_MUTED));
+  // Also persist to Sheets so it works across browsers
+  try{
+    await sheetsClear(`${CONFIG.SHEET_NIZAM}!C2:C2`);
+    await sheetsUpdate(`${CONFIG.SHEET_NIZAM}!C2:C2`,[[JSON.stringify(CHAT_MUTED)]]);
+  }catch(e){}
+  logActivity('💬','Chat moderation: '+email+' → '+action);
+  toast(action==='unmute'?'✅ Restriction removed':'🔇 Moderation applied!');
+  closeMo();renderChat();
+  const actionLabel=action==='ban'?'permanently banned':action==='suspend'?'suspended':action==='mute'?'muted':'unrestricted';
+  pushNotif('🔇',`${email} is now ${actionLabel}`);
+}
+
+// ══ ABOUT US ══════════════════════════════════════════════════════════════════
+// ABOUT_US stored in Sheets (SHEET_NIZAM col B) + localStorage fallback
+let ABOUT_US = {
+  headline: '',
+  body: '',
+  fbPage: '',
+  fbGroup: '',
+  photo: ''
+};
+
+function loadAboutFromStr(str) {
+  if (!str) return;
+  try { ABOUT_US = JSON.parse(str); }
+  catch(e) {
+    // legacy plain text
+    ABOUT_US = { headline: 'Fityahal', body: str, fbPage: '', fbGroup: '', photo: '' };
+  }
+}
+
+function renderAbout() {
+  const isAdmin = CURRENT_ROLE === 'admin';
+  const btn = document.getElementById('edit-about-btn');
+  if (btn) btn.style.display = isAdmin ? '' : 'none';
+  const container = document.getElementById('about-content');
+  if (!container) return;
+  const a = ABOUT_US;
+  const hasContent = a.headline || a.body || a.fbPage || a.fbGroup || a.photo;
+  // Supreme admin card
+  const supremeMem = MEM.find(m=>m.email&&m.email.toLowerCase()===SUPREME_ADMIN.toLowerCase());
+  const supremeSection = supremeMem ? `<div style="margin-bottom:1.5rem;background:linear-gradient(135deg,rgba(255,200,40,.08),rgba(157,122,250,.08));border:1.5px solid rgba(255,200,40,.3);border-radius:var(--rxl);padding:1.5rem;display:flex;align-items:center;gap:1rem;position:relative;overflow:hidden;">
+    <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,200,40,.03),transparent);pointer-events:none;"></div>
+    <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#ffd94d,#9d7afa);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 4px 20px rgba(200,160,255,.4);">${supremeMem.photo?`<img src="${MEMBER_PHOTOS[supremeMem.name]||supremeMem.photo}" style="width:64px;height:64px;object-fit:cover;border-radius:50%;">`:ini(supremeMem.name)}</div>
+    <div>
+      <div style="font-size:11px;font-weight:800;color:#ffd94d;letter-spacing:1px;margin-bottom:4px;">👑 SUPREME ADMIN</div>
+      <div style="font-size:16px;font-weight:800;color:var(--tx);">${supremeMem.name}</div>
+      ${supremeMem.phone?`<div style="font-size:12px;color:var(--tx3);margin-top:2px;">📞 ${supremeMem.phone}</div>`:''}
+    </div>
+  </div>` : '';
+  if (!hasContent) {
+    container.innerHTML = supremeSection + '<div class="empty"><div class="ei">🏢</div><div>No information added yet.</div></div>';
+    return;
+  }
+  let html = supremeSection;
+  if (a.photo) html += `<img src="${a.photo}" style="width:100%;max-height:220px;object-fit:cover;border-radius:var(--rl);margin-bottom:1rem;">`;
+  if (a.headline) html += `<h2 style="font-size:20px;font-weight:800;color:var(--tx);margin-bottom:.75rem;">${a.headline}</h2>`;
+  if (a.body) html += `<p style="font-size:14px;color:var(--tx2);line-height:1.9;white-space:pre-wrap;margin-bottom:1rem;">${a.body}</p>`;
+  if (a.fbPage || a.fbGroup) {
+    html += '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:.5rem;">';
+    if (a.fbPage) html += `<a href="${a.fbPage}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:#1877f2;color:#fff;border-radius:var(--r);text-decoration:none;font-size:13px;font-weight:600;"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Page</a>`;
+    if (a.fbGroup) html += `<a href="${a.fbGroup}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:#1877f2;color:#fff;border-radius:var(--r);text-decoration:none;font-size:13px;font-weight:600;"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Group</a>`;
+    html += '</div>';
+  }
+  container.innerHTML = html;
+}
+
+function openAboutEdit() {
+  const a = ABOUT_US;
+  document.getElementById('about-headline-inp').value = a.headline || '';
+  document.getElementById('about-inp').value = a.body || '';
+  document.getElementById('about-fbpage-inp').value = a.fbPage || '';
+  document.getElementById('about-fbgroup-inp').value = a.fbGroup || '';
+  document.getElementById('about-photo-preview').src = a.photo || '';
+  document.getElementById('about-photo-preview').style.display = a.photo ? '' : 'none';
+  openMo('mo-about');
+}
+
+function previewAboutPhoto(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    ABOUT_US.photo = e.target.result;
+    const prev = document.getElementById('about-photo-preview');
+    prev.src = e.target.result; prev.style.display = '';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveAbout() {
+  ABOUT_US.headline = document.getElementById('about-headline-inp').value.trim();
+  ABOUT_US.body = document.getElementById('about-inp').value.trim();
+  ABOUT_US.fbPage = document.getElementById('about-fbpage-inp').value.trim();
+  ABOUT_US.fbGroup = document.getElementById('about-fbgroup-inp').value.trim();
+  const str = JSON.stringify(ABOUT_US);
+  localStorage.setItem('bft_about', str);
+  try {
+    await sheetsClear(`${CONFIG.SHEET_NIZAM}!B2:B2`);
+    await sheetsUpdate(`${CONFIG.SHEET_NIZAM}!B2:B2`, [[str]]);
+  } catch(e) { /* local only ok */ }
+  logActivity('🏢','About Us updated');
+  toast('About Us saved!'); closeMo(); renderAbout();
+}
+
+// ══ BKASH PAYMENT ════════════════════════════════════════════════════════════
+const BKASH_NUMBER='01785853252';
+
+function openBkashModal(memberName){
+  const myMem=MEM.find(r=>r.name===memberName)||MEM.find(r=>r.email&&r.email.toLowerCase()===CURRENT_EMAIL.toLowerCase());
+  if(!myMem){openMemberPayMo();return;}
+  // Calculate amount owed
+  const allKeys=activeMonthKeys();
+  const mp=gp(myMem.name);
+  let unpaidMonths=0;
+  const now=new Date();
+  allKeys.forEach(k=>{
+    const[y,mo]=k.split('-').map(Number);
+    const d=new Date(y,mo-1,1);
+    if(d>now)return;
+    const p=mp[k];
+    if(!p||(!p.m&&!p.b))unpaidMonths++;
+  });
+  const amountOwed=unpaidMonths*100; // adjust per your monthly fee
+  const msg=`Pay ৳${amountOwed>0?amountOwed:'your dues'} to Fityahal — ${myMem.name}`;
+  // Open bKash app via deep link
+  const bkashUrl=`bkash://send?number=${BKASH_NUMBER}&amount=${amountOwed}&ref=${encodeURIComponent(msg)}`;
+  // Show a modal first with details
+  if(confirm(`Send payment to bKash: ${BKASH_NUMBER}\nAmount: ৳${amountOwed>0?amountOwed:'[enter amount]'}\n\nClick OK to open bKash app, or Cancel to submit manually.`)){
+    window.location.href=bkashUrl;
+    setTimeout(()=>{
+      // Fallback: if app didn't open, show web link
+      window.open(`https://www.bkash.com/send-money?to=${BKASH_NUMBER}`,'_blank');
+    },1500);
+  }
+}
+
+function showBkashInfo(){
+  const myMem=MEM.find(r=>r.email&&r.email.toLowerCase()===CURRENT_EMAIL.toLowerCase());
+  const allKeys=activeMonthKeys();
+  let unpaid=[];
+  const now=new Date();
+  if(myMem){
+    const mp=gp(myMem.name);
+    allKeys.forEach(k=>{
+      const[y,mo]=k.split('-').map(Number);
+      const d=new Date(y,mo-1,1);
+      if(d>now)return;
+      const p=mp[k];
+      if(!p||(!p.m&&!p.b))unpaid.push(keyToFull(k));
+    });
+  }
+  const unpaidText=unpaid.length>0?`Unpaid months: ${unpaid.slice(-3).join(', ')}${unpaid.length>3?' + more':''}.\n`:'All payments up to date! ✅\n';
+  // Show bKash send button
+  const amountOwed=unpaid.length*100;
+  const confirmed=window.confirm(`📱 bKash Payment\n\n${unpaidText}Send to: ${BKASH_NUMBER}\nAmount: ৳${amountOwed||'[enter amount]'}\n\nClick OK to open bKash app.`);
+  if(confirmed){
+    const bkashUrl=`bkash://send?number=${BKASH_NUMBER}`;
+    window.location.href=bkashUrl;
+    setTimeout(()=>window.open('https://www.bkash.com','_blank'),1500);
+  }
+}
+async function saveProjects(){await saveProjectsToSheet();}
+function openProjectMo(editIdx=-1){
+  document.getElementById('proj-edit-idx').value=editIdx;
+  if(editIdx>=0){
+    const p=PROJECTS[editIdx];
+    document.getElementById('proj-name-inp').value=p.name;
+    document.getElementById('proj-desc-inp').value=p.desc||'';
+    document.getElementById('proj-status-inp').value=p.status||'active';
+    document.getElementById('mo-proj-t').textContent='Edit Project';
+  } else {
+    document.getElementById('proj-name-inp').value='';
+    document.getElementById('proj-desc-inp').value='';
+    document.getElementById('proj-status-inp').value='active';
+    document.getElementById('mo-proj-t').textContent='New Project';
+  }
+  openMo('mo-project');
+}
+async function saveProject(){
+  const name=document.getElementById('proj-name-inp').value.trim();
+  if(!name){toast('Project name required','t-err');return;}
+  const idx=parseInt(document.getElementById('proj-edit-idx').value);
+  const obj={name,desc:document.getElementById('proj-desc-inp').value.trim(),status:document.getElementById('proj-status-inp').value,expenses:[],collections:[]};
+  if(idx>=0){obj.expenses=PROJECTS[idx].expenses||[];obj.collections=PROJECTS[idx].collections||[];PROJECTS[idx]=obj;}
+  else PROJECTS.unshift(obj);
+  await saveProjects();
+  logActivity('📊','Project saved: '+name);toast('Project saved!');closeMo();renderProjects();
+}
+async function deleteProject(idx){
+  const ok=await confirm2('Delete Project','Remove "'+PROJECTS[idx].name+'"?','🗑️',true);
+  if(!ok)return;
+  PROJECTS.splice(idx,1);await saveProjects();renderProjects();toast('Project removed');
+}
+function openProjExpMo(pidx){document.getElementById('projexp-pidx').value=pidx;document.getElementById('projexp-item').value='';document.getElementById('projexp-amt').value='';openMo('mo-projexp');}
+async function saveProjExp(){
+  const pidx=parseInt(document.getElementById('projexp-pidx').value);
+  const item=document.getElementById('projexp-item').value.trim();
+  const amt=parseFloat(document.getElementById('projexp-amt').value)||0;
+  if(!item||!amt){toast('Item and amount required','t-err');return;}
+  if(!PROJECTS[pidx].expenses)PROJECTS[pidx].expenses=[];
+  PROJECTS[pidx].expenses.push({item,amt,time:new Date().toISOString().slice(0,10)});
+  await saveProjects();toast('Expense added!');closeMo();renderProjects();
+}
+async function deleteProjExp(pidx,eidx){PROJECTS[pidx].expenses.splice(eidx,1);await saveProjects();renderProjects();}
+function openProjColMo(pidx){document.getElementById('projcol-pidx').value=pidx;document.getElementById('projcol-from').value='';document.getElementById('projcol-amt').value='';openMo('mo-projcol');}
+async function saveProjCol(){
+  const pidx=parseInt(document.getElementById('projcol-pidx').value);
+  const from=document.getElementById('projcol-from').value.trim();
+  const amt=parseFloat(document.getElementById('projcol-amt').value)||0;
+  if(!from||!amt){toast('Source and amount required','t-err');return;}
+  if(!PROJECTS[pidx].collections)PROJECTS[pidx].collections=[];
+  PROJECTS[pidx].collections.push({from,amt,time:new Date().toISOString().slice(0,10)});
+  await saveProjects();toast('Collection added!');closeMo();renderProjects();
+}
+async function deleteProjCol(pidx,cidx){PROJECTS[pidx].collections.splice(cidx,1);await saveProjects();renderProjects();}
+function renderProjects(){
+  const el=document.getElementById('proj-list');
+  const isAdmin=CURRENT_ROLE==='admin';
+  const addBtn=document.getElementById('add-proj-btn');
+  if(addBtn)addBtn.style.display=isAdmin?'':'none';
+  if(!PROJECTS.length){el.innerHTML='<div class="empty"><div class="ei">📊</div><div>No projects yet.</div></div>';return;}
+  el.innerHTML=PROJECTS.map((p,i)=>{
+    const totalExp=(p.expenses||[]).reduce((a,e)=>a+e.amt,0);
+    const totalCol=(p.collections||[]).reduce((a,c)=>a+c.amt,0);
+    const net=totalCol-totalExp;
+    const pct=totalExp>0?Math.min(100,(totalCol/totalExp*100)):0;
+    const expRows=(p.expenses||[]).map((e,ei)=>`<div class="proj-row"><span>${e.item}</span><span>৳${e.amt.toFixed(2)}${isAdmin?`<button class="proj-row-del" onclick="deleteProjExp(${i},${ei})">✕</button>`:''}</span></div>`).join('');
+    const colRows=(p.collections||[]).map((c,ci)=>`<div class="proj-row"><span>${c.from}</span><span style="color:var(--gn-t);">৳${c.amt.toFixed(2)}${isAdmin?`<button class="proj-row-del" onclick="deleteProjCol(${i},${ci})">✕</button>`:''}</span></div>`).join('');
+    return `<div class="proj-card">
+      <div class="proj-hd">
+        <div><div class="proj-name">${p.name}</div>${p.desc?`<div style="font-size:12px;color:var(--tx3);margin-top:2px;">${p.desc}</div>`:''}</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="proj-status ${p.status==='done'?'ps-done':'ps-active'}">${p.status==='done'?'Completed':'Active'}</span>
+          ${isAdmin?`<button class="btn btn-sm" onclick="openProjectMo(${i})">Edit</button><button class="btn btn-sm btn-d" onclick="deleteProject(${i})">Del</button>`:''}
+        </div>
+      </div>
+      <div class="proj-meta">
+        <div class="proj-m"><div class="proj-ml">Expenses</div><div class="proj-mv" style="color:var(--rd-t);">৳${totalExp.toFixed(0)}</div></div>
+        <div class="proj-m"><div class="proj-ml">Collected</div><div class="proj-mv" style="color:var(--gn-t);">৳${totalCol.toFixed(0)}</div></div>
+        <div class="proj-m"><div class="proj-ml">Balance</div><div class="proj-mv" style="color:${net>=0?'var(--gn-t)':'var(--rd-t)'};">৳${net.toFixed(0)}</div></div>
+      </div>
+      <div class="proj-progress"><div class="proj-progress-fill" style="width:${pct.toFixed(0)}%"></div></div>
+      <div style="font-size:10px;color:var(--tx3);margin-top:4px;margin-bottom:10px;">${pct.toFixed(0)}% of expenses covered</div>
+      <div class="proj-sect">
+        <div class="proj-sl">Expenses ${isAdmin?`<button class="btn btn-sm" style="float:right;margin-top:-2px;" onclick="openProjExpMo(${i})">+ Add</button>`:''}</div>
+        ${expRows||'<div style="font-size:12px;color:var(--tx3);padding:4px 0;">No expenses yet.</div>'}
+      </div>
+      <div class="proj-sect">
+        <div class="proj-sl">Collections ${isAdmin?`<button class="btn btn-sm" style="float:right;margin-top:-2px;" onclick="openProjColMo(${i})">+ Add</button>`:''}</div>
+        ${colRows||'<div style="font-size:12px;color:var(--tx3);padding:4px 0;">No collections yet.</div>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══ NOTIFICATIONS ═════════════════════════════════════════════════════════════
+// ══ PROFILE ══════════════════════════════════════════════════════════════════
+function renderProfile(){
+  const el=document.getElementById('profile-content');
+  if(!el)return;
+  const email=CURRENT_EMAIL||sessionStorage.getItem('bft_email')||'';
+  const me=MEM.find(r=>r.email&&r.email.toLowerCase()===email.toLowerCase());
+  const orgRole=me?ORG_ROLES[me.name]:'';
+  const orgIcon=orgRole?ORG_ROLE_ICONS[orgRole]||'⭐':'';
+  const photo=me?(MEMBER_PHOTOS[me.name]||me.photo||''):'';
+  const avHtml=photo
+    ?`<img src="${photo}" style="width:80px;height:80px;object-fit:cover;border-radius:50%;">`
+    :`<span>${me?ini(me.name):'?'}</span>`;
+  const isAdmin=CURRENT_ROLE==='admin';
+  const isSupreme=email.toLowerCase()===SUPREME_ADMIN.toLowerCase();
+
+  if(me){
+    const allKeys=activeMonthKeys();
+    const mp=gp(me.name);
+    const now=new Date();
+    let payRows='',unpaidCount=0,totalOwed=0;
+    allKeys.slice(-6).forEach(k=>{
+      const[y,mo]=k.split('-').map(Number);
+      const d=new Date(y,mo-1,1);
+      const p=mp[k]||{m:0,b:0};
+      const paid=p.m>0||p.b>0;
+      if(!paid&&d<=now){unpaidCount++;totalOwed+=100;}// 100 = monthly fee placeholder
+      payRows+=`<div class="profile-row">
+        <span class="profile-row-label">${keyToFull(k)}</span>
+        <span>${paid
+          ?`<span class="profile-pay-chip ppc-paid">✓ ৳${(p.m+p.b).toFixed(2)}</span>`
+          :(d<=now?`<span class="profile-pay-chip ppc-unpaid">Not paid</span>`:`<span class="profile-pay-chip ppc-unpaid" style="opacity:.5;">Upcoming</span>`)
+        }</span>
+      </div>`;
+    });
+    const myPending=PENDING_PAYS.filter(p=>p.memberName===me.name&&p.status==='pending');
+    const pendingRows=myPending.map(p=>`<div class="profile-row">
+        <span class="profile-row-label">${keyToFull(p.key)}</span>
+        <span class="profile-pay-chip" style="background:var(--am-s);color:var(--am-t);border:1px solid rgba(255,173,46,.2);">⏳ Pending ৳${(p.m+p.b).toFixed(2)}</span>
+      </div>`).join('');
+
+    el.innerHTML=`
+      <div class="profile-hero">
+        <div class="profile-av">${avHtml}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="profile-name">${me.name}${me.nick&&me.nick!==me.name?` <span style="font-size:13px;color:var(--tx3);font-weight:400;">(${me.nick})</span>`:''}</div>
+          <div class="profile-email">📧 ${email}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
+            <span class="mc-role-badge ${isAdmin?'rb-admin':'rb-viewer'}">${isAdmin?'🔑 Admin':'👁 Viewer'}</span>
+            ${orgRole?`<span class="org-role-badge ${ORG_ROLE_CLASS[orgRole]||''}">${orgIcon} ${orgRole}</span>`:''}
+            ${isSupreme?`<span class="org-role-badge" style="background:rgba(255,200,40,.15);color:#ffd94d;border:1px solid rgba(255,200,40,.3);">👑 Supreme Admin</span>`:''}
+          </div>
+        </div>
+        <button class="btn btn-sm" onclick="doLogout()" style="color:var(--rd-t);flex-shrink:0;">🚪 Logout</button>
+      </div>
+
+      ${me.phone||me.addr||me.join||me.sid?`<div class="profile-section">
+        <div class="profile-section-hd">Personal Details</div>
+        ${me.phone?`<div class="profile-row"><span class="profile-row-label">Phone</span><span class="profile-row-val">${me.phone}</span></div>`:''}
+        ${me.addr?`<div class="profile-row"><span class="profile-row-label">Address</span><span class="profile-row-val">${me.addr}</span></div>`:''}
+        ${me.join?`<div class="profile-row"><span class="profile-row-label">Joined</span><span class="profile-row-val">${new Date(me.join).toLocaleDateString('en-GB',{year:'numeric',month:'long',day:'numeric'})}</span></div>`:''}
+        ${me.sid?`<div class="profile-row"><span class="profile-row-label">ID/Roll</span><span class="profile-row-val">${me.sid}</span></div>`:''}
+      </div>`:''}
+
+      <div class="profile-section">
+        <div class="profile-section-hd" style="display:flex;justify-content:space-between;align-items:center;">
+          Payment History
+          <div style="display:flex;gap:6px;">
+            ${!isAdmin?`<button class="btn btn-sm btn-p" onclick="openMemberPayMo()">💳 Submit Pay</button>
+            <button class="btn btn-sm" onclick="showBkashInfo()" style="background:linear-gradient(135deg,#e2136e,#a00050);color:#fff;border:none;">📱 bKash</button>`:''}
+          </div>
+        </div>
+        ${unpaidCount>0&&!isAdmin?`<div style="padding:.75rem 1.1rem;background:var(--am-s);border-bottom:1px solid var(--br);font-size:13px;color:var(--am-t);">⚠ ${unpaidCount} unpaid month${unpaidCount>1?'s':''}. bKash to <strong>${BKASH_NUMBER}</strong></div>`:''}
+        ${payRows||'<div class="profile-row"><span style="color:var(--tx3);">No payment records.</span></div>'}
+        ${pendingRows}
+      </div>
+
+      <div class="profile-section">
+        <div class="profile-section-hd">Account</div>
+        <div class="profile-row"><span class="profile-row-label">Login Email</span><span class="profile-row-val" style="font-size:12px;">${email}</span></div>
+        <div class="profile-row"><span class="profile-row-label">Role</span><span class="profile-row-val">${isAdmin?'🔑 Admin — Full access':'👁 Viewer — Read only'}</span></div>
+        <div class="profile-row" style="justify-content:center;"><button class="btn btn-d" onclick="doLogout()">🚪 Sign Out</button></div>
+      </div>`;
+  } else {
+    el.innerHTML=`
+      <div class="profile-hero">
+        <div class="profile-av"><span>?</span></div>
+        <div style="flex:1;">
+          <div class="profile-name">${email||'Unknown'}</div>
+          <div class="profile-email">📧 ${email}</div>
+          <div style="margin-top:8px;">
+            <span class="mc-role-badge ${CURRENT_ROLE==='admin'?'rb-admin':'rb-viewer'}">${CURRENT_ROLE==='admin'?'🔑 Admin':'👁 Viewer'}</span>
+            ${isSupreme?`<span class="org-role-badge" style="background:rgba(255,200,40,.15);color:#ffd94d;border:1px solid rgba(255,200,40,.3);margin-left:4px;">👑 Supreme Admin</span>`:''}
+          </div>
+        </div>
+        <button class="btn btn-sm" onclick="doLogout()" style="color:var(--rd-t);">🚪 Logout</button>
+      </div>
+      <div class="profile-section">
+        <div class="profile-section-hd">Account</div>
+        <div class="profile-row"><span class="profile-row-label">Login Email</span><span class="profile-row-val" style="font-size:12px;">${email}</span></div>
+        <div class="profile-row"><span class="profile-row-label">Role</span><span class="profile-row-val">${CURRENT_ROLE==='admin'?'🔑 Admin — Full access':'👁 Viewer — Read only'}</span></div>
+        <div style="padding:.75rem 1.1rem;font-size:12px;color:var(--tx3);">Email not linked to a member profile. Ask admin to add your email to your record.</div>
+        <div class="profile-row" style="justify-content:center;"><button class="btn btn-d" onclick="doLogout()">🚪 Sign Out</button></div>
+      </div>`;
+  }
+}
+
+function pushNotif(icon,txt){
+  toast(icon+' '+txt,'t-info');
+  logActivity(icon,txt);
+  // Browser notification if permission granted
+  if(Notification&&Notification.permission==='granted'){
+    try{new Notification('Fityahal — '+icon,{body:txt,icon:'https://instasize.com/api/image/b991d8a9d15515996e724e5b54e9429bbdecce49b0f2a2eeed7aa2e5142987a1.png'});}catch(e){}
+  }
+}
+// Request notification permission on boot
+function requestNotifPermission(){
+  if(Notification&&Notification.permission==='default'){
+    Notification.requestPermission().catch(()=>{});
+  }
+}
+
+
+// ══ NIZAM BOOK OVERLAY ═══════════════════════════════════════════════════════
+function showNizamBook(){
+  const content=NIZAM||'No rules have been written yet.\n\nThe admin will add the Nizam rules soon.\nPlease check back later.';
+  document.getElementById('nizam-book-content').textContent=content;
+  document.getElementById('nizam-book-overlay').style.display='flex';
+  setTimeout(()=>toast('📖 Please read the Nizam carefully before proceeding!','t-info'),400);
+}
+function closeNizamBook(){
+  document.getElementById('nizam-book-overlay').style.display='none';
+}
+// Also keep nizam tab link to open book
+function openNizamAsBook(){
+  showNizamBook();
+}
+
+// ══ PHOTO UPLOAD ═════════════════════════════════════════════════════════════
+function previewMemberPhoto(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const data=e.target.result;
+    document.getElementById('em-photo').value=data;
+    const prev=document.getElementById('em-photo-preview');
+    prev.innerHTML=`<img src="${data}" style="width:70px;height:70px;object-fit:cover;border-radius:50%;">`;
+    prev.style.fontSize='0';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ══ SAVE MEM (updated to include photo) ══════════════════════════════════════
+// Patched into existing saveMem below
+
+// ══ PENDING PAYMENT SYSTEM ════════════════════════════════════════════════════
+function openMemberPayMo(){
+  const now=new Date();
+  populateYearSel('mempay-yr',now.getFullYear());
+  populateMonthSel('mempay-mo',now.getMonth());
+  document.getElementById('mempay-m').value='';
+  document.getElementById('mempay-b').value='';
+  document.getElementById('mempay-note').value='';
+  openMo('mo-mem-pay');
+}
+
+async function submitMemberPayment(){
+  const y=document.getElementById('mempay-yr').value;
+  const mo=document.getElementById('mempay-mo').value;
+  if(!y||mo===''){toast('Select year and month','t-err');return;}
+  const m=parseFloat(document.getElementById('mempay-m').value)||0;
+  const b=parseFloat(document.getElementById('mempay-b').value)||0;
+  // Allow zero amounts (to clear/reset a payment entry)
+  const note=document.getElementById('mempay-note').value.trim();
+  const key=mkKey(parseInt(y),parseInt(mo));
+  const myMem=MEM.find(r=>r.email&&r.email.toLowerCase()===CURRENT_EMAIL.toLowerCase());
+  if(!myMem){toast('Your member profile not found','t-err');return;}
+  const dup=PENDING_PAYS.find(p=>p.memberName===myMem.name&&p.key===key&&p.status==='pending');
+  if(dup){toast('You already have a pending payment for '+keyToFull(key),'t-warn');return;}
+  const entry={
+    id:Date.now().toString(),
+    memberName:myMem.name,
+    memberEmail:CURRENT_EMAIL,
+    key,m,b,note,
+    status:'pending',
+    submittedAt:new Date().toISOString()
+  };
+  PENDING_PAYS.push(entry);
+  await savePendingToSheet();
+  logActivity('💳','Payment submitted (pending): '+myMem.name+' — '+keyToFull(key)+' ৳'+(m+b).toFixed(2));
+  toast('Payment submitted! Waiting for admin approval ⏳','t-info');
+  closeMo();renderAll();
+}
+
+function openPendingPayments(){
+  const list=document.getElementById('pending-list');
+  const pending=PENDING_PAYS.filter(p=>p.status==='pending');
+  if(!pending.length){
+    list.innerHTML='<div class="empty"><div class="ei">✅</div><div>No pending payments.</div></div>';
+  } else {
+    list.innerHTML=pending.map(p=>`
+      <div class="pay-pending-item">
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:700;">${p.memberName}</div>
+          <div style="font-size:11px;color:var(--tx3);">${keyToFull(p.key)} — ৳${(p.m+p.b).toFixed(2)} ${p.note?'· '+p.note:''}</div>
+          <div style="font-size:10px;color:var(--tx3);margin-top:2px;">Submitted: ${new Date(p.submittedAt).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0;">
+          <button class="btn btn-sm btn-g" onclick="approvePending('${p.id}')">✓ Approve</button>
+          <button class="btn btn-sm btn-d" onclick="rejectPending('${p.id}')">✕ Reject</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  openMo('mo-pending');
+}
+
+async function approvePending(id){
+  const idx=PENDING_PAYS.findIndex(p=>p.id===id);
+  if(idx<0)return;
+  const p=PENDING_PAYS[idx];
+  ep(p.memberName);
+  PAY[p.memberName][p.key]={m:p.m,b:p.b};
+  PENDING_PAYS[idx].status='approved';
+  await savePendingToSheet();
+  flush();
+  logActivity('✅','Approved payment: '+p.memberName+' '+keyToFull(p.key));
+  toast('Payment approved!');
+  openPendingPayments();renderAll();
+}
+
+async function rejectPending(id){
+  const idx=PENDING_PAYS.findIndex(p=>p.id===id);
+  if(idx<0)return;
+  PENDING_PAYS[idx].status='rejected';
+  await savePendingToSheet();
+  logActivity('❌','Rejected payment: '+PENDING_PAYS[idx].memberName);
+  toast('Payment rejected','t-warn');
+  openPendingPayments();renderAll();
+}
+
+// ══ BOOK BORROW STATUS ════════════════════════════════════════════════════════
+function toggleBookBorrow(name){
+  if(CURRENT_ROLE!=='admin'){toast('Admin only','t-warn');return;}
+  if(BORROWED_BOOKS[name]) delete BORROWED_BOOKS[name];
+  else BORROWED_BOOKS[name]=new Date().toISOString().slice(0,10);
+  localStorage.setItem('bft_books',JSON.stringify(BORROWED_BOOKS));
+  renderAll();toast(BORROWED_BOOKS[name]?name+' marked as holding a book':'Book returned by '+name);
+}
+
 window.addEventListener('load',()=>{
+  const btn=document.getElementById('google-signin-btn');
+  if(btn) btn.innerHTML=_gBtnHtml();
   let tries=0;
   const wait=setInterval(()=>{
     tries++;
-    if(window.google&&google.accounts&&google.accounts.oauth2){clearInterval(wait);initGoogleAuth();}
-    else if(tries>60){clearInterval(wait);toast('Could not load Google services','t-err');}
+    if(window.google&&google.accounts&&google.accounts.oauth2){
+      clearInterval(wait);
+      initGoogleAuth();
+    } else if(tries>60){
+      clearInterval(wait);
+      showLoginError('Google services could not load. Please check your internet connection and refresh.');
+    }
   },100);
 });
 </script>
