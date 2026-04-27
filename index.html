@@ -873,14 +873,13 @@ function messagesHTML(){
       '<div style="width:210px;border-right:1px solid var(--br2);overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column">'+
         '<div style="padding:8px;border-bottom:1px solid var(--br)">'+
         '<div class="inp-wrap"><span class="inp-ico">🔍</span>'+
-        '<input class="inp" placeholder="Search members…" value="'+esc(S.dmSearch||'')+'" oninput="S.dmSearch=this.value;renderScreen()" style="font-size:12px"/></div>'+
+        '<div style="padding:7px;flex-shrink:0;border-bottom:1px solid var(--br)"><div class="inp-wrap"><span class="inp-ico">🔍</span><input class="inp" placeholder="Search members…" value="'+esc(S.dmSearch||'')+'" oninput="S.dmSearch=this.value;renderScreen()" style="font-size:12px"/></div></div>'+
         '</div>'+
         (all.length?contacts:'<div style="padding:20px;font-size:13px;color:var(--tx3);text-align:center">No members with emails found</div>')+
       '</div>'+
       (act?
         '<div style="display:flex;flex-direction:column;flex:1;overflow:hidden">'+
           '<div style="padding:10px 15px;border-bottom:1px solid var(--br2);display:flex;align-items:center;gap:10px;flex-shrink:0">'+av(actMem?.name||act.split('@')[0],34,act)+'<span style="font-weight:600;font-size:14px">'+esc(actMem?.name||act)+'</span></div>'+
-          '<div style="padding:7px;flex-shrink:0;border-bottom:1px solid var(--br)"><div class="inp-wrap"><span class="inp-ico">🔍</span><input class="inp" placeholder="Search conversation…" value="'+esc(S.dmSearch||'')+'" oninput="S.dmSearch=this.value;renderScreen()" style="font-size:12px"/></div></div>'+
           '<div id="dm-msgs" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column">'+dmRows+'<div id="dm-bot"></div></div>'+
           '<div style="padding:10px;border-top:1px solid var(--br2);display:flex;gap:8px;flex-shrink:0"><input class="inp" id="dm-in" placeholder="Message…" style="flex:1" onkeydown="if(event.key===\'Enter\')sendDM()"/><button class="btn btn-p" onclick="sendDM()">Send</button></div>'+
         '</div>':
