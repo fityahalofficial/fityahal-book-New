@@ -148,8 +148,8 @@ textarea.inp{resize:vertical;min-height:80px}
 .prog{height:5px;background:var(--sf3);border-radius:3px;overflow:hidden}
 .prog-fill{height:100%;border-radius:3px;transition:width .3s}
 /* Chat */
-.chat-mine{background:var(--ac);color:#fff;border-radius:16px 16px 4px 16px;padding:9px 13px;font-size:13px;line-height:1.5;max-width:72%;word-break:break-word}
-.chat-other{background:var(--sf2);color:var(--tx);border-radius:16px 16px 16px 4px;padding:9px 13px;font-size:13px;line-height:1.5;max-width:72%;word-break:break-word}
+.chat-mine{background:var(--ac);color:#fff;border-radius:16px 16px 4px 16px;padding:7px 12px;font-size:13px;line-height:1.4;max-width:75%;word-break:break-word;display:inline-block}
+.chat-other{background:var(--sf2);color:var(--tx);border-radius:16px 16px 16px 4px;padding:7px 12px;font-size:13px;line-height:1.4;max-width:75%;word-break:break-word;display:inline-block}
 /* Misc */
 .divider{height:1px;background:var(--br)}
 .empty{text-align:center;padding:48px 16px;color:var(--tx3)}
@@ -188,6 +188,7 @@ textarea.inp{resize:vertical;min-height:80px}
 <body>
 <div id="app"></div>
 <div class="toast-box" id="toasts"></div>
+<div id="app-fab" style="position:fixed;bottom:20px;right:16px;display:flex;flex-direction:column;gap:8px;z-index:400;align-items:flex-end"></div>
 <div id="modal-root"></div>
 <script>
 const SHEET_ID="1_bEe_QbRq02bbJ_gHpw5DiGjXE_2rmznJpo98h5-cac";
@@ -344,7 +345,7 @@ function getModal(name,data){
       fr('Caption',inp('mem-cap','','text','What happened?'))+
       fr('Date',inp('mem-date','','date'))+
       '<div class="form-row"><label class="form-lbl">Tags</label><div id="mem-tags" style="display:flex;flex-wrap:wrap;gap:6px">'+tags.map(t=>'<button type="button" class="btn btn-sm" id="tag-'+t+'" onclick="toggleTag(\''+t+'\')">'+t+'</button>').join('')+'</div></div>',
-      '<button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-p" onclick="saveMemory()">Post</button>');
+      '<button class="btn" onclick="closeModal()">Cancel</button><button id="mem-post-btn" class="btn btn-p" onclick="saveMemory()">Post</button>');
   }
 
   if(name==='submitPayment')return wrap('Submit Payment',
@@ -387,6 +388,17 @@ function getModal(name,data){
         (p.budget>0?'<div style="background:var(--sf2);border-radius:var(--r);padding:13px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px"><span>Spent <span class="mono neg">'+tk(p.spent||0)+'</span></span><span>Budget <span class="mono">'+tk(p.budget)+'</span></span></div><div class="prog"><div class="prog-fill" style="width:'+pct+'%;background:'+((p.spent||0)>p.budget?'var(--rd)':'var(--ac)')+'"></div></div></div>':'')+
         '<div><p style="font-size:13px;font-weight:600;margin-bottom:8px">Expenses</p>'+
           ((p.expenses||[]).length?'<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Description</th><th>Amount</th></tr></thead><tbody>'+p.expenses.map(e=>'<tr><td class="mono" style="font-size:11px;color:var(--tx3)">'+esc(e.date)+'</td><td>'+esc(e.description)+'</td><td class="mono neg">'+tk(e.amount)+'</td></tr>').join('')+'</tbody></table></div>':'<p style="font-size:13px;color:var(--tx3)">No expenses logged.</p>')+
+        (isAdmin()?
+          '<div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">'+
+            '<p style="font-size:12px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.5px">Add Expense</p>'+
+            '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+              '<input class="inp" id="exp-desc" placeholder="Description" style="flex:2;min-width:140px"/>'+
+              '<input class="inp" id="exp-amt" type="number" placeholder="Amount (৳)" style="flex:1;min-width:100px"/>'+
+              '<input class="inp" id="exp-date" type="date" style="flex:1;min-width:110px"/>'+
+            '</div>'+
+            '<button class="btn btn-p btn-sm" onclick="addExpense('+data._idx+')">＋ Add Expense</button>'+
+          '</div>'
+        :'')+
         '</div>'+
       '</div>'+
     '</div></div>';
@@ -436,21 +448,49 @@ async function saveNotice(){const title=gv('no-t'),body=gv('no-b');if(!title||!b
 async function saveNizam(){const txt=gv('niz-txt');S.nizam=txt;closeModal();renderApp();toast('ok','Nizam saved!');try{await sheetPut('Nizam!A2',txt);}catch(e){toast('err','Sync: '+e.message);}}
 let _memTags=[];
 function toggleTag(t){_memTags.includes(t)?(_memTags=_memTags.filter(x=>x!==t)):_memTags.push(t);const b=g('tag-'+t);if(b)b.className='btn btn-sm'+(_memTags.includes(t)?' btn-p':'');}
-async function saveMemory(){const file=g('mem-file')?.files[0];let fd='';if(file){fd=await new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(file);});}const m={id:genId(),caption:gv('mem-cap'),videoUrl:gv('mem-url'),fileData:fd,tags:[..._memTags],date:gv('mem-date'),likes:[],comments:[],postedBy:S.user?.email||'',time:new Date().toISOString()};_memTags=[];S.memories=[m,...S.memories];localStorage.setItem('bft_mem',JSON.stringify(S.memories));closeModal();renderApp();toast('ok','Memory posted!');addAct('📸','New memory posted');}
+async function saveMemory(){
+  const file=g('mem-file')?.files[0];
+  const btn=document.querySelector('#mem-post-btn');
+  if(btn){btn.disabled=true;btn.textContent='Posting…';}
+  let fd='';
+  try{
+    if(file){fd=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsDataURL(file);});}
+    const m={id:genId(),caption:gv('mem-cap'),videoUrl:gv('mem-url'),fileData:fd,tags:[..._memTags],date:gv('mem-date')||new Date().toLocaleDateString('en-GB'),likes:[],comments:[],postedBy:S.user?.email||'',time:new Date().toISOString()};
+    _memTags=[];
+    S.memories=[m,...S.memories];
+    localStorage.setItem('bft_mem',JSON.stringify(S.memories));
+    closeModal();renderApp();toast('ok','Memory posted!');addAct('📸','New memory posted');
+  }catch(e){toast('err','Failed to post: '+e.message);if(btn){btn.disabled=false;btn.textContent='Post';}}
+}
 function toggleLike(i){const m=S.memories[i];const e=S.user?.email;m.likes=m.likes.includes(e)?m.likes.filter(x=>x!==e):[...m.likes,e];localStorage.setItem('bft_mem',JSON.stringify(S.memories));renderApp();}
 function addComment(i){const inp=g('cmt-'+i);if(!inp||!inp.value.trim())return;S.memories[i].comments.push({name:S.user?.email?.split('@')[0]||'User',email:S.user?.email,text:inp.value.trim(),time:new Date().toISOString()});localStorage.setItem('bft_mem',JSON.stringify(S.memories));renderApp();}
 function deleteMemory(i){if(!confirm('Delete this memory?'))return;S.memories.splice(i,1);localStorage.setItem('bft_mem',JSON.stringify(S.memories));renderApp();}
 async function saveAboutUs(){const au={adminName:gv('au-name'),adminBio:gv('au-bio'),motto:gv('au-motto'),fbPage:gv('au-fb'),fbGroup:gv('au-grp')};S.aboutUs=au;closeModal();renderApp();toast('ok','Updated!');try{await sheetPut('Nizam!B2',JSON.stringify(au));}catch(e){toast('err','Sync: '+e.message);}}
 async function approvePay(id){const p=S.pendingPays.find(x=>x.id===id);if(!p)return;saveState('Approve Payment');p.status='approved';const pay={member:p.memberName,month:curMonth(),monthly:p.m,book:p.b};S.payments.push(pay);renderApp();toast('ok','Approved!');addAct('✅','Payment approved for '+p.memberName);try{await sheetAppend('Payments!A:D',[[pay.member,pay.month,pay.monthly,pay.book]]);}catch{}}
 function rejectPay(id){if(!confirm('Reject?'))return;const p=S.pendingPays.find(x=>x.id===id);if(!p)return;p.status='rejected';renderApp();toast('info','Rejected.');}
-async function submitPay(){const mo=gv('sp-mo'),key=gv('sp-key');if(!mo||!key)return toast('warn','Month and TxID required');const mem=S.members.find(m=>m.email===S.user?.email);const pay={id:genId(),memberName:mem?.name||S.user?.email,memberEmail:S.user?.email,key,m:parseFloat(gv('sp-m'))||0,b:parseFloat(gv('sp-b'))||0,status:'pending'};S.pendingPays.push(pay);closeModal();renderApp();toast('ok','Submitted! Awaiting approval.');try{await sheetAppend('PendingPays!A:G',[[pay.id,pay.memberName,pay.memberEmail,pay.key,pay.m,pay.b,'pending']]);}catch{}}
+async function submitPay(){const mo=gv('sp-mo');if(!mo)return toast('warn','Month required');const key=gv('sp-key')||'—';const mem=S.members.find(m=>m.email===S.user?.email);const pay={id:genId(),memberName:mem?.name||S.user?.email,memberEmail:S.user?.email,key,m:parseFloat(gv('sp-m'))||0,b:parseFloat(gv('sp-b'))||0,status:'pending'};S.pendingPays.push(pay);closeModal();renderApp();toast('ok','Submitted! Awaiting approval.');
+  addAct('💳','Payment submitted: '+tk(pay.m+pay.b)+' — awaiting admin approval');
+  if(S.tab!=='notifications')S.unreadMsgs=S.unreadMsgs||0;try{await sheetAppend('PendingPays!A:G',[[pay.id,pay.memberName,pay.memberEmail,pay.key,pay.m,pay.b,'pending']]);}catch{}}
 // Chat
-function sendGroupMsg(){const inp=g('gchat-in');if(!inp||!inp.value.trim())return;const mem=S.members.find(m=>m.email===S.user?.email);const msg={id:genId(),email:S.user?.email,name:mem?.name||S.user?.email?.split('@')[0]||'User',text:inp.value.trim(),time:new Date().toISOString(),deleted:false,pinned:false};S.groupMsgs.push(msg);inp.value='';localStorage.setItem('bft_gchat',JSON.stringify(S.groupMsgs.slice(-300)));const box=g('gchat-msgs'),bot=g('gchat-bot');if(box&&bot){const div=document.createElement('div');div.style.cssText='display:flex;gap:8px;flex-direction:row-reverse;align-items:flex-end;margin-bottom:10px';div.innerHTML=av(msg.name,30,msg.email)+'<div><div class="chat-mine">'+esc(msg.text)+'</div><div style="font-size:10px;color:var(--tx3);text-align:right;margin-top:3px">'+new Date(msg.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'</div></div>';box.insertBefore(div,bot);bot.scrollIntoView({behavior:'smooth'});}else{renderApp();setTimeout(()=>{const b=g('gchat-bot');if(b)b.scrollIntoView();},60);}}
+function sendGroupMsg(){const inp=g('gchat-in');if(!inp||!inp.value.trim())return;const mem=S.members.find(m=>m.email===S.user?.email);const msg={id:genId(),email:S.user?.email,name:mem?.name||S.user?.email?.split('@')[0]||'User',text:inp.value.trim(),time:new Date().toISOString(),deleted:false,pinned:false};S.groupMsgs.push(msg);inp.value='';
+  if(S.tab!=='messages')S.unreadMsgs=(S.unreadMsgs||0)+1;localStorage.setItem('bft_gchat',JSON.stringify(S.groupMsgs.slice(-300)));const box=g('gchat-msgs'),bot=g('gchat-bot');if(box&&bot){const div=document.createElement('div');div.style.cssText='display:flex;gap:8px;flex-direction:row-reverse;align-items:flex-end;margin-bottom:10px';div.innerHTML=av(msg.name,30,msg.email)+'<div><div class="chat-mine">'+esc(msg.text)+'</div><div style="font-size:10px;color:var(--tx3);text-align:right;margin-top:3px">'+new Date(msg.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'</div></div>';box.insertBefore(div,bot);bot.scrollIntoView({behavior:'smooth'});}else{renderApp();setTimeout(()=>{const b=g('gchat-bot');if(b)b.scrollIntoView();},60);}}
 function deleteGMsg(id){const m=S.groupMsgs.find(x=>x.id===id);if(!m)return;m.deleted=true;localStorage.setItem('bft_gchat',JSON.stringify(S.groupMsgs.slice(-300)));renderScreen();}
 function pinGMsg(id){const m=S.groupMsgs.find(x=>x.id===id);if(!m)return;m.pinned=!m.pinned;localStorage.setItem('bft_gchat',JSON.stringify(S.groupMsgs.slice(-300)));renderScreen();}
 function reportMsg(id){openModal('reportMsg',{msgId:id});}
 function submitReport(msgId,reason){const rep={id:genId(),msgId,reason,by:S.user?.email,time:new Date().toISOString()};S.reports.push(rep);localStorage.setItem('bft_rep',JSON.stringify(S.reports));closeModal();toast('ok','Message reported.');addAct('🚨','Message reported: '+reason);}
 function sendDM(){const inp=g('dm-in');if(!inp||!inp.value.trim()||!S.activeDM)return;if(!S.dmChats[S.activeDM])S.dmChats[S.activeDM]=[];const msg={email:S.user?.email,text:inp.value.trim(),time:new Date().toISOString()};S.dmChats[S.activeDM].push(msg);inp.value='';localStorage.setItem('bft_dms',JSON.stringify({chats:S.dmChats,contacts:S.dmContacts}));const box=g('dm-msgs'),bot=g('dm-bot');if(box&&bot){const div=document.createElement('div');div.style.cssText='display:flex;gap:8px;flex-direction:row-reverse;margin-bottom:9px';div.innerHTML='<div class="chat-mine">'+esc(msg.text)+'</div>';box.insertBefore(div,bot);bot.scrollIntoView({behavior:'smooth'});}else renderScreen();}
+function addExpense(idx){
+  const desc=gv('exp-desc'),amt=parseFloat(gv('exp-amt')),date=gv('exp-date')||new Date().toLocaleDateString('en-GB');
+  if(!desc||!amt)return toast('warn','Description and amount required');
+  saveState('Add Expense');
+  if(!S.projects[idx].expenses)S.projects[idx].expenses=[];
+  S.projects[idx].expenses.push({description:desc,amount:amt,date});
+  S.projects[idx].spent=(S.projects[idx].expenses||[]).reduce((s,e)=>s+e.amount,0);
+  sheetPut('Projects!A2',JSON.stringify(S.projects)).catch(()=>{});
+  toast('ok','Expense added!');
+  // Re-open modal with updated data
+  openModal('projectDetail',{...S.projects[idx],_idx:idx});
+}
 function exportPDF(){const c=S.payments.reduce((s,p)=>s+p.monthly+p.book,0),cs=S.costs.reduce((s,c)=>s+c.amount,0),now=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});const win=window.open('','_blank');const rows=S.members.map(m=>{const t=S.payments.filter(p=>p.member===m.name).reduce((s,p)=>s+p.monthly+p.book,0);return'<tr><td>'+m.name+'</td><td>'+m.phone+'</td><td>'+m.email+'</td><td style="text-align:right;font-family:monospace">'+tk(t)+'</td></tr>';}).join('');win.document.write('<!DOCTYPE html><html><head><title>Fityahal Report</title><style>body{font-family:serif;margin:40px;font-size:13px}h1{font-size:20px}table{width:100%;border-collapse:collapse;margin:12px 0}th{background:#eee;padding:7px;text-align:left;border:1px solid #ddd}td{padding:7px;border:1px solid #ddd}@media print{body{margin:0}}</style></head><body><h1>Fityahal — Account Report</h1><p style="color:#666">'+now+'</p><p>Collected: '+tk(c)+' | Costs: '+tk(cs)+' | Balance: '+tk(c-cs)+'</p><h2>Members</h2><table><thead><tr><th>Name</th><th>Phone</th><th>Email</th><th style="text-align:right">Total Paid</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');win.document.close();setTimeout(()=>win.print(),400);}
 function openLightbox(src){const lb=document.createElement('div');lb.className='lightbox';lb.onclick=()=>lb.remove();lb.innerHTML='<img src="'+esc(src)+'"/>';document.body.appendChild(lb);}
 function openBookView(){const bv=document.createElement('div');bv.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:9000;display:flex;animation:fadeIn .2s';bv.innerHTML='<div style="width:34px;background:#4a3010;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="writing-mode:vertical-rl;color:#e8c872;font-weight:700;font-size:12px;letter-spacing:4px">NIZAM</span></div><div style="flex:1;overflow-y:auto;padding:48px 40px;max-width:680px;margin:0 auto"><h2 style="font-family:Georgia,serif;text-align:center;margin-bottom:32px;font-size:22px;color:#eef1ff">Fityahal — Nizam</h2><div style="font-family:Georgia,serif;font-size:15px;line-height:2;white-space:pre-wrap;color:#d4d8f0">'+esc(S.nizam)+'</div><div style="margin-top:48px;text-align:center"><button class="btn btn-p" onclick="this.closest(\'div[style]\').parentNode.remove()">I have read the Nizam</button></div></div>';document.body.appendChild(bv);}
@@ -473,6 +513,14 @@ function dashboardHTML(){
   h+='<div class="g4">'+cards.map(c=>'<div class="stat-card"><div class="sc-bar" style="background:'+c.bar+'"></div><div class="sc-icon" style="background:'+c.bg+'">'+c.ico+'</div><div class="sc-lbl">'+c.lbl+'</div><div class="sc-val" style="color:'+c.color+'">'+c.val+'</div></div>').join('')+'</div>';
   if(isAdmin()&&overdue.length)h+='<div style="background:var(--rd-s);border:1px solid rgba(240,79,94,.2);color:var(--rd-t);padding:11px 15px;font-size:13px;border-radius:var(--r);cursor:pointer;display:flex;align-items:center;gap:9px" onclick="S.tab=\'members\';renderApp()">⚠️ <span><strong>'+overdue.length+' member'+(overdue.length>1?'s':'')+' overdue</strong> — no payment in last 2 months. Click to view.</span></div>';
   if(isAdmin())h+='<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-p" onclick="openModal(\'addPayment\')">＋ Add Payment</button><button class="btn" onclick="openModal(\'addCost\')">＋ Add Cost</button><button class="btn" onclick="exportPDF()">📄 Export PDF</button></div>';
+  // Show member's own pending payments prominently
+  const myPend=S.pendingPays.filter(p=>p.memberEmail===S.user?.email&&p.status==='pending');
+  if(!isAdmin()&&myPend.length){
+    h+='<div style="background:var(--am-s);border:1px solid rgba(255,173,46,.2);border-radius:var(--rl);padding:14px 16px">'+
+      '<p style="font-size:13px;font-weight:600;color:var(--am-t);margin-bottom:10px">⏳ Your Pending Payments ('+myPend.length+')</p>'+
+      myPend.map(p=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,173,46,.1);font-size:13px"><span>'+tk(p.m+p.b)+' · '+esc(p.key!=='—'?'TxID: '+p.key:'')+' </span><span class="badge b-warn">Pending Admin Approval</span></div>').join('')+
+    '</div>';
+  }
   h+='<div class="g2" style="align-items:start">';
   h+='<div><p style="font-size:13px;font-weight:600;color:var(--tx2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Recent Payments</p>';
   h+=recentPays.length?'<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Member</th><th>Month</th><th>Amount</th></tr></thead><tbody>'+recentPays.map(p=>'<tr><td style="font-weight:500">'+esc(p.member)+'</td><td style="color:var(--tx2)">'+esc(p.month)+'</td><td class="mono pos">'+tk(p.monthly+p.book)+'</td></tr>').join('')+'</tbody></table></div>':'<div class="empty"><div class="empty-ico">💳</div><p>No payments yet</p></div>';
@@ -674,17 +722,21 @@ function messagesHTML(){
       '<div style="padding:10px;border-top:1px solid var(--br2);display:flex;gap:8px;flex-shrink:0"><input class="inp" id="gchat-in" placeholder="Message the group…" style="flex:1" onkeydown="if(event.key===\'Enter\')sendGroupMsg()"/><button class="btn btn-p" onclick="sendGroupMsg()">Send</button></div>'+
     '</div>';
   }else{
-    const all=[...new Set([...S.members.filter(m=>m.email&&m.email!==S.user?.email).map(m=>m.email),...S.dmContacts.filter(c=>c!==S.user?.email)])];
+    const allRaw=[...new Set([...S.members.filter(m=>m.email&&m.email!==S.user?.email).map(m=>m.email),...S.dmContacts.filter(c=>c!==S.user?.email)])];
+    const dsf2=(S.dmSearch||'').toLowerCase();
+    const all=dsf2?allRaw.filter(c=>{const mem=S.members.find(m=>m.email===c);return(mem?.name||c).toLowerCase().includes(dsf2);}):allRaw;
     const act=S.activeDM;
     const dmMsgs=act&&S.dmChats[act]?S.dmChats[act]:[];
-    const dsf=S.dmSearch?.toLowerCase()||'';
-    const showDM=dsf?dmMsgs.filter(m=>m.text.toLowerCase().includes(dsf)):dmMsgs;
+    const showDM=dmMsgs;
     const contacts=all.map(c=>{const mem=S.members.find(m=>m.email===c);const name=mem?.name||c.split('@')[0];return'<div onclick="S.activeDM=\''+esc(c)+'\';S.msgTab=\'dm\';renderScreen();setTimeout(()=>{const b=g(\'dm-bot\');if(b)b.scrollIntoView();},60)" style="padding:10px 14px;cursor:pointer;background:'+(act===c?'var(--ac-s)':'transparent')+';border-left:3px solid '+(act===c?'var(--ac)':'transparent')+';display:flex;align-items:center;gap:9px;transition:background .15s">'+av(name,32,c)+'<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(name)+'</div>'+(mem?.nick?'<div style="font-size:10px;color:var(--tx3)">'+esc(mem.nick)+'</div>':'')+' </div></div>';}).join('');
     const dmRows=showDM.map(m=>{const mine=m.email===S.user?.email;return'<div style="display:flex;gap:8px;flex-direction:'+(mine?'row-reverse':'row')+';margin-bottom:9px"><div class="'+(mine?'chat-mine':'chat-other')+'">'+esc(m.text)+'<div style="font-size:10px;opacity:.65;margin-top:2px;text-align:'+(mine?'right':'left')+'">'+new Date(m.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'</div></div></div>';}).join('');
     const actMem=act?S.members.find(m=>m.email===act):null;
     inner='<div style="display:flex;flex:1;overflow:hidden">'+
       '<div style="width:210px;border-right:1px solid var(--br2);overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column">'+
-        '<div style="padding:8px 12px;border-bottom:1px solid var(--br);font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px">Members ('+all.length+')</div>'+
+        '<div style="padding:8px;border-bottom:1px solid var(--br)">'+
+        '<div class="inp-wrap"><span class="inp-ico">🔍</span>'+
+        '<input class="inp" placeholder="Search members…" value="'+esc(S.dmSearch||'')+'" oninput="S.dmSearch=this.value;renderScreen()" style="font-size:12px"/></div>'+
+        '</div>'+
         (all.length?contacts:'<div style="padding:20px;font-size:13px;color:var(--tx3);text-align:center">No members with emails found</div>')+
       '</div>'+
       (act?
@@ -825,8 +877,8 @@ function renderApp(){
   }
 
   const nav=NAV.filter(n=>!n.admin||isAdmin());
-  const tabs=nav.map(n=>'<button class="nav-tab'+(S.tab===n.id?' active':'')+'" onclick="S.tab=\''+n.id+'\';S.mobileMenuOpen=false;renderApp()">'+esc(n.label)+'</button>').join('');
-  const mobTabs=nav.map(n=>'<button class="mob-tab'+(S.tab===n.id?' active':'')+'" onclick="S.tab=\''+n.id+'\';S.mobileMenuOpen=false;renderApp()" style="gap:14px"><span style="font-size:18px;width:26px;text-align:center">'+({dashboard:'⊞',members:'👥',overview:'₿',projects:'📁',announcements:'📢',nizam:'📖',memories:'📸',notifications:'🔔',messages:'💬',sync:'🔄',profile:'👤',aboutus:'🌟'}[n.id]||'·')+'</span>'+esc(n.label)+'</button>').join('');
+  const tabs=nav.map(n=>'<button class="nav-tab'+(S.tab===n.id?' active':'')+'" onclick="S.tab=\''+n.id+'\';S.mobileMenuOpen=false;renderApp()">'+esc(n.label)+(n.id==='messages'&&S.tab!=='messages'&&(S.unreadMsgs||0)>0?' <span style="background:var(--rd);color:#fff;font-size:9px;border-radius:10px;padding:1px 5px;font-weight:700">'+(S.unreadMsgs||0)+'</span>':'')+'</button>').join('');
+  const mobTabs=nav.map(n=>'<button class="mob-tab'+(S.tab===n.id?' active':'')+'" onclick="S.tab=\''+n.id+'\';S.mobileMenuOpen=false;renderApp()" style="gap:14px"><span style="font-size:18px;width:26px;text-align:center">'+({dashboard:'⊞',members:'👥',overview:'₿',projects:'📁',announcements:'📢',nizam:'📖',memories:'📸',notifications:'🔔',messages:'💬',sync:'🔄',profile:'👤',aboutus:'🌟'}[n.id]||'·')+'</span>'+esc(n.label)+(n.id==='messages'&&S.tab!=='messages'&&(S.unreadMsgs||0)>0?' <span style="background:var(--rd);color:#fff;font-size:9px;border-radius:10px;padding:1px 5px;font-weight:700">'+(S.unreadMsgs||0)+'</span>':'')+'</button>').join('');
   const pic=getMpic(S.user?.email||'');
   const avatarBtn=pic?'<img src="'+esc(pic)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>':esc((S.user?.email?.[0]||'U').toUpperCase());
 
@@ -850,6 +902,14 @@ function renderApp(){
     '<main id="main-content" style="flex:1;overflow-y:auto">'+(SCREENS[S.tab]||dashboardHTML)()+'</main>'+
     (S.lastAction&&S.history.length?'<div class="undo-bar">↩ <span style="color:var(--tx2)">'+esc(S.lastAction)+'</span><button class="btn btn-sm" onclick="doUndo()">Undo</button>'+(S.future.length?'<button class="btn btn-sm" onclick="doRedo()">Redo</button>':'')+' <button class="btn btn-ghost btn-icon btn-sm" onclick="S.lastAction=\'\';renderApp()">✕</button></div>':'');
 
+  // Floating action buttons: sync + undo (admin only)
+  const fabEl=document.getElementById('app-fab');
+  if(fabEl){
+    fabEl.innerHTML=isAdmin()?
+      (S.history.length?'<button class="btn btn-sm" onclick="doUndo()" style="box-shadow:var(--sh-m);backdrop-filter:blur(8px)">↩ Undo</button>':'')+
+      (S.future.length?'<button class="btn btn-sm" onclick="doRedo()" style="box-shadow:var(--sh-m)">↪ Redo</button>':'')+
+      '<button class="btn btn-p btn-sm" onclick="fullSync()" style="box-shadow:var(--sh-m)">'+(S.syncStatus==='syncing'?'<span class="spinner"></span> Syncing':'🔄 Sync')+'</button>':'';
+  }
   renderModal();
   if(S.tab==='messages'){
     setTimeout(()=>{
