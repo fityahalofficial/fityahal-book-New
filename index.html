@@ -485,29 +485,80 @@ body.theme-night{
 .pay-pending-badge{padding:2px 9px;border-radius:99px;font-size:10px;font-weight:700;background:var(--am-s);color:var(--am-t);border:1px solid rgba(255,173,46,.25);}
 .pay-approved-badge{background:var(--gn-s);color:var(--gn-t);border:1px solid rgba(16,212,142,.25);}
 
-/* ══ ANNOUNCEMENT INTERACTIONS ══ */
-.ni-media{width:100%;border-radius:var(--r);margin-bottom:10px;display:block;}
-.ni-media video{width:100%;max-height:320px;border-radius:var(--r);background:#000;display:block;}
-.ni-actions{display:flex;align-items:center;gap:8px;padding-top:10px;border-top:1px solid var(--br);margin-top:10px;}
-.ni-action-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:99px;border:1px solid var(--br2);background:var(--sf2);color:var(--tx2);font-family:var(--fn);font-size:12px;font-weight:600;cursor:pointer;transition:all .18s;}
-.ni-action-btn:hover{background:var(--sf3);}
-.ni-action-btn.liked{background:var(--rd-s);color:var(--rd-t);border-color:rgba(255,92,108,.3);}
-.ni-action-btn.liked:hover{background:var(--rd-s);}
-.ni-comments-wrap{margin-top:10px;border-top:1px solid var(--br);padding-top:10px;display:none;}
-.ni-comments-wrap.open{display:block;}
-.ni-comment{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;}
-.ni-comment-av{width:26px;height:26px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0;overflow:hidden;}
-.ni-comment-av img{width:100%;height:100%;object-fit:cover;}
-.ni-comment-body{flex:1;background:var(--sf2);border-radius:8px;padding:6px 10px;}
-.ni-comment-name{font-size:10px;font-weight:700;color:var(--ac-t);margin-bottom:2px;}
-.ni-comment-txt{font-size:12px;color:var(--tx);line-height:1.5;}
-.ni-comment-time{font-size:9px;color:var(--tx3);margin-top:3px;}
-.ni-comment-input-row{display:flex;gap:6px;margin-top:8px;}
-.ni-comment-input{flex:1;padding:7px 11px;border:1px solid var(--br2);border-radius:20px;font-family:var(--fn);font-size:12px;color:var(--tx);background:var(--sf);outline:none;transition:border .2s;}
-.ni-comment-input:focus{border-color:var(--ac);}
-.ni-comment-send{padding:7px 14px;background:var(--ac);color:#fff;border:none;border-radius:20px;font-family:var(--fn);font-size:12px;font-weight:600;cursor:pointer;}
-.ni-viewers-wrap{margin-top:6px;}
-.ni-viewer-chip{display:inline-flex;align-items:center;gap:3px;font-size:10px;color:var(--tx3);background:var(--sf2);border-radius:99px;padding:2px 8px;margin:2px;border:1px solid var(--br);}
+/* ══ MOMENTS (Facebook-style feed) ══ */
+#tab-notices{padding:0 !important;background:var(--bg2);}
+.moments-header{padding:1rem 1rem .75rem;display:flex;align-items:center;justify-content:space-between;background:var(--bg2);position:sticky;top:0;z-index:10;border-bottom:1px solid var(--br);}
+.moments-title{font-size:20px;font-weight:800;color:var(--tx);}
+.moments-feed{max-width:600px;margin:0 auto;padding:.75rem 1rem 2rem;display:flex;flex-direction:column;gap:14px;}
+.moment-card{background:var(--sf);border:1px solid var(--br2);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh);animation:momentIn .3s cubic-bezier(.16,1,.3,1);}
+@keyframes momentIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.moment-head{display:flex;align-items:center;gap:10px;padding:.85rem 1rem .75rem;}
+.moment-av{width:40px;height:40px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0;overflow:hidden;cursor:pointer;}
+.moment-av img{width:100%;height:100%;object-fit:cover;}
+.moment-info{flex:1;min-width:0;}
+.moment-name{font-size:14px;font-weight:700;color:var(--tx);}
+.moment-time{font-size:11px;color:var(--tx3);margin-top:1px;}
+.moment-menu{position:relative;}
+.moment-menu-btn{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:18px;padding:4px 8px;border-radius:8px;line-height:1;transition:background .15s;}
+.moment-menu-btn:hover{background:var(--sf2);}
+.moment-dropdown{position:absolute;right:0;top:100%;background:var(--sf);border:1px solid var(--br2);border-radius:10px;min-width:150px;box-shadow:var(--sh-m);z-index:100;display:none;overflow:hidden;}
+.moment-dropdown.open{display:block;}
+.moment-dropdown button{display:block;width:100%;text-align:left;padding:10px 14px;background:none;border:none;font-family:var(--fn);font-size:13px;color:var(--tx);cursor:pointer;transition:background .12s;}
+.moment-dropdown button:hover{background:var(--sf2);}
+.moment-dropdown button.danger{color:var(--rd-t);}
+.moment-caption{padding:0 1rem .85rem;font-size:14px;color:var(--tx);line-height:1.7;white-space:pre-wrap;word-break:break-word;}
+.moment-caption.nocap{display:none;}
+.moment-media{width:100%;display:block;background:#000;}
+.moment-media img{width:100%;display:block;max-height:500px;object-fit:cover;}
+.moment-media video{width:100%;display:block;max-height:420px;}
+.moment-stats{display:flex;align-items:center;justify-content:space-between;padding:.55rem 1rem;border-top:1px solid var(--br);font-size:12px;color:var(--tx3);}
+.moment-stats-likes{display:flex;align-items:center;gap:4px;cursor:pointer;}
+.moment-stats-likes:hover{text-decoration:underline;}
+.moment-actions{display:flex;border-top:1px solid var(--br);}
+.moment-action-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 6px;background:none;border:none;font-family:var(--fn);font-size:13px;font-weight:600;color:var(--tx2);cursor:pointer;transition:background .15s;}
+.moment-action-btn:hover{background:var(--sf2);}
+.moment-action-btn.active-like{color:var(--rd-t);}
+.moment-action-btn.active-like:hover{background:var(--rd-s);}
+.moment-comments-wrap{background:var(--sf2);padding:.75rem 1rem;display:none;border-top:1px solid var(--br);}
+.moment-comments-wrap.open{display:block;}
+.mc-comment{display:flex;gap:8px;margin-bottom:10px;align-items:flex-start;}
+.mc-comment-av{width:30px;height:30px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0;overflow:hidden;}
+.mc-comment-av img{width:100%;height:100%;object-fit:cover;}
+.mc-comment-body{flex:1;background:var(--sf);border-radius:14px;padding:7px 12px;}
+.mc-comment-name{font-size:11px;font-weight:700;color:var(--ac-t);}
+.mc-comment-txt{font-size:13px;color:var(--tx);line-height:1.5;margin-top:2px;}
+.mc-comment-meta{font-size:10px;color:var(--tx3);margin-top:4px;display:flex;align-items:center;gap:10px;}
+.mc-comment-del{background:none;border:none;color:var(--rd-t);cursor:pointer;font-size:10px;padding:0;opacity:.5;}
+.mc-comment-del:hover{opacity:1;}
+.mc-comment-input-row{display:flex;gap:8px;align-items:center;margin-top:8px;}
+.mc-comment-inp{flex:1;padding:8px 14px;border:1px solid var(--br2);border-radius:20px;font-family:var(--fn);font-size:13px;color:var(--tx);background:var(--sf);outline:none;transition:border .2s;}
+.mc-comment-inp:focus{border-color:var(--ac);}
+.mc-comment-send{width:34px;height:34px;border-radius:50%;background:var(--ac);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
+.mc-comment-send:hover{opacity:.85;}
+/* Moment post composer */
+.moment-composer{background:var(--sf);border:1px solid var(--br2);border-radius:var(--rl);padding:1rem;box-shadow:var(--sh);cursor:pointer;display:flex;align-items:center;gap:10px;transition:border .2s;}
+.moment-composer:hover{border-color:var(--ac);}
+.moment-composer span{font-size:13px;color:var(--tx3);}
+/* React picker */
+.react-picker{position:absolute;bottom:calc(100% + 6px);left:0;background:var(--sf);border:1px solid var(--br2);border-radius:30px;padding:6px 10px;display:flex;gap:6px;box-shadow:var(--sh-m);z-index:200;display:none;}
+.react-picker.open{display:flex;}
+.react-emoji{font-size:22px;cursor:pointer;transition:transform .15s;user-select:none;}
+.react-emoji:hover{transform:scale(1.3);}
+/* Viewers */
+.viewers-popup{position:absolute;left:0;bottom:calc(100%+4px);background:var(--sf);border:1px solid var(--br2);border-radius:10px;padding:8px 12px;min-width:160px;box-shadow:var(--sh-m);z-index:100;display:none;font-size:12px;color:var(--tx2);}
+.viewers-popup.open{display:block;}
+/* Post modal */
+.post-mo-media-preview{width:100%;border-radius:var(--r);margin-top:8px;display:none;}
+.post-mo-media-preview img,.post-mo-media-preview video{width:100%;border-radius:var(--r);display:block;max-height:220px;object-fit:cover;}
+/* Chat private + react */
+.chat-dm-badge{display:inline-block;background:var(--pu-s);color:var(--pu-t);border:1px solid rgba(157,122,250,.3);border-radius:99px;padding:1px 7px;font-size:10px;font-weight:700;margin-bottom:3px;}
+.chat-react-wrap{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px;}
+.chat-react-chip{display:inline-flex;align-items:center;gap:2px;padding:2px 7px;border-radius:99px;background:var(--sf2);border:1px solid var(--br2);font-size:11px;cursor:pointer;transition:border .15s;}
+.chat-react-chip:hover,.chat-react-chip.mine{border-color:var(--ac);background:var(--ac-s);}
+.msg-react-btn{background:none;border:1px solid var(--br2);border-radius:99px;padding:2px 6px;font-size:11px;cursor:pointer;margin-left:4px;color:var(--tx3);transition:all .15s;}
+.msg-react-btn:hover{border-color:var(--ac);color:var(--ac-t);}
+.react-float{position:absolute;background:var(--sf);border:1px solid var(--br2);border-radius:30px;padding:5px 8px;display:flex;gap:5px;box-shadow:var(--sh-m);z-index:300;white-space:nowrap;}
+.react-float .react-emoji{font-size:20px;}
 
 /* ══ NIZAM BOOK OVERLAY ══ */
 #nizam-book-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:8500;backdrop-filter:blur(10px);padding:1rem;}
@@ -618,7 +669,7 @@ Sign in with Google
       <button class="nb" onclick="showTab('table',this)">Overview</button>
       <button class="nb" onclick="showTab('members',this)">Members</button>
       <button class="nb" onclick="showTab('projects',this)">Projects</button>
-      <div style="position:relative;display:flex;"><button class="nb" onclick="showTab('notices',this)">Announcements</button><span class="notif-dot" id="notice-dot" style="display:none;"></span></div>
+      <div style="position:relative;display:flex;"><button class="nb" onclick="showTab('notices',this)">✨ Moments</button><span class="notif-dot" id="notice-dot" style="display:none;"></span></div>
       <button class="nb" onclick="showTab('nizam',this)">Nizam</button>
       <div style="position:relative;display:flex;"><button class="nb" onclick="showTab('chat',this)">Chat</button><span class="notif-dot" id="chat-dot" style="display:none;"></span></div>
       <div style="position:relative;display:flex;"><button class="nb" onclick="showTab('activity',this)">🔔 Notifs</button><span class="notif-dot" id="notif-dot" style="display:none;"></span></div>
@@ -734,17 +785,16 @@ Sign in with Google
       <div id="proj-list"></div>
     </div>
 
-    <!-- NOTICE BOARD TAB -->
-    <div id="tab-notices" class="tab-panel">
-      <div class="sh">
-        <div class="sh-t">Announcements</div>
-        <div class="sh-a">
-          <button class="btn btn-p" id="add-notice-btn" style="display:none;" onclick="guardEdit(()=>openNoticeMo())">+ Post</button>
-          <button class="btn" id="send-pnotice-btn" style="display:none;" onclick="guardEdit(openPrivateNoticeMo)">📨 Private</button>
-        </div>
+    <!-- MOMENTS TAB -->
+    <div id="tab-notices" class="tab-panel" style="padding:0;">
+      <div class="moments-header">
+        <div class="moments-title">✨ Moments</div>
+        <button class="btn btn-p" style="padding:7px 16px;font-size:13px;" onclick="openMomentComposer()">+ Post</button>
       </div>
-      <div class="notice-list" id="notice-list"></div>
-      <div id="private-notices-wrap" style="margin-top:1.5rem;display:none;">
+      <div class="moments-feed">
+        <div id="notice-list"></div>
+      </div>
+      <div id="private-notices-wrap" style="display:none;max-width:600px;margin:0 auto;padding:0 1rem 1rem;">
         <div class="sh"><div class="sh-t" style="font-size:13px;color:var(--tx3);">📬 Private Messages for You</div></div>
         <div id="private-notices-list"></div>
       </div>
@@ -766,15 +816,21 @@ Sign in with Google
     </div>
 
     <!-- CHAT TAB -->
-    <div id="tab-chat" class="tab-panel" style="padding:0;">
-      <div style="padding:.75rem 1.25rem;background:var(--sf2);border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-        <span style="font-size:13px;font-weight:600;color:var(--tx2);">💬 Member Chat</span>
-        <div id="chat-admin-controls" style="display:none;">
-          <button class="btn btn-sm" onclick="guardEdit(openMuteModal)">🔇 Moderate</button>
+    <div id="tab-chat" class="tab-panel" style="padding:0;display:flex;flex-direction:column;height:calc(100vh - 56px);">
+      <div style="padding:.6rem 1rem;background:var(--sf2);border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;flex-shrink:0;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:14px;font-weight:700;color:var(--tx);">💬 Group Chat</span>
+          <span id="chat-dm-label" style="display:none;background:var(--pu-s);color:var(--pu-t);border:1px solid rgba(157,122,250,.3);border-radius:99px;padding:2px 10px;font-size:11px;font-weight:700;cursor:pointer;" onclick="clearDmTarget()">✉ DM: <span id="chat-dm-name"></span> ✕</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button class="btn btn-sm" id="chat-dm-btn" onclick="openDmPicker()">✉ DM</button>
+          <div id="chat-admin-controls" style="display:none;">
+            <button class="btn btn-sm" onclick="guardEdit(openMuteModal)">🔇 Moderate</button>
+          </div>
         </div>
       </div>
-      <div id="chat-msgs" style="height:calc(100vh - 200px);max-height:520px;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:10px;"></div>
-      <div id="chat-footer" style="display:flex;gap:8px;padding:10px 1rem;border-top:1px solid var(--br);background:var(--sf2);">
+      <div id="chat-msgs" style="flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:10px;"></div>
+      <div id="chat-footer" style="display:flex;gap:8px;padding:10px 1rem;border-top:1px solid var(--br);background:var(--sf2);flex-shrink:0;">
         <input class="chat-input" id="chat-input" placeholder="Type a message…"/>
         <button class="chat-send" id="chat-send-btn" onclick="sendChatMsg()">Send</button>
       </div>
@@ -917,31 +973,64 @@ Sign in with Google
     <div id="pending-list" style="max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;"></div>
     <div class="mo-f"><button class="btn" onclick="closeMo()">Close</button></div>
   </div>
-  <div class="mo-b" id="mo-notice" style="display:none;">
-    <div class="mo-t"><span id="mo-notice-t">Post Announcement</span><button class="mo-x" aria-label="Close" onclick="closeMo()">✕</button></div>
+  <!-- MOMENT POST COMPOSER MODAL -->
+  <div class="mo-b" id="mo-notice" style="display:none;max-width:520px;">
+    <div class="mo-t"><span id="mo-notice-t">✨ Create Moment</span><button class="mo-x" aria-label="Close" onclick="closeMo()">✕</button></div>
     <input type="hidden" id="notice-edit-idx" value="-1"/>
-    <div class="fr"><label>Media (optional)</label>
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-        <img id="notice-photo-preview" style="display:none;width:80px;height:60px;object-fit:cover;border-radius:var(--r);">
-        <video id="notice-video-preview" style="display:none;width:160px;height:90px;border-radius:var(--r);object-fit:cover;" controls></video>
-        <label style="cursor:pointer;padding:7px 12px;background:var(--sf3);border-radius:var(--r);font-size:12px;color:var(--tx2);">📷 Photo<input type="file" accept="image/*" style="display:none;" onchange="previewNoticePhoto(this)"></label>
-        <label style="cursor:pointer;padding:7px 12px;background:var(--sf3);border-radius:var(--r);font-size:12px;color:var(--tx2);">🎥 Video<input type="file" accept="video/*" style="display:none;" onchange="previewNoticeVideo(this)"></label>
-        <button id="notice-clear-media-btn" class="btn btn-sm btn-d" style="display:none;" onclick="clearNoticeMedia()">✕ Clear</button>
-        <input type="hidden" id="notice-photo-data">
-        <input type="hidden" id="notice-video-data">
-        <input type="hidden" id="notice-media-type" value="">
-      </div>
-    </div>
-    <div class="fr"><label>Title</label><input id="notice-title-inp" placeholder="Announcement title…"/></div>
-    <div class="fr"><label>Body</label><textarea id="notice-body-inp" placeholder="Write the announcement…" style="min-height:110px;"></textarea></div>
+    <!-- Who's posting -->
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
-      <input type="checkbox" id="notice-pin-inp" style="width:16px;height:16px;cursor:pointer;">
-      <label for="notice-pin-inp" style="font-size:13px;cursor:pointer;color:var(--tx);">📌 Pin this announcement</label>
+      <div id="composer-av" class="moment-av" style="width:38px;height:38px;font-size:12px;pointer-events:none;">?</div>
+      <div id="composer-name" style="font-size:14px;font-weight:700;color:var(--tx);">You</div>
     </div>
+    <!-- Caption -->
+    <textarea id="notice-body-inp" placeholder="What's on your mind?" style="width:100%;min-height:90px;background:none;border:none;outline:none;font-family:var(--fn);font-size:16px;color:var(--tx);resize:none;padding:0;line-height:1.6;"></textarea>
+    <!-- Media preview -->
+    <div id="post-mo-media-preview" class="post-mo-media-preview"></div>
+    <!-- Title (optional) -->
+    <input id="notice-title-inp" placeholder="Title / topic (optional)" style="width:100%;margin-top:10px;padding:8px 12px;border:1px solid var(--br2);border-radius:var(--r);background:var(--sf2);color:var(--tx);font-family:var(--fn);font-size:13px;outline:none;"/>
+    <!-- Media + pin toolbar -->
+    <div style="display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--br);flex-wrap:wrap;">
+      <label style="cursor:pointer;display:flex;align-items:center;gap:5px;padding:7px 12px;background:var(--sf2);border-radius:var(--r);font-size:12px;color:var(--tx2);border:1px solid var(--br2);transition:border .2s;" title="Add photo">📷 Photo<input type="file" accept="image/*" style="display:none;" onchange="previewNoticePhoto(this)"></label>
+      <label style="cursor:pointer;display:flex;align-items:center;gap:5px;padding:7px 12px;background:var(--sf2);border-radius:var(--r);font-size:12px;color:var(--tx2);border:1px solid var(--br2);transition:border .2s;" title="Add video">🎥 Video<input type="file" accept="video/*" style="display:none;" onchange="previewNoticeVideo(this)"></label>
+      <button id="notice-clear-media-btn" style="display:none;padding:7px 12px;background:var(--rd-s);color:var(--rd-t);border:1px solid rgba(255,92,108,.2);border-radius:var(--r);font-size:12px;cursor:pointer;" onclick="clearNoticeMedia()">✕ Remove media</button>
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--tx2);margin-left:auto;">
+        <input type="checkbox" id="notice-pin-inp" style="width:14px;height:14px;"> 📌 Pin
+      </label>
+      <input type="hidden" id="notice-photo-data">
+      <input type="hidden" id="notice-video-data">
+      <input type="hidden" id="notice-media-type" value="">
+    </div>
+    <div class="mo-f" style="margin-top:12px;">
+      <button class="btn" onclick="closeMo()">Cancel</button>
+      <button class="btn btn-p" style="flex:1;" onclick="saveNotice()">Post Moment</button>
+    </div>
+  </div>
+
+  <!-- REPORT MODAL -->
+  <div class="mo-b" id="mo-report" style="display:none;max-width:400px;">
+    <div class="mo-t"><span>🚩 Report Post</span><button class="mo-x" onclick="closeMo()">✕</button></div>
+    <input type="hidden" id="report-idx" value="-1"/>
+    <div class="fr"><label>Reason</label>
+      <select id="report-reason" style="width:100%;padding:9px 12px;border:1px solid var(--br2);border-radius:var(--r);background:var(--sf2);color:var(--tx);font-family:var(--fn);font-size:13px;outline:none;">
+        <option value="spam">Spam</option>
+        <option value="inappropriate">Inappropriate content</option>
+        <option value="harassment">Harassment</option>
+        <option value="false">False information</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="fr"><label>Details (optional)</label><textarea id="report-detail" placeholder="Add any details…" style="min-height:70px;"></textarea></div>
     <div class="mo-f">
       <button class="btn" onclick="closeMo()">Cancel</button>
-      <button class="btn btn-p" onclick="saveNotice()">Post</button>
+      <button class="btn" style="background:var(--rd-s);color:var(--rd-t);border-color:rgba(255,92,108,.3);" onclick="submitReport()">Report</button>
     </div>
+  </div>
+
+  <!-- VIEWERS MODAL -->
+  <div class="mo-b" id="mo-viewers" style="display:none;max-width:380px;">
+    <div class="mo-t"><span>👁 Seen by</span><button class="mo-x" onclick="closeMo()">✕</button></div>
+    <div id="viewers-list" style="max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;"></div>
+    <div class="mo-f"><button class="btn" onclick="closeMo()">Close</button></div>
   </div>
 
   <!-- PRIVATE NOTICE MODAL -->
@@ -1017,6 +1106,20 @@ Sign in with Google
     <div class="mo-f">
       <button class="btn" onclick="closeMo()">Cancel</button>
       <button class="btn btn-p" onclick="applyMute()">Apply</button>
+    </div>
+  </div>
+
+  <!-- DM PICKER MODAL -->
+  <div class="mo-b" id="mo-dm" style="display:none;max-width:380px;">
+    <div class="mo-t"><span>✉ Send Direct Message</span><button class="mo-x" onclick="closeMo()">✕</button></div>
+    <div class="fr"><label>Send to</label>
+      <select id="dm-target-sel" style="width:100%;padding:9px 12px;border:1px solid var(--br2);border-radius:var(--r);background:var(--sf2);color:var(--tx);font-family:var(--fn);font-size:13px;outline:none;">
+        <option value="">Select member…</option>
+      </select>
+    </div>
+    <div class="mo-f">
+      <button class="btn" onclick="closeMo()">Cancel</button>
+      <button class="btn btn-p" onclick="setDmTarget()">Start DM</button>
     </div>
   </div>
 
@@ -1495,7 +1598,7 @@ async function loadSharedData(){
     NOTICES=allNotices.filter(r=>!r[4]).map(r=>{
       let reactions={};try{reactions=JSON.parse(r[8]||'{}');}catch(e){}
       let comments=[];try{comments=JSON.parse(r[9]||'[]');}catch(e){}
-      return {title:r[0]||'',body:r[1]||'',by:r[2]||'',time:r[3]||'',pinned:r[5]==='1',photo:r[6]||'',video:r[7]||'',reactions,comments,viewers:reactions._viewers||{}};
+      return {title:r[0]||'',body:r[1]||'',by:r[2]||'',byName:r[2]||'',time:r[3]||'',pinned:r[5]==='1',photo:r[6]||'',video:r[7]||'',reactions,comments,viewers:reactions._viewers||{}};
     });
     PRIVATE_NOTICES={};
     allNotices.filter(r=>r[4]).forEach(r=>{const to=r[4];if(!PRIVATE_NOTICES[to])PRIVATE_NOTICES[to]=[];PRIVATE_NOTICES[to].push({body:r[1]||'',time:r[3]||''});});
@@ -1511,9 +1614,12 @@ async function loadSharedData(){
     if(mutedStr)try{CHAT_MUTED=JSON.parse(mutedStr);}catch(e){}
     const borrowedStr=nizRow[3]||'';
     if(borrowedStr)try{BORROWED_BOOKS=JSON.parse(borrowedStr);localStorage.setItem('bft_books',JSON.stringify(BORROWED_BOOKS));}catch(e){}
-    // Chat - last 200 msgs
-    const chatr=await sheetsGet(`${CONFIG.SHEET_CHAT}!A2:D10000`);
-    CHAT_MSGS=((chatr.values||[]).filter(r=>r[0]&&r[3]).map(r=>({name:r[0]||'',email:r[1]||'',time:r[2]||'',txt:r[3]||''}))).slice(-200);
+    // Chat - last 200 msgs (col E = JSON meta: dm, reactions)
+    const chatr=await sheetsGet(`${CONFIG.SHEET_CHAT}!A2:E10000`);
+    CHAT_MSGS=((chatr.values||[]).filter(r=>r[0]&&r[3]).map(r=>{
+      let meta={};try{meta=JSON.parse(r[4]||'{}');}catch(e){}
+      return {name:r[0]||'',email:r[1]||'',time:r[2]||'',txt:r[3]||'',dm:meta.dm||'',dmName:meta.dmName||'',reactions:meta.reactions||{}};
+    })).slice(-200);
     // Projects - stored as JSON in one cell
     const projr=await sheetsGet(`${CONFIG.SHEET_PROJECTS}!A2:A2`);
     try{PROJECTS=JSON.parse(((projr.values||[])[0]||['[]'])[0]);}catch(e){PROJECTS=[];}
@@ -1574,11 +1680,11 @@ async function saveNizamToSheet(){
 }
 
 async function saveChatMsg(msg){
-  // All members can send chat — no role restriction
   try{
-    const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(CONFIG.SHEET_CHAT+'!A:D')}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,{
+    const meta=JSON.stringify({dm:msg.dm||'',dmName:msg.dmName||'',reactions:msg.reactions||{}});
+    const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(CONFIG.SHEET_CHAT+'!A:E')}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,{
       method:'POST',headers:{Authorization:`Bearer ${ACCESS_TOKEN}`,'Content-Type':'application/json'},
-      body:JSON.stringify({values:[[msg.name,msg.email,msg.time,msg.txt]]})
+      body:JSON.stringify({values:[[msg.name,msg.email,msg.time,msg.txt,meta]]})
     });
     if(!res.ok)throw new Error('chat append failed '+res.status);
   }catch(e){console.error('saveChatMsg',e);toast('Message failed to send','t-err');}
@@ -2198,41 +2304,55 @@ function removePayEntry(name,k){
 }
 
 // ══ NOTICE BOARD ═════════════════════════════════════════════════════════════
-function openNoticeMo(editIdx=-1){
+// ══ MOMENTS COMPOSER ══════════════════════════════════════════════════════════
+function openMomentComposer(editIdx=-1){
   document.getElementById('notice-edit-idx').value=editIdx;
   document.getElementById('notice-photo-data').value='';
   document.getElementById('notice-video-data').value='';
   document.getElementById('notice-media-type').value='';
-  document.getElementById('notice-photo-preview').style.display='none';
-  const vPrev=document.getElementById('notice-video-preview');
-  vPrev.style.display='none';vPrev.src='';
+  document.getElementById('post-mo-media-preview').style.display='none';
+  document.getElementById('post-mo-media-preview').innerHTML='';
   document.getElementById('notice-clear-media-btn').style.display='none';
+  // Fill in poster info
+  const email=CURRENT_EMAIL||'';
+  const me=MEM.find(r=>r.email&&r.email.toLowerCase()===email.toLowerCase());
+  const photo=me?(MEMBER_PHOTOS[me.name]||me.photo||''):'';
+  const avEl=document.getElementById('composer-av');
+  const nmEl=document.getElementById('composer-name');
+  if(avEl){avEl.innerHTML=photo?`<img src="${photo}">`:(me?ini(me.name):'?');}
+  if(nmEl) nmEl.textContent=me?me.nick||me.name:email.split('@')[0];
   if(editIdx>=0){
     const n=NOTICES[editIdx];
-    document.getElementById('notice-title-inp').value=n.title;
-    document.getElementById('notice-body-inp').value=n.body;
-    document.getElementById('notice-pin-inp').checked=n.pinned||false;
-    document.getElementById('mo-notice-t').textContent='Edit Announcement';
+    document.getElementById('notice-title-inp').value=n.title||'';
+    document.getElementById('notice-body-inp').value=n.body||'';
+    document.getElementById('notice-pin-inp').checked=!!n.pinned;
+    document.getElementById('mo-notice-t').textContent='Edit Moment';
     if(n.video){
       document.getElementById('notice-video-data').value=n.video;
       document.getElementById('notice-media-type').value='video';
-      vPrev.src=n.video;vPrev.style.display='';
+      const p=document.getElementById('post-mo-media-preview');
+      p.innerHTML=`<video controls style="width:100%;border-radius:var(--r);max-height:200px;display:block;"><source src="${n.video}"></video>`;
+      p.style.display='';
       document.getElementById('notice-clear-media-btn').style.display='';
     } else if(n.photo){
       document.getElementById('notice-photo-data').value=n.photo;
       document.getElementById('notice-media-type').value='photo';
-      const imgPrev=document.getElementById('notice-photo-preview');
-      imgPrev.src=n.photo;imgPrev.style.display='';
+      const p=document.getElementById('post-mo-media-preview');
+      p.innerHTML=`<img src="${n.photo}" style="width:100%;border-radius:var(--r);max-height:200px;object-fit:cover;display:block;">`;
+      p.style.display='';
       document.getElementById('notice-clear-media-btn').style.display='';
     }
   } else {
     document.getElementById('notice-title-inp').value='';
     document.getElementById('notice-body-inp').value='';
     document.getElementById('notice-pin-inp').checked=false;
-    document.getElementById('mo-notice-t').textContent='Post Announcement';
+    document.getElementById('mo-notice-t').textContent='✨ Create Moment';
   }
   openMo('mo-notice');
+  setTimeout(()=>document.getElementById('notice-body-inp').focus(),150);
 }
+// keep alias
+function openNoticeMo(idx){openMomentComposer(idx);}
 
 function previewNoticePhoto(input){
   const file=input.files[0];if(!file)return;
@@ -2242,27 +2362,25 @@ function previewNoticePhoto(input){
     document.getElementById('notice-photo-data').value=d;
     document.getElementById('notice-video-data').value='';
     document.getElementById('notice-media-type').value='photo';
-    const prev=document.getElementById('notice-photo-preview');
-    prev.src=d;prev.style.display='';
-    const vPrev=document.getElementById('notice-video-preview');
-    vPrev.style.display='none';vPrev.src='';
+    const p=document.getElementById('post-mo-media-preview');
+    p.innerHTML=`<img src="${d}" style="width:100%;border-radius:var(--r);max-height:200px;object-fit:cover;display:block;">`;
+    p.style.display='';
     document.getElementById('notice-clear-media-btn').style.display='';
   };
   reader.readAsDataURL(file);
 }
 function previewNoticeVideo(input){
   const file=input.files[0];if(!file)return;
-  if(file.size>50*1024*1024){toast('Video too large (max 50MB). Use a shorter clip.','t-err');return;}
+  if(file.size>80*1024*1024){toast('Video too large (max 80MB)','t-err');return;}
   const reader=new FileReader();
   reader.onload=e=>{
     const d=e.target.result;
     document.getElementById('notice-video-data').value=d;
     document.getElementById('notice-photo-data').value='';
     document.getElementById('notice-media-type').value='video';
-    const vPrev=document.getElementById('notice-video-preview');
-    vPrev.src=d;vPrev.style.display='';
-    const iPrev=document.getElementById('notice-photo-preview');
-    iPrev.style.display='none';iPrev.src='';
+    const p=document.getElementById('post-mo-media-preview');
+    p.innerHTML=`<video controls style="width:100%;border-radius:var(--r);max-height:200px;display:block;"><source src="${d}"></video>`;
+    p.style.display='';
     document.getElementById('notice-clear-media-btn').style.display='';
   };
   reader.readAsDataURL(file);
@@ -2271,26 +2389,29 @@ function clearNoticeMedia(){
   document.getElementById('notice-photo-data').value='';
   document.getElementById('notice-video-data').value='';
   document.getElementById('notice-media-type').value='';
-  document.getElementById('notice-photo-preview').style.display='none';
-  const vp=document.getElementById('notice-video-preview');
-  vp.style.display='none';vp.src='';
+  const p=document.getElementById('post-mo-media-preview');
+  p.innerHTML='';p.style.display='none';
   document.getElementById('notice-clear-media-btn').style.display='none';
 }
 function saveNotice(){
-  const title=document.getElementById('notice-title-inp').value.trim();
   const body=document.getElementById('notice-body-inp').value.trim();
-  if(!title||!body){toast('Title and message required','t-err');return;}
-  const idx=parseInt(document.getElementById('notice-edit-idx').value);
-  const pinned=document.getElementById('notice-pin-inp')?.checked||false;
+  const title=document.getElementById('notice-title-inp').value.trim();
+  // caption OR media required
   const mediaType=document.getElementById('notice-media-type').value;
   const photo=mediaType==='photo'?(document.getElementById('notice-photo-data')?.value||''):'';
   const video=mediaType==='video'?(document.getElementById('notice-video-data')?.value||''):'';
-  // Preserve existing media if editing and nothing new was chosen
+  if(!body&&!photo&&!video){toast('Add a caption or media to post','t-err');return;}
+  const idx=parseInt(document.getElementById('notice-edit-idx').value);
+  const pinned=(CURRENT_ROLE==='admin')&&(document.getElementById('notice-pin-inp')?.checked||false);
   const existingPhoto=(idx>=0&&!photo&&mediaType!=='video')?(NOTICES[idx]?.photo||''):photo;
   const existingVideo=(idx>=0&&!video&&mediaType!=='photo')?(NOTICES[idx]?.video||''):video;
   const existing=idx>=0?NOTICES[idx]:null;
+  const email=CURRENT_EMAIL||sessionStorage.getItem('bft_email')||'';
+  const me=MEM.find(r=>r.email&&r.email.toLowerCase()===email.toLowerCase());
   const entry={
-    title,body,by:CURRENT_EMAIL||'Admin',
+    title,body,
+    by:email,
+    byName:me?me.nick||me.name:email.split('@')[0],
     time:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),
     pinned,
     photo:mediaType==='video'?'':existingPhoto,
@@ -2301,12 +2422,11 @@ function saveNotice(){
   };
   if(idx>=0) NOTICES[idx]=entry;
   else NOTICES.unshift(entry);
-  // Re-sort after adding
-  NOTICES.sort((a,b)=>{if(a.pinned&&!b.pinned)return -1;if(!a.pinned&&b.pinned)return 1;return b.time.localeCompare(a.time);});
+  NOTICES.sort((a,b)=>{if(a.pinned&&!b.pinned)return -1;if(!a.pinned&&b.pinned)return 1;return 0;});
   saveNotices().then(()=>{
-    logActivity('📢','Notice posted: '+title);
-    toast('Announcement posted!');closeMo();renderNoticeBoard();
-    pushNotif('📢','New notice: '+title);
+    logActivity('✨','New moment by '+entry.byName+(title?' — '+title:''));
+    toast('Moment posted! ✨');closeMo();renderNoticeBoard();
+    if(CURRENT_ROLE==='admin') pushNotif('✨','New moment: '+(title||body.slice(0,40)));
   });
 }
 async function deleteNotice(idx){
@@ -2331,162 +2451,257 @@ async function deletePrivateNotice(toEmail,msgIdx){
   renderNoticeBoard();
   toast('Notice deleted');
 }
+// ══ MOMENTS RENDER ════════════════════════════════════════════════════════════
+const MOMENT_REACTS=['❤️','😂','😮','😢','😡','👍'];
+
 function renderNoticeBoard(){
   const isAdmin=CURRENT_ROLE==='admin';
   const isSupreme=CURRENT_EMAIL.toLowerCase()===SUPREME_ADMIN.toLowerCase();
   const email=(CURRENT_EMAIL||sessionStorage.getItem('bft_email')||'').toLowerCase();
-  const addBtn=document.getElementById('add-notice-btn');
-  const pnBtn=document.getElementById('send-pnotice-btn');
-  if(addBtn)addBtn.style.display=isAdmin?'':'none';
-  if(pnBtn)pnBtn.style.display=isAdmin?'':'none';
   const el=document.getElementById('notice-list');
 
-  // Mark notices as viewed and record viewer
+  // Mark as viewed
   let viewsUpdated=false;
-  NOTICES.forEach((n,i)=>{
+  NOTICES.forEach(n=>{
     if(!n.viewers) n.viewers={};
-    if(email && !n.viewers[email]){
-      n.viewers[email]=new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
-      viewsUpdated=true;
-    }
+    if(email&&!n.viewers[email]){n.viewers[email]=new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});viewsUpdated=true;}
   });
-  // Save viewers — admin does full sheet save; viewers save locally (synced when admin next loads)
   if(viewsUpdated) saveNotices().catch(()=>{});
 
-  if(!NOTICES.length){el.innerHTML='<div class="empty"><div class="ei">📢</div><div>No announcements yet.</div></div>';}
-  else{
+  if(!NOTICES.length){
+    el.innerHTML='<div class="empty"><div class="ei">✨</div><div>No moments yet. Be the first to post!</div></div>';
+  } else {
     el.innerHTML=NOTICES.map((n,i)=>{
-      const likedByMe=(n.reactions||{})[email];
-      const likeCount=Object.keys(n.reactions||{}).filter(k=>k!=='_viewers').length;
+      const me=MEM.find(r=>r.email&&r.email.toLowerCase()===(n.by||'').toLowerCase());
+      const posterPhoto=me?(MEMBER_PHOTOS[me.name]||me.photo||''):'';
+      const posterName=n.byName||(me?me.nick||me.name:(n.by||'Unknown').split('@')[0]);
+      const avHtml=posterPhoto?`<img src="${posterPhoto}" alt="${posterName}">`:`<span>${ini(posterName)}</span>`;
+      const isOwn=n.by&&n.by.toLowerCase()===email;
+      const canEdit=isOwn||isAdmin;
+      const canDelete=isOwn||isAdmin;
+      const isAdminPost=!n.by||CONFIG.ACCOUNTS.find(a=>a.email===n.by&&a.role==='admin');
+
+      // Reactions summary
+      const reactCounts={};
+      Object.values(n.reactions||{}).forEach(r=>{if(typeof r==='string') reactCounts[r]=(reactCounts[r]||0)+1;});
+      const myReact=(n.reactions||{})[email];
+      const totalReacts=Object.values(reactCounts).reduce((a,b)=>a+b,0);
+      const reactSummary=Object.entries(reactCounts).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([e,c])=>`${e}${c>1?'<small style="font-size:10px;margin-left:1px;">'+c+'</small>':''}`).join(' ');
+
+      // Comments count
       const commentCount=(n.comments||[]).length;
-      const viewerList=Object.keys(n.viewers||{});
-      const viewCount=viewerList.length;
+      const viewCount=Object.keys(n.viewers||{}).length;
 
       // Media
       let mediaHtml='';
       if(n.video){
-        mediaHtml=`<div class="ni-media"><video controls preload="metadata" style="width:100%;max-height:320px;border-radius:var(--r);background:#000;display:block;"><source src="${n.video}">Your browser does not support video.</video></div>`;
+        mediaHtml=`<div class="moment-media"><video controls preload="metadata" playsinline><source src="${n.video}">Your browser does not support video.</video></div>`;
       } else if(n.photo){
-        mediaHtml=`<img src="${n.photo}" class="ni-media" style="max-height:220px;object-fit:cover;" alt="Announcement photo">`;
+        mediaHtml=`<div class="moment-media"><img src="${n.photo}" alt="Moment photo" loading="lazy" onclick="openMediaViewer('${i}')"></div>`;
       }
 
+      // Caption
+      const captionHtml=n.body?`<div class="moment-caption">${escHtml(n.body)}</div>`:'';
+      // Title badge
+      const titleHtml=n.title?`<div style="padding:0 1rem .5rem;"><span style="background:var(--ac-s);color:var(--ac-t);border-radius:99px;padding:2px 10px;font-size:11px;font-weight:700;">${escHtml(n.title)}</span></div>`:'';
+      const pinBadge=n.pinned?`<span style="background:var(--am-s);color:var(--am-t);border-radius:99px;padding:1px 8px;font-size:10px;font-weight:800;margin-right:6px;">📌 PINNED</span>`:'';
+
       // Comments HTML
-      const commentsHtml=(n.comments||[]).map((c,ci)=>{
-        const cMem=MEM.find(r=>r.email&&r.email.toLowerCase()===c.email.toLowerCase());
+      const commentsHtml=(n.comments||[]).slice(-20).map((c,ci)=>{
+        const cMem=MEM.find(r=>r.email&&r.email.toLowerCase()===(c.email||'').toLowerCase());
         const cPhoto=cMem?(MEMBER_PHOTOS[cMem.name]||cMem.photo||''):'';
-        const avHtml=cPhoto?`<img src="${cPhoto}" alt="${c.name}">`:`<span>${ini(c.name)}</span>`;
-        const canDelComment=isAdmin||(c.email&&c.email.toLowerCase()===email);
-        return `<div class="ni-comment">
-          <div class="ni-comment-av">${avHtml}</div>
-          <div class="ni-comment-body">
-            <div class="ni-comment-name">${c.name}</div>
-            <div class="ni-comment-txt">${escHtml(c.txt)}</div>
-            <div class="ni-comment-time">${c.time}${canDelComment?` <button onclick="deleteComment(${i},${ci})" style="background:none;border:none;color:var(--rd-t);cursor:pointer;font-size:10px;padding:0 3px;" aria-label="Delete comment">✕</button>`:''}</div>
+        const cAvHtml=cPhoto?`<img src="${cPhoto}">`:`<span>${ini(c.name)}</span>`;
+        const canDelC=isAdmin||(c.email&&c.email.toLowerCase()===email);
+        return `<div class="mc-comment">
+          <div class="mc-comment-av">${cAvHtml}</div>
+          <div class="mc-comment-body">
+            <div class="mc-comment-name">${escHtml(c.name)}</div>
+            <div class="mc-comment-txt">${escHtml(c.txt)}</div>
+            <div class="mc-comment-meta">${c.time}${canDelC?`<button class="mc-comment-del" onclick="deleteComment(${i},${ci})" aria-label="Delete">✕</button>`:''}</div>
           </div>
         </div>`;
       }).join('');
 
-      // Viewers tooltip
-      const viewerNames=viewerList.map(e=>{
-        const m=MEM.find(r=>r.email&&r.email.toLowerCase()===e.toLowerCase());
-        return m?m.nick||m.name:e.split('@')[0];
-      });
-      const viewersHtml=viewCount>0?`<div class="ni-viewers-wrap" style="margin-top:8px;">${viewerNames.map(v=>`<span class="ni-viewer-chip">👁 ${v}</span>`).join('')}</div>`:'';
-
-      return `<div class="notice-item" id="notice-item-${i}" style="${n.pinned?'border:1.5px solid var(--am);':''}">
-        ${n.pinned?'<div style="font-size:10px;font-weight:800;color:var(--am-t);margin-bottom:6px;letter-spacing:.5px;">📌 PINNED</div>':''}
-        ${mediaHtml}
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">
-          <div class="ni-title">${escHtml(n.title)}</div>
-          <div style="display:flex;gap:6px;flex-shrink:0;">${isAdmin?`<button class="btn btn-sm btn-gh" aria-label="${n.pinned?'Unpin':'Pin'}" onclick="togglePin(${i})">📌</button><button class="btn btn-sm btn-gh" onclick="openNoticeMo(${i})">Edit</button><button class="btn btn-sm btn-d" aria-label="Delete notice" onclick="deleteNotice(${i})">✕</button>`:''}</div>
-        </div>
-        <div class="ni-body">${escHtml(n.body)}</div>
-        <div class="ni-meta"><span class="ni-tag">📢 ${n.by||'Admin'}</span><span>${n.time}</span><span class="ni-tag">👁 ${viewCount} viewed</span></div>
-
-        <!-- Interaction bar -->
-        <div class="ni-actions">
-          <button class="ni-action-btn ${likedByMe?'liked':''}" aria-label="${likedByMe?'Unlike':'Like'}" onclick="toggleLike(${i})">
-            ❤️ <span>${likeCount}</span>
-          </button>
-          <button class="ni-action-btn" aria-label="Show comments" onclick="toggleComments(${i})">
-            💬 <span>${commentCount}</span>
-          </button>
-          ${isAdmin?`<button class="ni-action-btn" aria-label="Show viewers" onclick="toggleViewers(${i})">👁 ${viewCount}</button>`:''}
-        </div>
-
-        <!-- Comments section -->
-        <div class="ni-comments-wrap" id="comments-wrap-${i}">
-          <div id="comments-list-${i}">${commentsHtml||'<div style="font-size:12px;color:var(--tx3);padding:4px 0;">No comments yet.</div>'}</div>
-          <div class="ni-comment-input-row">
-            <input class="ni-comment-input" id="comment-input-${i}" placeholder="Write a comment…" aria-label="Write a comment" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();postComment(${i});}"/>
-            <button class="ni-comment-send" onclick="postComment(${i})">Send</button>
+      return `<div class="moment-card" id="moment-${i}">
+        <div class="moment-head">
+          <div class="moment-av">${avHtml}</div>
+          <div class="moment-info">
+            <div class="moment-name">${pinBadge}${escHtml(posterName)}</div>
+            <div class="moment-time">${n.time}</div>
+          </div>
+          <div class="moment-menu" id="mmenu-wrap-${i}">
+            <button class="moment-menu-btn" aria-label="Options" onclick="toggleMomentMenu(${i})">⋯</button>
+            <div class="moment-dropdown" id="mmenu-${i}">
+              ${canEdit?`<button onclick="closeMomentMenu(${i});openMomentComposer(${i})">✏️ Edit</button>`:''}
+              ${canDelete?`<button class="danger" onclick="closeMomentMenu(${i});deleteNotice(${i})">🗑️ Delete</button>`:''}
+              ${isAdmin&&n.pinned?`<button onclick="closeMomentMenu(${i});togglePin(${i})">📌 Unpin</button>`:''}
+              ${isAdmin&&!n.pinned?`<button onclick="closeMomentMenu(${i});togglePin(${i})">📌 Pin</button>`:''}
+              ${isAdmin?`<button onclick="closeMomentMenu(${i});showViewers(${i})">👁 Seen by (${viewCount})</button>`:''}
+              ${!isOwn?`<button class="danger" onclick="closeMomentMenu(${i});openReport(${i})">🚩 Report</button>`:''}
+            </div>
           </div>
         </div>
-
-        <!-- Viewers section (admin only) -->
-        ${isAdmin?`<div id="viewers-wrap-${i}" style="display:none;">${viewersHtml||'<div style="font-size:11px;color:var(--tx3);padding:4px 0;">No views recorded yet.</div>'}</div>`:''}
+        ${captionHtml}
+        ${titleHtml}
+        ${mediaHtml}
+        <div class="moment-stats">
+          <div class="moment-stats-likes" onclick="showLikers(${i})">${totalReacts>0?reactSummary+` <span>${totalReacts}</span>`:''}</div>
+          <div style="display:flex;gap:10px;font-size:12px;color:var(--tx3);">
+            ${commentCount?`<span onclick="toggleMomentComments(${i})" style="cursor:pointer;">${commentCount} comment${commentCount>1?'s':''}</span>`:''}
+            <span style="color:var(--tx3);">👁 ${viewCount}</span>
+          </div>
+        </div>
+        <div class="moment-actions">
+          <div style="position:relative;flex:1;display:flex;">
+            <button class="moment-action-btn ${myReact?'active-like':''}" onclick="toggleLike(${i})" onmouseenter="showReactPicker(${i},this)" aria-label="React">
+              ${myReact||'❤️'} ${myReact?'Reacted':'Like'}
+            </button>
+            <div class="react-float" id="react-float-${i}" style="display:none;bottom:calc(100%+4px);left:0;" onmouseleave="hideReactPicker(${i})">
+              ${MOMENT_REACTS.map(e=>`<span class="react-emoji" onclick="setReact(${i},'${e}')" title="${e}">${e}</span>`).join('')}
+              ${myReact?`<span class="react-emoji" onclick="setReact(${i},null)" title="Remove">✖</span>`:''}
+            </div>
+          </div>
+          <button class="moment-action-btn" onclick="toggleMomentComments(${i})" aria-label="Comment">💬 Comment</button>
+        </div>
+        <div class="moment-comments-wrap" id="mcomments-${i}">
+          <div id="mcomments-list-${i}">${commentsHtml||''}</div>
+          <div class="mc-comment-input-row">
+            <div class="mc-comment-av" style="width:30px;height:30px;font-size:10px;">${(()=>{const em=email;const m=MEM.find(r=>r.email&&r.email.toLowerCase()===em);const ph=m?(MEMBER_PHOTOS[m.name]||m.photo||''):'';return ph?`<img src="${ph}">`:`<span>${m?ini(m.name):'?'}</span>`;})()}</div>
+            <input class="mc-comment-inp" id="mc-inp-${i}" placeholder="Write a comment…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();postComment(${i});}"/>
+            <button class="mc-comment-send" onclick="postComment(${i})" aria-label="Send">➤</button>
+          </div>
+        </div>
       </div>`;
     }).join('');
   }
 
   // Private notices
-  let myPN=[];
+  const myPN=[];
   if(isSupreme){
-    Object.entries(PRIVATE_NOTICES).forEach(([to,msgs])=>{
-      msgs.forEach(m=>myPN.push({...m,to}));
-    });
+    Object.entries(PRIVATE_NOTICES).forEach(([to,msgs])=>{msgs.forEach(m=>myPN.push({...m,to}));});
     myPN.sort((a,b)=>b.time.localeCompare(a.time));
   } else {
-    myPN=PRIVATE_NOTICES[email]||[];
+    (PRIVATE_NOTICES[email]||[]).forEach((m,i)=>myPN.push({...m,msgIdx:i,toKey:email}));
   }
   const pnWrap=document.getElementById('private-notices-wrap');
   const pnList=document.getElementById('private-notices-list');
   if(pnWrap){
     if(myPN.length){
       pnWrap.style.display='';
-      if(pnList)pnList.innerHTML=myPN.map((n,i)=>{
-        const delBtn=`<button class="btn btn-sm btn-d" style="padding:2px 7px;font-size:11px;" aria-label="Delete private notice" onclick="deletePrivateNotice('${n.toKey||n.to||email}',${n.msgIdx!==undefined?n.msgIdx:i})">✕</button>`;
-        return `<div class="notice-item" style="border-left:3px solid var(--pu);">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-            <span class="pn-badge">${isSupreme&&n.to?'To: '+n.to:'Private'}</span>
-            ${delBtn}
-          </div>
-          <div class="pn-msg">${escHtml(n.body)}</div>
-          <div class="pn-time">${n.time}</div>
-        </div>`;
-      }).join('');
-    } else {
-      pnWrap.style.display='none';
-    }
+      if(pnList) pnList.innerHTML=myPN.map((n,i)=>`<div class="notice-item" style="border-left:3px solid var(--pu);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span class="pn-badge">${isSupreme&&n.to?'To: '+n.to:'📬 Private'}</span>
+          <button style="background:none;border:none;color:var(--rd-t);cursor:pointer;font-size:12px;" aria-label="Delete" onclick="deletePrivateNotice('${n.toKey||n.to||email}',${n.msgIdx!==undefined?n.msgIdx:i})">✕</button>
+        </div>
+        <div class="pn-msg">${escHtml(n.body)}</div>
+        <div class="pn-time">${n.time}</div>
+      </div>`).join('');
+    } else { pnWrap.style.display='none'; }
   }
+
+  // Close any open dropdowns when clicking outside
+  document.onclick=function(e){if(!e.target.closest('.moment-menu'))document.querySelectorAll('.moment-dropdown.open').forEach(d=>d.classList.remove('open'));};
 }
 
-// ══ ANNOUNCEMENT INTERACTIONS ═════════════════════════════════════════════════
-function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function toggleMomentMenu(i){const d=document.getElementById('mmenu-'+i);if(d)d.classList.toggle('open');}
+function closeMomentMenu(i){const d=document.getElementById('mmenu-'+i);if(d)d.classList.remove('open');}
+function toggleMomentComments(i){const w=document.getElementById('mcomments-'+i);if(w){w.classList.toggle('open');if(w.classList.contains('open'))setTimeout(()=>{const inp=document.getElementById('mc-inp-'+i);if(inp)inp.focus();},100);}}
 
-function toggleComments(idx){
-  const wrap=document.getElementById(`comments-wrap-${idx}`);
-  if(wrap) wrap.classList.toggle('open');
-}
-function toggleViewers(idx){
-  const wrap=document.getElementById(`viewers-wrap-${idx}`);
-  if(wrap) wrap.style.display=wrap.style.display==='none'?'':'none';
+function openMediaViewer(i){
+  const n=NOTICES[i];if(!n||!n.photo)return;
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:zoom-out;';
+  ov.innerHTML=`<img src="${n.photo}" style="max-width:96vw;max-height:96vh;border-radius:8px;object-fit:contain;">`;
+  ov.onclick=()=>ov.remove();
+  document.body.appendChild(ov);
 }
 
+let _reactTimers={};
+function showReactPicker(i,btn){
+  clearTimeout(_reactTimers[i]);
+  document.querySelectorAll('.react-float').forEach(f=>{if(f.id!=='react-float-'+i)f.style.display='none';});
+  const f=document.getElementById('react-float-'+i);
+  if(f) f.style.display='flex';
+}
+function hideReactPicker(i){_reactTimers[i]=setTimeout(()=>{const f=document.getElementById('react-float-'+i);if(f)f.style.display='none';},300);}
+
+async function setReact(idx,emoji){
+  const n=NOTICES[idx];if(!n)return;
+  const email=(CURRENT_EMAIL||sessionStorage.getItem('bft_email')||'').toLowerCase();
+  if(!email){toast('Log in to react','t-err');return;}
+  if(!n.reactions)n.reactions={};
+  if(!emoji) delete n.reactions[email];
+  else n.reactions[email]=emoji;
+  const f=document.getElementById('react-float-'+idx);if(f)f.style.display='none';
+  await saveNotices().catch(()=>{});
+  renderNoticeBoard();
+  const w=document.getElementById('mcomments-'+idx);if(w&&w.classList.contains('open'))w.classList.add('open');
+}
+
+// toggleLike now sets/removes ❤️ react
 async function toggleLike(idx){
   const n=NOTICES[idx];if(!n)return;
   const email=(CURRENT_EMAIL||sessionStorage.getItem('bft_email')||'').toLowerCase();
-  if(!email){toast('Please log in to like','t-err');return;}
+  if(!email){toast('Log in to like','t-err');return;}
   if(!n.reactions)n.reactions={};
   if(n.reactions[email]) delete n.reactions[email];
-  else n.reactions[email]=1;
+  else n.reactions[email]='❤️';
   await saveNotices().catch(()=>{});
   renderNoticeBoard();
 }
 
+function showLikers(idx){
+  const n=NOTICES[idx];if(!n)return;
+  const likers=Object.entries(n.reactions||{}).filter(([k,v])=>typeof v==='string');
+  if(!likers.length){toast('No reactions yet','t-info');return;}
+  const content=likers.map(([e,react])=>{
+    const m=MEM.find(r=>r.email&&r.email.toLowerCase()===e.toLowerCase());
+    const name=m?m.nick||m.name:e.split('@')[0];
+    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--br);">${react} <span style="font-size:13px;">${escHtml(name)}</span></div>`;
+  }).join('');
+  document.getElementById('viewers-list').innerHTML=content;
+  document.querySelector('#mo-viewers .mo-t span').textContent=`${likers.length} Reaction${likers.length>1?'s':''}`;
+  openMo('mo-viewers');
+}
+
+function showViewers(idx){
+  const n=NOTICES[idx];if(!n)return;
+  const views=Object.entries(n.viewers||{});
+  if(!views.length){toast('No views yet','t-info');return;}
+  const content=views.map(([e,time])=>{
+    const m=MEM.find(r=>r.email&&r.email.toLowerCase()===e.toLowerCase());
+    const name=m?m.nick||m.name:e.split('@')[0];
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--br);"><span style="font-size:13px;">👁 ${escHtml(name)}</span><span style="font-size:10px;color:var(--tx3);">${time}</span></div>`;
+  }).join('');
+  document.getElementById('viewers-list').innerHTML=content;
+  document.querySelector('#mo-viewers .mo-t span').textContent=`Seen by ${views.length}`;
+  openMo('mo-viewers');
+}
+
+function openReport(idx){
+  document.getElementById('report-idx').value=idx;
+  document.getElementById('report-reason').value='inappropriate';
+  document.getElementById('report-detail').value='';
+  openMo('mo-report');
+}
+async function submitReport(){
+  const idx=parseInt(document.getElementById('report-idx').value);
+  const reason=document.getElementById('report-reason').value;
+  const detail=document.getElementById('report-detail').value.trim();
+  const n=NOTICES[idx];
+  logActivity('🚩',`Report: ${reason} — post by ${n?n.byName||n.by:'unknown'}${detail?' — '+detail:''}`);
+  toast('Report submitted. Admins have been notified.','t-info');
+  closeMo();
+}
+
+// ══ ANNOUNCEMENT INTERACTIONS (kept for compatibility) ═════════════════════════
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function toggleComments(idx){toggleMomentComments(idx);}
+function toggleViewers(idx){showViewers(idx);}
+
 async function postComment(idx){
   const n=NOTICES[idx];if(!n)return;
-  const inp=document.getElementById(`comment-input-${idx}`);
+  const inp=document.getElementById(`mc-inp-${idx}`);
   if(!inp)return;
   const txt=inp.value.trim();if(!txt){inp.focus();return;}
   const email=(CURRENT_EMAIL||sessionStorage.getItem('bft_email')||'').toLowerCase();
@@ -2497,8 +2712,7 @@ async function postComment(idx){
   inp.value='';
   await saveNotices().catch(()=>{});
   renderNoticeBoard();
-  // Re-open comments
-  const wrap=document.getElementById(`comments-wrap-${idx}`);
+  const wrap=document.getElementById(`mcomments-${idx}`);
   if(wrap) wrap.classList.add('open');
 }
 
@@ -2507,7 +2721,7 @@ async function deleteComment(noticeIdx,commentIdx){
   n.comments.splice(commentIdx,1);
   await saveNotices().catch(()=>{});
   renderNoticeBoard();
-  const wrap=document.getElementById(`comments-wrap-${noticeIdx}`);
+  const wrap=document.getElementById(`mcomments-${noticeIdx}`);
   if(wrap) wrap.classList.add('open');
 }
 function openPrivateNoticeMo(){
@@ -2561,6 +2775,36 @@ function renderNizam(){
 
 // ══ CHAT ═════════════════════════════════════════════════════════════════════
 let _chatLastCount=0;
+let _dmTarget=null; // {email, name}
+
+function openDmPicker(){
+  const sel=document.getElementById('dm-target-sel');
+  sel.innerHTML='<option value="">Select member…</option>';
+  MEM.forEach((r,i)=>{
+    if(r.email&&r.email.toLowerCase()===CURRENT_EMAIL.toLowerCase()) return; // skip self
+    const o=document.createElement('option');o.value=i;o.textContent=r.nick||r.name;sel.appendChild(o);
+  });
+  openMo('mo-dm');
+}
+function setDmTarget(){
+  const i=document.getElementById('dm-target-sel').value;
+  if(i===''){toast('Select a member','t-err');return;}
+  const m=MEM[parseInt(i)];
+  _dmTarget={email:m.email,name:m.nick||m.name};
+  document.getElementById('chat-dm-name').textContent=_dmTarget.name;
+  document.getElementById('chat-dm-label').style.display='';
+  const inp=document.getElementById('chat-input');
+  if(inp){inp.placeholder=`DM to ${_dmTarget.name}…`;inp.focus();}
+  closeMo();
+  toast('DM mode on — '+_dmTarget.name,'t-info');
+}
+function clearDmTarget(){
+  _dmTarget=null;
+  document.getElementById('chat-dm-label').style.display='none';
+  const inp=document.getElementById('chat-input');
+  if(inp){inp.placeholder='Type a message…';inp.focus();}
+}
+
 function initChatInput(){
   const inp=document.getElementById('chat-input');
   if(inp&&!inp._listenerAttached){
@@ -2579,30 +2823,26 @@ async function sendChatMsg(){
   if(muted==='mute'){toast('You have been muted','t-warn');return;}
   const me=MEM.find(r=>r.email&&r.email.toLowerCase()===email.toLowerCase());
   const displayName=me?me.nick||me.name:email;
-  const msg={name:displayName,email,time:new Date().toISOString(),txt};
+  const msg={name:displayName,email,time:new Date().toISOString(),txt,reactions:{}};
+  if(_dmTarget){msg.dm=_dmTarget.email;msg.dmName=_dmTarget.name;}
   el.value='';
-  // Optimistically add locally and render
   CHAT_MSGS.push(msg);
   renderChat();
-  // Save to Sheets
   await saveChatMsg(msg);
 }
 
 function formatChatTime(isoStr){
   const d=new Date(isoStr);
-  const date=d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
   const time=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-  return `${time} · ${date}`;
+  return time;
 }
+
+const CHAT_REACTS=['❤️','😂','👍','😮','😢','🔥'];
 
 function renderChat(){
   const email=CURRENT_EMAIL||sessionStorage.getItem('bft_email')||'';
   const isAdmin=CURRENT_ROLE==='admin';
-  const myMem=MEM.find(r=>r.email&&r.email.toLowerCase()===email.toLowerCase());
-  const myOrgRole=myMem?ORG_ROLES[myMem.name]:'';
-  // Header controls
   document.getElementById('chat-admin-controls').style.display=isAdmin?'':'none';
-  // Mute check
   const muted=CHAT_MUTED[email];
   const footer=document.getElementById('chat-footer');
   if(muted&&muted!=='unmute'){
@@ -2610,9 +2850,8 @@ function renderChat(){
       footer.innerHTML=`<div class="muted-notice" style="flex:1;text-align:center;color:var(--rd-t);font-size:13px;padding:8px;">🚫 You are ${muted==='ban'?'permanently banned':muted==='suspend'?'suspended':'muted'} from this chat.</div>`;
     }
   } else {
-    // Only rebuild footer if input doesn't exist yet
     if(!document.getElementById('chat-input')){
-      footer.innerHTML=`<input class="chat-input" id="chat-input" placeholder="Type a message…"/><button class="chat-send" onclick="sendChatMsg()">Send</button>`;
+      footer.innerHTML=`<input class="chat-input" id="chat-input" placeholder="${_dmTarget?'DM to '+_dmTarget.name+'…':'Type a message…'}"/><button class="chat-send" onclick="sendChatMsg()">Send</button>`;
       const inp=document.getElementById('chat-input');
       inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChatMsg();}});
     }
@@ -2620,41 +2859,90 @@ function renderChat(){
   const el=document.getElementById('chat-msgs');
   if(!CHAT_MSGS.length){el.innerHTML='<div class="empty"><div class="ei">💬</div><div>No messages yet. Say hello!</div></div>';return;}
   const wasAtBottom=el.scrollTop+el.clientHeight>=el.scrollHeight-20;
-  el.innerHTML=CHAT_MSGS.map(m=>{
+
+  // Filter: show public + DMs involving current user
+  const visible=CHAT_MSGS.filter(m=>{
+    if(!m.dm) return true; // public
+    return m.email===email||m.dm===email||isAdmin; // dm: show if sender, recipient, or admin
+  });
+
+  el.innerHTML=visible.map((m,vi)=>{
     const mine=m.email===email;
+    const isDm=!!m.dm;
     const ts=formatChatTime(m.time);
     const memberObj=MEM.find(r=>r.email&&r.email.toLowerCase()===m.email.toLowerCase());
     const photo=memberObj?MEMBER_PHOTOS[memberObj.name]||memberObj.photo||'':'';
     const avatarHtml=photo
-      ?`<img src="${photo}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
-      :`<div style="width:28px;height:28px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0;">${ini(m.name)}</div>`;
+      ?`<img src="${photo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
+      :`<div style="width:30px;height:30px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0;">${ini(m.name)}</div>`;
     const senderIsSupreme=m.email&&m.email.toLowerCase()===SUPREME_ADMIN.toLowerCase();
     const isSupremeUser=CURRENT_EMAIL.toLowerCase()===SUPREME_ADMIN.toLowerCase();
     const canDelete=(!senderIsSupreme||isSupremeUser)&&(mine||(isAdmin&&!mine));
-    const delBtn=canDelete?`<button title="Delete for everyone" onclick="deleteChatMsg('${m.time}','${m.email}')" style="background:none;border:none;color:var(--rd-t);cursor:pointer;font-size:11px;padding:0 4px;opacity:.4;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.4">✕</button>`:'';
+    const delBtn=canDelete?`<button title="Delete" onclick="deleteChatMsg('${m.time}','${m.email}')" style="background:none;border:none;color:var(--rd-t);cursor:pointer;font-size:10px;padding:0 4px;opacity:.35;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.35">✕</button>`:'';
+    // Reactions on this message
+    const mReacts=m.reactions||{};
+    const mReactCounts={};
+    Object.entries(mReacts).forEach(([e,r])=>{mReactCounts[r]=(mReactCounts[r]||0)+1;});
+    const myMReact=mReacts[email];
+    const reactChips=Object.entries(mReactCounts).map(([e,c])=>`<span class="chat-react-chip ${mReacts[email]===e?'mine':''}" onclick="toggleChatReact('${m.time}','${m.email}','${e}')" title="${e}">${e}${c>1?' '+c:''}</span>`).join('');
+    const reactAddBtn=`<button class="msg-react-btn" title="React" onclick="showChatReactPicker(event,'${m.time}','${m.email}')">😊 +</button>`;
+    const realIdx=CHAT_MSGS.findIndex(cm=>cm.time===m.time&&cm.email===m.email);
     return `<div class="chat-msg ${mine?'msg-mine':'msg-other'}" style="display:flex;gap:7px;align-items:flex-end;${mine?'flex-direction:row-reverse;':''}">
       ${!mine?avatarHtml:''}
-      <div style="max-width:72%;">
-        ${!mine?`<div style="font-size:10px;font-weight:700;color:var(--ac-t);margin-bottom:3px;">${m.name} </div>`:''}
-        <div class="msg-bubble">${m.txt}</div>
-        <div class="msg-meta">${ts} ${delBtn}</div>
+      <div style="max-width:75%;">
+        ${!mine?`<div style="font-size:10px;font-weight:700;color:var(--ac-t);margin-bottom:3px;">${escHtml(m.name)}</div>`:''}
+        ${isDm?`<div class="chat-dm-badge">✉ ${mine?'DM → '+escHtml(m.dmName||m.dm):'DM'}</div>`:''}
+        <div class="msg-bubble">${escHtml(m.txt)}</div>
+        <div class="msg-meta" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">${ts} ${delBtn}${reactAddBtn}</div>
+        ${reactChips?`<div class="chat-react-wrap">${reactChips}</div>`:''}
       </div>
     </div>`;
   }).join('');
-  if(wasAtBottom||CHAT_MSGS.length<=3)el.scrollTop=el.scrollHeight;
+  if(wasAtBottom||visible.length<=3) el.scrollTop=el.scrollHeight;
   initChatInput();
+}
+
+// Floating react picker for chat
+function showChatReactPicker(ev,time,senderEmail){
+  document.querySelectorAll('.react-float-chat').forEach(f=>f.remove());
+  const div=document.createElement('div');
+  div.className='react-float react-float-chat';
+  div.style.cssText='position:fixed;z-index:500;';
+  div.innerHTML=CHAT_REACTS.map(e=>`<span class="react-emoji" onclick="toggleChatReact('${time}','${senderEmail}','${e}')">${e}</span>`).join('');
+  document.body.appendChild(div);
+  const rect=ev.target.getBoundingClientRect();
+  div.style.left=Math.min(rect.left,window.innerWidth-200)+'px';
+  div.style.top=(rect.top-50)+'px';
+  setTimeout(()=>document.addEventListener('click',function h(e){if(!div.contains(e.target)){div.remove();document.removeEventListener('click',h);}},{once:false}),50);
+}
+async function toggleChatReact(time,senderEmail,emoji){
+  document.querySelectorAll('.react-float-chat').forEach(f=>f.remove());
+  const msg=CHAT_MSGS.find(m=>m.time===time&&m.email===senderEmail);
+  if(!msg)return;
+  const email=CURRENT_EMAIL||'';
+  if(!msg.reactions)msg.reactions={};
+  if(msg.reactions[email]===emoji) delete msg.reactions[email];
+  else msg.reactions[email]=emoji;
+  // Save the whole chat — reactions stored inline with message
+  try{
+    await sheetsClear(`${CONFIG.SHEET_CHAT}!A2:E100000`);
+    if(CHAT_MSGS.length){
+      const rows=CHAT_MSGS.map(m=>[m.name,m.email,m.time,m.txt,JSON.stringify({dm:m.dm,dmName:m.dmName,reactions:m.reactions||{}})]);
+      await sheetsUpdate(`${CONFIG.SHEET_CHAT}!A2:E${1+rows.length}`,rows);
+    }
+  }catch(e){console.error('chatReact',e);}
+  renderChat();
 }
 
 
 async function deleteChatMsg(time,senderEmail){
   if(CURRENT_ROLE!=='admin'&&CURRENT_EMAIL!==senderEmail){toast('Not allowed','t-err');return;}
   CHAT_MSGS=CHAT_MSGS.filter(m=>!(m.time===time&&m.email===senderEmail));
-  // Re-save all chat to sheet
   try{
-    await sheetsClear(`${CONFIG.SHEET_CHAT}!A2:D100000`);
+    await sheetsClear(`${CONFIG.SHEET_CHAT}!A2:E100000`);
     if(CHAT_MSGS.length){
-      const rows=CHAT_MSGS.map(m=>[m.name,m.email,m.time,m.txt]);
-      await sheetsUpdate(`${CONFIG.SHEET_CHAT}!A2:D${1+rows.length}`,rows);
+      const rows=CHAT_MSGS.map(m=>[m.name,m.email,m.time,m.txt,JSON.stringify({dm:m.dm||'',dmName:m.dmName||'',reactions:m.reactions||{}})]);
+      await sheetsUpdate(`${CONFIG.SHEET_CHAT}!A2:E${1+rows.length}`,rows);
     }
   }catch(e){console.error('deleteChatMsg',e);}
   renderChat();
@@ -2666,8 +2954,8 @@ function startChatPoll(){
   _chatPollTimer=setInterval(async()=>{
     try{
       // Poll chat messages
-      const chatr=await sheetsGet(`${CONFIG.SHEET_CHAT}!A2:D10000`);
-      const fresh=((chatr.values||[]).filter(r=>r[0]&&r[3]).map(r=>({name:r[0]||'',email:r[1]||'',time:r[2]||'',txt:r[3]||''}))).slice(-200);
+      const chatr=await sheetsGet(`${CONFIG.SHEET_CHAT}!A2:E10000`);
+      const fresh=((chatr.values||[]).filter(r=>r[0]&&r[3]).map(r=>{let meta={};try{meta=JSON.parse(r[4]||'{}');}catch(e){}return {name:r[0]||'',email:r[1]||'',time:r[2]||'',txt:r[3]||'',dm:meta.dm||'',dmName:meta.dmName||'',reactions:meta.reactions||{}};})).slice(-200);
       if(fresh.length!==_lastChatLen){
         const isNew=fresh.length>_lastChatLen&&_lastChatLen>0;
         _lastChatLen=fresh.length;
