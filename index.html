@@ -158,7 +158,18 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .tb-ttl{font-size:15px;font-weight:800;letter-spacing:-.4px;background:var(--g1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .tb-r{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;}
 .tb-em{font-size:11px;color:var(--tx3);padding:4px 9px;background:var(--sf2);border-radius:99px;border:1px solid var(--br2);}
-@media(max-width:600px){.tb-em{display:none;}.tb-ttl{font-size:13px;}}
+.tb-profile-btn{display:flex;flex-direction:column;align-items:center;font-size:10px;padding:5px 10px;gap:1px;background:var(--sf2);border:1px solid var(--br2);border-radius:var(--r);cursor:pointer;color:var(--tx2);transition:all .18s;white-space:nowrap;}
+.tb-profile-btn:hover{background:var(--sf3);}
+.tb-profile-lbl{display:inline;}
+@media(max-width:640px){
+  #sync-status{display:none;}
+  .tb-desktop-only{display:none!important;}
+  .tb-profile-lbl{display:none;}
+  .tb-profile-btn{padding:5px 8px;min-width:36px;}
+  .tb-btn{padding:6px 8px;}
+  .tb-em{display:none;}
+  .tb-ttl{font-size:13px;}
+}
 .tb-btn{font-size:12px;padding:6px 10px;border-radius:var(--r);border:1px solid var(--br2);cursor:pointer;background:transparent;color:var(--tx2);font-family:var(--fn);transition:all .18s;font-weight:500;white-space:nowrap;}
 .tb-btn:hover{background:var(--sf2);color:var(--tx);border-color:var(--br3);}
 .tb-btn:disabled{opacity:.2;cursor:not-allowed;}
@@ -380,7 +391,8 @@ tfoot td.sk{text-align:left;font-family:var(--fn);font-size:12px;font-weight:600
 .msg-other .msg-bubble{background:var(--sf2);color:var(--tx);border-radius:14px 14px 14px 3px;}
 .msg-meta{font-size:10px;color:var(--tx3);margin-top:3px;padding:0 4px;}
 /* Fix chat tab itself so it doesn't overflow */
-#tab-chat{height:calc(100dvh - 52px);overflow:hidden;display:flex;flex-direction:column;}
+#tab-chat{height:calc(100dvh - 52px);overflow:hidden;display:none;flex-direction:column;}
+#tab-chat.active{display:flex;}
 #chat-msgs{flex:1;min-height:0;overflow-y:auto;padding:.75rem 1rem;display:flex;flex-direction:column;gap:10px;}
 #chat-footer{flex-shrink:0;display:flex;gap:8px;padding:8px .75rem;border-top:1px solid var(--br);background:var(--sf2);}
 .chat-input{flex:1;min-width:0;padding:9px 13px;border:1px solid var(--br2);border-radius:22px;background:var(--sf);color:var(--tx);font-family:var(--fn);font-size:14px;outline:none;transition:border .2s;}
@@ -710,10 +722,10 @@ Sign in with Google
     <div style="display:flex;align-items:center;gap:4px;padding:0 .5rem;flex-shrink:0;">
       <div id="sync-status" class="sync-ok" style="margin-right:2px;"><span class="sync-dot"></span><span id="sync-txt" style="font-size:10px;color:var(--tx3);"></span></div>
       <button class="theme-btn" id="theme-btn" onclick="cycleTheme()" title="Toggle theme" aria-label="Toggle theme">🌙</button>
-      <button class="tb-btn" id="undo-btn" onclick="doUndo()" title="Undo" aria-label="Undo" disabled>↩</button>
-      <button class="tb-btn" id="redo-btn" onclick="doRedo()" title="Redo" aria-label="Redo" disabled>↪</button>
+      <button class="tb-btn tb-desktop-only" id="undo-btn" onclick="doUndo()" title="Undo" aria-label="Undo" disabled>↩</button>
+      <button class="tb-btn tb-desktop-only" id="redo-btn" onclick="doRedo()" title="Redo" aria-label="Redo" disabled>↪</button>
       <button class="tb-btn" onclick="syncNow()" title="Sync now" aria-label="Sync now">↻</button>
-      <button onclick="goToProfile()" style="display:flex;flex-direction:column;align-items:center;font-size:10px;padding:5px 10px;gap:1px;background:var(--sf2);border:1px solid var(--br2);border-radius:var(--r);cursor:pointer;color:var(--tx2);min-width:46px;transition:all .18s;" onmouseover="this.style.background='var(--sf3)'" onmouseout="this.style.background='var(--sf2)'"><span style="font-size:18px;line-height:1.2;">👤</span><span>Profile</span></button>
+      <button onclick="goToProfile()" class="tb-profile-btn"><span style="font-size:18px;line-height:1;">👤</span><span class="tb-profile-lbl">Profile</span></button>
     </div>
   </div>
 
@@ -1046,9 +1058,11 @@ Sign in with Google
     <input id="notice-title-inp" placeholder="Title / topic (optional)" style="width:100%;margin-top:10px;padding:8px 12px;border:1px solid var(--br2);border-radius:var(--r);background:var(--sf2);color:var(--tx);font-family:var(--fn);font-size:13px;outline:none;"/>
     <!-- Media + pin toolbar -->
     <div style="display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--br);flex-wrap:wrap;">
-      <label style="cursor:pointer;display:flex;align-items:center;gap:5px;padding:7px 12px;background:var(--sf2);border-radius:var(--r);font-size:12px;color:var(--tx2);border:1px solid var(--br2);transition:border .2s;" title="Add photo">📷 Photo<input type="file" accept="image/*" style="display:none;" onchange="previewNoticePhoto(this)"></label>
-      <label style="cursor:pointer;display:flex;align-items:center;gap:5px;padding:7px 12px;background:var(--sf2);border-radius:var(--r);font-size:12px;color:var(--tx2);border:1px solid var(--br2);transition:border .2s;" title="Add video">🎥 Video<input type="file" accept="video/*" style="display:none;" onchange="previewNoticeVideo(this)"></label>
-      <button id="notice-clear-media-btn" style="display:none;padding:7px 12px;background:var(--rd-s);color:var(--rd-t);border:1px solid rgba(255,92,108,.2);border-radius:var(--r);font-size:12px;cursor:pointer;" onclick="clearNoticeMedia()">✕ Remove media</button>
+      <label style="cursor:pointer;display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--sf2);border-radius:var(--r);font-size:13px;font-weight:600;color:var(--tx2);border:1px solid var(--br2);transition:border .2s;" title="Add photo or video">
+        📎 Browse
+        <input type="file" accept="image/*,video/*" style="display:none;" onchange="previewNoticeMedia(this)">
+      </label>
+      <button id="notice-clear-media-btn" style="display:none;padding:8px 14px;background:var(--rd-s);color:var(--rd-t);border:1px solid rgba(255,92,108,.2);border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;" onclick="clearNoticeMedia()">✕ Remove</button>
       <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--tx2);margin-left:auto;">
         <input type="checkbox" id="notice-pin-inp" style="width:14px;height:14px;"> 📌 Pin
       </label>
@@ -2422,33 +2436,28 @@ function openMomentComposer(editIdx=-1){
 // keep alias
 function openNoticeMo(idx){openMomentComposer(idx);}
 
-function previewNoticePhoto(input){
+// Unified media picker — handles both image and video, no size limit
+function previewNoticeMedia(input){
   const file=input.files[0];if(!file)return;
+  const isVideo=file.type.startsWith('video/');
   const reader=new FileReader();
   reader.onload=e=>{
     const d=e.target.result;
-    document.getElementById('notice-photo-data').value=d;
-    document.getElementById('notice-video-data').value='';
-    document.getElementById('notice-media-type').value='photo';
-    const p=document.getElementById('post-mo-media-preview');
-    p.innerHTML=`<img src="${d}" style="width:100%;border-radius:var(--r);max-height:200px;object-fit:cover;display:block;">`;
-    p.style.display='';
-    document.getElementById('notice-clear-media-btn').style.display='';
-  };
-  reader.readAsDataURL(file);
-}
-function previewNoticeVideo(input){
-  const file=input.files[0];if(!file)return;
-  if(file.size>80*1024*1024){toast('Video too large (max 80MB)','t-err');return;}
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const d=e.target.result;
-    document.getElementById('notice-video-data').value=d;
-    document.getElementById('notice-photo-data').value='';
-    document.getElementById('notice-media-type').value='video';
-    const p=document.getElementById('post-mo-media-preview');
-    p.innerHTML=`<video controls style="width:100%;border-radius:var(--r);max-height:200px;display:block;"><source src="${d}"></video>`;
-    p.style.display='';
+    if(isVideo){
+      document.getElementById('notice-video-data').value=d;
+      document.getElementById('notice-photo-data').value='';
+      document.getElementById('notice-media-type').value='video';
+      const p=document.getElementById('post-mo-media-preview');
+      p.innerHTML=`<video controls style="width:100%;border-radius:var(--r);max-height:220px;display:block;"><source src="${d}"></video>`;
+      p.style.display='';
+    } else {
+      document.getElementById('notice-photo-data').value=d;
+      document.getElementById('notice-video-data').value='';
+      document.getElementById('notice-media-type').value='photo';
+      const p=document.getElementById('post-mo-media-preview');
+      p.innerHTML=`<img src="${d}" style="width:100%;border-radius:var(--r);max-height:220px;object-fit:cover;display:block;">`;
+      p.style.display='';
+    }
     document.getElementById('notice-clear-media-btn').style.display='';
   };
   reader.readAsDataURL(file);
