@@ -485,6 +485,30 @@ body.theme-night{
 .pay-pending-badge{padding:2px 9px;border-radius:99px;font-size:10px;font-weight:700;background:var(--am-s);color:var(--am-t);border:1px solid rgba(255,173,46,.25);}
 .pay-approved-badge{background:var(--gn-s);color:var(--gn-t);border:1px solid rgba(16,212,142,.25);}
 
+/* ══ ANNOUNCEMENT INTERACTIONS ══ */
+.ni-media{width:100%;border-radius:var(--r);margin-bottom:10px;display:block;}
+.ni-media video{width:100%;max-height:320px;border-radius:var(--r);background:#000;display:block;}
+.ni-actions{display:flex;align-items:center;gap:8px;padding-top:10px;border-top:1px solid var(--br);margin-top:10px;}
+.ni-action-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:99px;border:1px solid var(--br2);background:var(--sf2);color:var(--tx2);font-family:var(--fn);font-size:12px;font-weight:600;cursor:pointer;transition:all .18s;}
+.ni-action-btn:hover{background:var(--sf3);}
+.ni-action-btn.liked{background:var(--rd-s);color:var(--rd-t);border-color:rgba(255,92,108,.3);}
+.ni-action-btn.liked:hover{background:var(--rd-s);}
+.ni-comments-wrap{margin-top:10px;border-top:1px solid var(--br);padding-top:10px;display:none;}
+.ni-comments-wrap.open{display:block;}
+.ni-comment{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;}
+.ni-comment-av{width:26px;height:26px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0;overflow:hidden;}
+.ni-comment-av img{width:100%;height:100%;object-fit:cover;}
+.ni-comment-body{flex:1;background:var(--sf2);border-radius:8px;padding:6px 10px;}
+.ni-comment-name{font-size:10px;font-weight:700;color:var(--ac-t);margin-bottom:2px;}
+.ni-comment-txt{font-size:12px;color:var(--tx);line-height:1.5;}
+.ni-comment-time{font-size:9px;color:var(--tx3);margin-top:3px;}
+.ni-comment-input-row{display:flex;gap:6px;margin-top:8px;}
+.ni-comment-input{flex:1;padding:7px 11px;border:1px solid var(--br2);border-radius:20px;font-family:var(--fn);font-size:12px;color:var(--tx);background:var(--sf);outline:none;transition:border .2s;}
+.ni-comment-input:focus{border-color:var(--ac);}
+.ni-comment-send{padding:7px 14px;background:var(--ac);color:#fff;border:none;border-radius:20px;font-family:var(--fn);font-size:12px;font-weight:600;cursor:pointer;}
+.ni-viewers-wrap{margin-top:6px;}
+.ni-viewer-chip{display:inline-flex;align-items:center;gap:3px;font-size:10px;color:var(--tx3);background:var(--sf2);border-radius:99px;padding:2px 8px;margin:2px;border:1px solid var(--br);}
+
 /* ══ NIZAM BOOK OVERLAY ══ */
 #nizam-book-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:8500;backdrop-filter:blur(10px);padding:1rem;}
 .nizam-book{position:relative;width:min(720px,96vw);max-height:90vh;display:flex;border-radius:4px;box-shadow:0 40px 120px rgba(0,0,0,.8),0 0 0 1px rgba(200,160,100,.25);}
@@ -603,10 +627,10 @@ Sign in with Google
     </div>
     <div style="display:flex;align-items:center;gap:4px;padding:0 .5rem;flex-shrink:0;">
       <div id="sync-status" class="sync-ok" style="margin-right:2px;"><span class="sync-dot"></span><span id="sync-txt" style="font-size:10px;color:var(--tx3);"></span></div>
-      <button class="theme-btn" id="theme-btn" onclick="cycleTheme()" title="Theme">🌙</button>
-      <button class="tb-btn" id="undo-btn" onclick="doUndo()" title="Undo" disabled>↩</button>
-      <button class="tb-btn" id="redo-btn" onclick="doRedo()" title="Redo" disabled>↪</button>
-      <button class="tb-btn" onclick="syncNow()" title="Sync">↻</button>
+      <button class="theme-btn" id="theme-btn" onclick="cycleTheme()" title="Toggle theme" aria-label="Toggle theme">🌙</button>
+      <button class="tb-btn" id="undo-btn" onclick="doUndo()" title="Undo" aria-label="Undo" disabled>↩</button>
+      <button class="tb-btn" id="redo-btn" onclick="doRedo()" title="Redo" aria-label="Redo" disabled>↪</button>
+      <button class="tb-btn" onclick="syncNow()" title="Sync now" aria-label="Sync now">↻</button>
       <button onclick="goToProfile()" style="display:flex;flex-direction:column;align-items:center;font-size:10px;padding:5px 10px;gap:1px;background:var(--sf2);border:1px solid var(--br2);border-radius:var(--r);cursor:pointer;color:var(--tx2);min-width:46px;transition:all .18s;" onmouseover="this.style.background='var(--sf3)'" onmouseout="this.style.background='var(--sf2)'"><span style="font-size:18px;line-height:1.2;">👤</span><span>Profile</span></button>
     </div>
   </div>
@@ -892,13 +916,18 @@ Sign in with Google
     <div class="mo-f"><button class="btn" onclick="closeMo()">Close</button></div>
   </div>
   <div class="mo-b" id="mo-notice" style="display:none;">
-    <div class="mo-t"><span id="mo-notice-t">Post Announcement</span><button class="mo-x" onclick="closeMo()">✕</button></div>
+    <div class="mo-t"><span id="mo-notice-t">Post Announcement</span><button class="mo-x" aria-label="Close" onclick="closeMo()">✕</button></div>
     <input type="hidden" id="notice-edit-idx" value="-1"/>
-    <div class="fr"><label>Photo (optional)</label>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <img id="notice-photo-preview" style="display:none;width:60px;height:60px;object-fit:cover;border-radius:var(--r);">
+    <div class="fr"><label>Media (optional)</label>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <img id="notice-photo-preview" style="display:none;width:80px;height:60px;object-fit:cover;border-radius:var(--r);">
+        <video id="notice-video-preview" style="display:none;width:160px;height:90px;border-radius:var(--r);object-fit:cover;" controls></video>
         <label style="cursor:pointer;padding:7px 12px;background:var(--sf3);border-radius:var(--r);font-size:12px;color:var(--tx2);">📷 Photo<input type="file" accept="image/*" style="display:none;" onchange="previewNoticePhoto(this)"></label>
+        <label style="cursor:pointer;padding:7px 12px;background:var(--sf3);border-radius:var(--r);font-size:12px;color:var(--tx2);">🎥 Video<input type="file" accept="video/*" style="display:none;" onchange="previewNoticeVideo(this)"></label>
+        <button id="notice-clear-media-btn" class="btn btn-sm btn-d" style="display:none;" onclick="clearNoticeMedia()">✕ Clear</button>
         <input type="hidden" id="notice-photo-data">
+        <input type="hidden" id="notice-video-data">
+        <input type="hidden" id="notice-media-type" value="">
       </div>
     </div>
     <div class="fr"><label>Title</label><input id="notice-title-inp" placeholder="Announcement title…"/></div>
@@ -1035,6 +1064,10 @@ Sign in with Google
 </div>
 <script>
 // ══ CONFIG ══════════════════════════════════════════════════════════════════
+// ⚠ SECURITY NOTE: CLIENT_ID and API_KEY are restricted via Google Cloud Console
+// (HTTP referrer restrictions). Role enforcement is done server-side via Google
+// Sheets OAuth scopes — only authorised Google accounts can write to the Sheet.
+// The ACCOUNTS list below controls app-level login access only.
 const CONFIG={
   CLIENT_ID:'885276391812-ss7igds0m4pf39mt7g0mue8o6k0cpmlc.apps.googleusercontent.com',
   API_KEY:'AIzaSyCziWiqTJOKll1k4u8or9uRdoQ_H7VWWHU',
@@ -1409,7 +1442,7 @@ async function initSheetHeaders(){
   await sheetsUpdate(`${CONFIG.SHEET_COSTS}!A1:C1`,[['month','amount','description']]);
   // Create extra tabs for shared data
   await ensureSheetTabs();
-  await sheetsUpdate(`${CONFIG.SHEET_NOTICES}!A1:G1`,[['title','body','by','time','private_to','pinned','photo']]);
+  await sheetsUpdate(`${CONFIG.SHEET_NOTICES}!A1:J1`,[['title','body','by','time','private_to','pinned','photo','video','reactions','comments']]);
   await sheetsUpdate(`${CONFIG.SHEET_CHAT}!A1:D1`,[['name','email','time','message']]);
   await sheetsUpdate(`${CONFIG.SHEET_NIZAM}!A1:A1`,[['content']]);
   await sheetsUpdate(`${CONFIG.SHEET_PROJECTS}!A1:A1`,[['json']]);
@@ -1454,10 +1487,14 @@ async function loadFromSheet(){
 
 async function loadSharedData(){
   try{
-    // Notices: title,body,by,time,private_to
-    const nr=await sheetsGet(`${CONFIG.SHEET_NOTICES}!A2:G2000`);
+    // Notices: title,body,by,time,private_to,pinned,photo,video,reactions,comments
+    const nr=await sheetsGet(`${CONFIG.SHEET_NOTICES}!A2:J2000`);
     const allNotices=(nr.values||[]).filter(r=>r[0]);
-    NOTICES=allNotices.filter(r=>!r[4]).map(r=>({title:r[0]||'',body:r[1]||'',by:r[2]||'',time:r[3]||'',pinned:r[5]==='1',photo:r[6]||''}));
+    NOTICES=allNotices.filter(r=>!r[4]).map(r=>{
+      let reactions={};try{reactions=JSON.parse(r[8]||'{}');}catch(e){}
+      let comments=[];try{comments=JSON.parse(r[9]||'[]');}catch(e){}
+      return {title:r[0]||'',body:r[1]||'',by:r[2]||'',time:r[3]||'',pinned:r[5]==='1',photo:r[6]||'',video:r[7]||'',reactions,comments,viewers:reactions._viewers||{}};
+    });
     PRIVATE_NOTICES={};
     allNotices.filter(r=>r[4]).forEach(r=>{const to=r[4];if(!PRIVATE_NOTICES[to])PRIVATE_NOTICES[to]=[];PRIVATE_NOTICES[to].push({body:r[1]||'',time:r[3]||''});});
     // Nizam
@@ -1467,9 +1504,11 @@ async function loadSharedData(){
     // Load About Us from col B
     const aboutStr=nizRow[1]||'';
     loadAboutFromStr(aboutStr||localStorage.getItem('bft_about')||'');
-    // Load CHAT_MUTED from col C
+    // Load CHAT_MUTED from col C and BORROWED_BOOKS from col D
     const mutedStr=nizRow[2]||'';
     if(mutedStr)try{CHAT_MUTED=JSON.parse(mutedStr);}catch(e){}
+    const borrowedStr=nizRow[3]||'';
+    if(borrowedStr)try{BORROWED_BOOKS=JSON.parse(borrowedStr);localStorage.setItem('bft_books',JSON.stringify(BORROWED_BOOKS));}catch(e){}
     // Chat - last 200 msgs
     const chatr=await sheetsGet(`${CONFIG.SHEET_CHAT}!A2:D10000`);
     CHAT_MSGS=((chatr.values||[]).filter(r=>r[0]&&r[3]).map(r=>({name:r[0]||'',email:r[1]||'',time:r[2]||'',txt:r[3]||''}))).slice(-200);
@@ -1503,11 +1542,15 @@ async function saveToSheet(){
 async function saveNotices(){
   if(CURRENT_ROLE!=='admin'){toast('Admin only','t-err');return;}
   try{
-    await sheetsClear(`${CONFIG.SHEET_NOTICES}!A2:G10000`);
+    await sheetsClear(`${CONFIG.SHEET_NOTICES}!A2:J10000`);
     const rows=[];
-    NOTICES.forEach(n=>rows.push([n.title||'',n.body||'',n.by||'',n.time||'','',n.pinned?'1':'',n.photo||'']));
+    NOTICES.forEach(n=>{
+      const reactions=Object.assign({},n.reactions||{});
+      delete reactions._viewers;
+      rows.push([n.title||'',n.body||'',n.by||'',n.time||'','',n.pinned?'1':'',n.photo||'',n.video||'',JSON.stringify(reactions),JSON.stringify(n.comments||[])]);
+    });
     Object.entries(PRIVATE_NOTICES).forEach(([email,msgs])=>{msgs.forEach(m=>rows.push(['Private',''+m.body,'Admin',m.time||'',email]));});
-    if(rows.length)await sheetsUpdate(`${CONFIG.SHEET_NOTICES}!A2:G${1+rows.length}`,rows);
+    if(rows.length)await sheetsUpdate(`${CONFIG.SHEET_NOTICES}!A2:J${1+rows.length}`,rows);
   }catch(e){console.error('saveNotices',e);toast('Notice save failed','t-err');}
 }
 
@@ -2137,14 +2180,35 @@ function removePayEntry(name,k){
 // ══ NOTICE BOARD ═════════════════════════════════════════════════════════════
 function openNoticeMo(editIdx=-1){
   document.getElementById('notice-edit-idx').value=editIdx;
+  document.getElementById('notice-photo-data').value='';
+  document.getElementById('notice-video-data').value='';
+  document.getElementById('notice-media-type').value='';
+  document.getElementById('notice-photo-preview').style.display='none';
+  const vPrev=document.getElementById('notice-video-preview');
+  vPrev.style.display='none';vPrev.src='';
+  document.getElementById('notice-clear-media-btn').style.display='none';
   if(editIdx>=0){
     const n=NOTICES[editIdx];
     document.getElementById('notice-title-inp').value=n.title;
     document.getElementById('notice-body-inp').value=n.body;
+    document.getElementById('notice-pin-inp').checked=n.pinned||false;
     document.getElementById('mo-notice-t').textContent='Edit Announcement';
+    if(n.video){
+      document.getElementById('notice-video-data').value=n.video;
+      document.getElementById('notice-media-type').value='video';
+      vPrev.src=n.video;vPrev.style.display='';
+      document.getElementById('notice-clear-media-btn').style.display='';
+    } else if(n.photo){
+      document.getElementById('notice-photo-data').value=n.photo;
+      document.getElementById('notice-media-type').value='photo';
+      const imgPrev=document.getElementById('notice-photo-preview');
+      imgPrev.src=n.photo;imgPrev.style.display='';
+      document.getElementById('notice-clear-media-btn').style.display='';
+    }
   } else {
     document.getElementById('notice-title-inp').value='';
     document.getElementById('notice-body-inp').value='';
+    document.getElementById('notice-pin-inp').checked=false;
     document.getElementById('mo-notice-t').textContent='Post Announcement';
   }
   openMo('mo-notice');
@@ -2156,10 +2220,41 @@ function previewNoticePhoto(input){
   reader.onload=e=>{
     const d=e.target.result;
     document.getElementById('notice-photo-data').value=d;
+    document.getElementById('notice-video-data').value='';
+    document.getElementById('notice-media-type').value='photo';
     const prev=document.getElementById('notice-photo-preview');
     prev.src=d;prev.style.display='';
+    const vPrev=document.getElementById('notice-video-preview');
+    vPrev.style.display='none';vPrev.src='';
+    document.getElementById('notice-clear-media-btn').style.display='';
   };
   reader.readAsDataURL(file);
+}
+function previewNoticeVideo(input){
+  const file=input.files[0];if(!file)return;
+  if(file.size>50*1024*1024){toast('Video too large (max 50MB). Use a shorter clip.','t-err');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const d=e.target.result;
+    document.getElementById('notice-video-data').value=d;
+    document.getElementById('notice-photo-data').value='';
+    document.getElementById('notice-media-type').value='video';
+    const vPrev=document.getElementById('notice-video-preview');
+    vPrev.src=d;vPrev.style.display='';
+    const iPrev=document.getElementById('notice-photo-preview');
+    iPrev.style.display='none';iPrev.src='';
+    document.getElementById('notice-clear-media-btn').style.display='';
+  };
+  reader.readAsDataURL(file);
+}
+function clearNoticeMedia(){
+  document.getElementById('notice-photo-data').value='';
+  document.getElementById('notice-video-data').value='';
+  document.getElementById('notice-media-type').value='';
+  document.getElementById('notice-photo-preview').style.display='none';
+  const vp=document.getElementById('notice-video-preview');
+  vp.style.display='none';vp.src='';
+  document.getElementById('notice-clear-media-btn').style.display='none';
 }
 function saveNotice(){
   const title=document.getElementById('notice-title-inp').value.trim();
@@ -2167,10 +2262,23 @@ function saveNotice(){
   if(!title||!body){toast('Title and message required','t-err');return;}
   const idx=parseInt(document.getElementById('notice-edit-idx').value);
   const pinned=document.getElementById('notice-pin-inp')?.checked||false;
-  const photo=document.getElementById('notice-photo-data')?.value||'';
-  const entry={title,body,by:CURRENT_EMAIL||'Admin',
+  const mediaType=document.getElementById('notice-media-type').value;
+  const photo=mediaType==='photo'?(document.getElementById('notice-photo-data')?.value||''):'';
+  const video=mediaType==='video'?(document.getElementById('notice-video-data')?.value||''):'';
+  // Preserve existing media if editing and nothing new was chosen
+  const existingPhoto=(idx>=0&&!photo&&mediaType!=='video')?(NOTICES[idx]?.photo||''):photo;
+  const existingVideo=(idx>=0&&!video&&mediaType!=='photo')?(NOTICES[idx]?.video||''):video;
+  const existing=idx>=0?NOTICES[idx]:null;
+  const entry={
+    title,body,by:CURRENT_EMAIL||'Admin',
     time:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),
-    pinned,photo:(idx>=0&&!photo)?(NOTICES[idx]?.photo||''):photo};
+    pinned,
+    photo:mediaType==='video'?'':existingPhoto,
+    video:mediaType==='photo'?'':existingVideo,
+    reactions:existing?existing.reactions||{}:{},
+    comments:existing?existing.comments||[]:[],
+    viewers:existing?existing.viewers||{}:{}
+  };
   if(idx>=0) NOTICES[idx]=entry;
   else NOTICES.unshift(entry);
   // Re-sort after adding
@@ -2206,29 +2314,102 @@ async function deletePrivateNotice(toEmail,msgIdx){
 function renderNoticeBoard(){
   const isAdmin=CURRENT_ROLE==='admin';
   const isSupreme=CURRENT_EMAIL.toLowerCase()===SUPREME_ADMIN.toLowerCase();
+  const email=(CURRENT_EMAIL||sessionStorage.getItem('bft_email')||'').toLowerCase();
   const addBtn=document.getElementById('add-notice-btn');
   const pnBtn=document.getElementById('send-pnotice-btn');
   if(addBtn)addBtn.style.display=isAdmin?'':'none';
   if(pnBtn)pnBtn.style.display=isAdmin?'':'none';
   const el=document.getElementById('notice-list');
+
+  // Mark notices as viewed and record viewer
+  NOTICES.forEach((n,i)=>{
+    if(!n.viewers) n.viewers={};
+    if(email && !n.viewers[email]){
+      n.viewers[email]=new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+      // Save viewers quietly in background — admin only so skip if viewer
+      if(isAdmin) saveNotices().catch(()=>{});
+    }
+  });
+
   if(!NOTICES.length){el.innerHTML='<div class="empty"><div class="ei">📢</div><div>No announcements yet.</div></div>';}
   else{
-    el.innerHTML=NOTICES.map((n,i)=>`<div class="notice-item" style="${n.pinned?'border:1.5px solid var(--am);':''}">
-      ${n.pinned?'<div style="font-size:10px;font-weight:800;color:var(--am-t);margin-bottom:6px;letter-spacing:.5px;">📌 PINNED</div>':''}
-      ${n.photo?`<img src="${n.photo}" style="width:100%;max-height:180px;object-fit:cover;border-radius:var(--r);margin-bottom:10px;">`:''}
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">
-        <div class="ni-title">${n.title}</div>
-        <div style="display:flex;gap:6px;flex-shrink:0;">${isAdmin?`<button class="btn btn-sm btn-gh" onclick="togglePin(${i})" title="${n.pinned?'Unpin':'Pin'}">📌</button><button class="btn btn-sm btn-gh" onclick="openNoticeMo(${i})">Edit</button><button class="btn btn-sm btn-d" onclick="deleteNotice(${i})">✕</button>`:''}</div>
-      </div>
-      <div class="ni-body">${n.body}</div>
-      <div class="ni-meta"><span class="ni-tag">📢 ${n.by||'Admin'}</span><span>${n.time}</span></div>
-    </div>`).join('');
+    el.innerHTML=NOTICES.map((n,i)=>{
+      const likedByMe=(n.reactions||{})[email];
+      const likeCount=Object.keys(n.reactions||{}).filter(k=>k!=='_viewers').length;
+      const commentCount=(n.comments||[]).length;
+      const viewerList=Object.keys(n.viewers||{});
+      const viewCount=viewerList.length;
+
+      // Media
+      let mediaHtml='';
+      if(n.video){
+        mediaHtml=`<div class="ni-media"><video controls preload="metadata" style="width:100%;max-height:320px;border-radius:var(--r);background:#000;display:block;"><source src="${n.video}">Your browser does not support video.</video></div>`;
+      } else if(n.photo){
+        mediaHtml=`<img src="${n.photo}" class="ni-media" style="max-height:220px;object-fit:cover;" alt="Announcement photo">`;
+      }
+
+      // Comments HTML
+      const commentsHtml=(n.comments||[]).map((c,ci)=>{
+        const cMem=MEM.find(r=>r.email&&r.email.toLowerCase()===c.email.toLowerCase());
+        const cPhoto=cMem?(MEMBER_PHOTOS[cMem.name]||cMem.photo||''):'';
+        const avHtml=cPhoto?`<img src="${cPhoto}" alt="${c.name}">`:`<span>${ini(c.name)}</span>`;
+        const canDelComment=isAdmin||(c.email&&c.email.toLowerCase()===email);
+        return `<div class="ni-comment">
+          <div class="ni-comment-av">${avHtml}</div>
+          <div class="ni-comment-body">
+            <div class="ni-comment-name">${c.name}</div>
+            <div class="ni-comment-txt">${escHtml(c.txt)}</div>
+            <div class="ni-comment-time">${c.time}${canDelComment?` <button onclick="deleteComment(${i},${ci})" style="background:none;border:none;color:var(--rd-t);cursor:pointer;font-size:10px;padding:0 3px;" aria-label="Delete comment">✕</button>`:''}</div>
+          </div>
+        </div>`;
+      }).join('');
+
+      // Viewers tooltip
+      const viewerNames=viewerList.map(e=>{
+        const m=MEM.find(r=>r.email&&r.email.toLowerCase()===e.toLowerCase());
+        return m?m.nick||m.name:e.split('@')[0];
+      });
+      const viewersHtml=viewCount>0?`<div class="ni-viewers-wrap" style="margin-top:8px;">${viewerNames.map(v=>`<span class="ni-viewer-chip">👁 ${v}</span>`).join('')}</div>`:'';
+
+      return `<div class="notice-item" id="notice-item-${i}" style="${n.pinned?'border:1.5px solid var(--am);':''}">
+        ${n.pinned?'<div style="font-size:10px;font-weight:800;color:var(--am-t);margin-bottom:6px;letter-spacing:.5px;">📌 PINNED</div>':''}
+        ${mediaHtml}
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">
+          <div class="ni-title">${escHtml(n.title)}</div>
+          <div style="display:flex;gap:6px;flex-shrink:0;">${isAdmin?`<button class="btn btn-sm btn-gh" aria-label="${n.pinned?'Unpin':'Pin'}" onclick="togglePin(${i})">📌</button><button class="btn btn-sm btn-gh" onclick="openNoticeMo(${i})">Edit</button><button class="btn btn-sm btn-d" aria-label="Delete notice" onclick="deleteNotice(${i})">✕</button>`:''}</div>
+        </div>
+        <div class="ni-body">${escHtml(n.body)}</div>
+        <div class="ni-meta"><span class="ni-tag">📢 ${n.by||'Admin'}</span><span>${n.time}</span><span class="ni-tag">👁 ${viewCount} viewed</span></div>
+
+        <!-- Interaction bar -->
+        <div class="ni-actions">
+          <button class="ni-action-btn ${likedByMe?'liked':''}" aria-label="${likedByMe?'Unlike':'Like'}" onclick="toggleLike(${i})">
+            ❤️ <span>${likeCount}</span>
+          </button>
+          <button class="ni-action-btn" aria-label="Show comments" onclick="toggleComments(${i})">
+            💬 <span>${commentCount}</span>
+          </button>
+          ${isAdmin?`<button class="ni-action-btn" aria-label="Show viewers" onclick="toggleViewers(${i})">👁 ${viewCount}</button>`:''}
+        </div>
+
+        <!-- Comments section -->
+        <div class="ni-comments-wrap" id="comments-wrap-${i}">
+          <div id="comments-list-${i}">${commentsHtml||'<div style="font-size:12px;color:var(--tx3);padding:4px 0;">No comments yet.</div>'}</div>
+          <div class="ni-comment-input-row">
+            <input class="ni-comment-input" id="comment-input-${i}" placeholder="Write a comment…" aria-label="Write a comment" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();postComment(${i});}"/>
+            <button class="ni-comment-send" onclick="postComment(${i})">Send</button>
+          </div>
+        </div>
+
+        <!-- Viewers section (admin only) -->
+        ${isAdmin?`<div id="viewers-wrap-${i}" style="display:none;">${viewersHtml||'<div style="font-size:11px;color:var(--tx3);padding:4px 0;">No views recorded yet.</div>'}</div>`:''}
+      </div>`;
+    }).join('');
   }
-  // Private notices — supreme admin sees all, others see their own
-  const email=(CURRENT_EMAIL||sessionStorage.getItem('bft_email')||'').toLowerCase();
+
+  // Private notices
   let myPN=[];
   if(isSupreme){
-    // Supreme admin sees all private notices
     Object.entries(PRIVATE_NOTICES).forEach(([to,msgs])=>{
       msgs.forEach(m=>myPN.push({...m,to}));
     });
@@ -2242,13 +2423,13 @@ function renderNoticeBoard(){
     if(myPN.length){
       pnWrap.style.display='';
       if(pnList)pnList.innerHTML=myPN.map((n,i)=>{
-        const delBtn=`<button class="btn btn-sm btn-d" style="padding:2px 7px;font-size:11px;" onclick="deletePrivateNotice('${n.toKey||n.to||email}',${n.msgIdx!==undefined?n.msgIdx:i})">✕</button>`;
+        const delBtn=`<button class="btn btn-sm btn-d" style="padding:2px 7px;font-size:11px;" aria-label="Delete private notice" onclick="deletePrivateNotice('${n.toKey||n.to||email}',${n.msgIdx!==undefined?n.msgIdx:i})">✕</button>`;
         return `<div class="notice-item" style="border-left:3px solid var(--pu);">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
             <span class="pn-badge">${isSupreme&&n.to?'To: '+n.to:'Private'}</span>
             ${delBtn}
           </div>
-          <div class="pn-msg">${n.body}</div>
+          <div class="pn-msg">${escHtml(n.body)}</div>
           <div class="pn-time">${n.time}</div>
         </div>`;
       }).join('');
@@ -2256,6 +2437,57 @@ function renderNoticeBoard(){
       pnWrap.style.display='none';
     }
   }
+}
+
+// ══ ANNOUNCEMENT INTERACTIONS ═════════════════════════════════════════════════
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function toggleComments(idx){
+  const wrap=document.getElementById(`comments-wrap-${idx}`);
+  if(wrap) wrap.classList.toggle('open');
+}
+function toggleViewers(idx){
+  const wrap=document.getElementById(`viewers-wrap-${idx}`);
+  if(wrap) wrap.style.display=wrap.style.display==='none'?'':'none';
+}
+
+async function toggleLike(idx){
+  const n=NOTICES[idx];if(!n)return;
+  const email=(CURRENT_EMAIL||sessionStorage.getItem('bft_email')||'').toLowerCase();
+  if(!email){toast('Please log in to like','t-err');return;}
+  if(!n.reactions)n.reactions={};
+  if(n.reactions[email]) delete n.reactions[email];
+  else n.reactions[email]=1;
+  // Non-admins can't saveNotices directly — optimistic UI, admin saves on next full sync
+  if(CURRENT_ROLE==='admin') await saveNotices().catch(()=>{});
+  renderNoticeBoard();
+}
+
+async function postComment(idx){
+  const n=NOTICES[idx];if(!n)return;
+  const inp=document.getElementById(`comment-input-${idx}`);
+  if(!inp)return;
+  const txt=inp.value.trim();if(!txt){inp.focus();return;}
+  const email=(CURRENT_EMAIL||sessionStorage.getItem('bft_email')||'').toLowerCase();
+  const me=MEM.find(r=>r.email&&r.email.toLowerCase()===email);
+  const displayName=me?me.nick||me.name:email.split('@')[0];
+  if(!n.comments)n.comments=[];
+  n.comments.push({email,name:displayName,txt,time:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})});
+  inp.value='';
+  if(CURRENT_ROLE==='admin') await saveNotices().catch(()=>{});
+  renderNoticeBoard();
+  // Re-open comments
+  const wrap=document.getElementById(`comments-wrap-${idx}`);
+  if(wrap) wrap.classList.add('open');
+}
+
+async function deleteComment(noticeIdx,commentIdx){
+  const n=NOTICES[noticeIdx];if(!n||!n.comments)return;
+  n.comments.splice(commentIdx,1);
+  if(CURRENT_ROLE==='admin') await saveNotices().catch(()=>{});
+  renderNoticeBoard();
+  const wrap=document.getElementById(`comments-wrap-${noticeIdx}`);
+  if(wrap) wrap.classList.add('open');
 }
 function openPrivateNoticeMo(){
   const sel=document.getElementById('pnotice-to');
@@ -2872,8 +3104,7 @@ function previewMemberPhoto(input){
   reader.readAsDataURL(file);
 }
 
-// ══ SAVE MEM (updated to include photo) ══════════════════════════════════════
-// Patched into existing saveMem below
+// ══ SAVE MEM (includes photo) ═════════════════════════════════════════════════
 
 // ══ PENDING PAYMENT SYSTEM ════════════════════════════════════════════════════
 function openMemberPayMo(){
@@ -2962,11 +3193,16 @@ async function rejectPending(id){
 }
 
 // ══ BOOK BORROW STATUS ════════════════════════════════════════════════════════
-function toggleBookBorrow(name){
+async function toggleBookBorrow(name){
   if(CURRENT_ROLE!=='admin'){toast('Admin only','t-warn');return;}
   if(BORROWED_BOOKS[name]) delete BORROWED_BOOKS[name];
   else BORROWED_BOOKS[name]=new Date().toISOString().slice(0,10);
   localStorage.setItem('bft_books',JSON.stringify(BORROWED_BOOKS));
+  // Persist to Sheets so it syncs across devices
+  try{
+    await sheetsClear(`${CONFIG.SHEET_NIZAM}!D2:D2`);
+    await sheetsUpdate(`${CONFIG.SHEET_NIZAM}!D2:D2`,[[JSON.stringify(BORROWED_BOOKS)]]);
+  }catch(e){console.warn('bookBorrow sheet save:',e);}
   renderAll();toast(BORROWED_BOOKS[name]?name+' marked as holding a book':'Book returned by '+name);
 }
 
@@ -2979,9 +3215,9 @@ window.addEventListener('load',()=>{
     if(window.google&&google.accounts&&google.accounts.oauth2){
       clearInterval(wait);
       initGoogleAuth();
-    } else if(tries>60){
+    } else if(tries>150){
       clearInterval(wait);
-      showLoginError('Google services could not load. Please check your internet connection and refresh.');
+      showLoginError('Google services could not load. Please check your internet connection and refresh the page. If the problem persists, try disabling any ad blockers.');
     }
   },100);
 });
