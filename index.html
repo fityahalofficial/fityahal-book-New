@@ -642,7 +642,8 @@ Sign in with Google
       <div class="sh">
         <div class="sh-t">Payment Overview</div>
         <div class="sh-a" id="dash-admin-btns">
-          <button class="btn btn-p" onclick="guardEdit(openPayMo)">+ Payment</button>
+          <button class="btn btn-p" id="dash-pay-btn" onclick="guardEdit(openPayMo)">+ Payment</button>
+          <button class="btn btn-p" id="dash-viewer-pay-btn" style="display:none;" onclick="openMemberPayMo()">💳 Submit Payment</button>
         </div>
       </div>
       <div class="tw"><div class="ts"><table><thead id="db-h"></thead><tbody id="db-b"></tbody><tfoot id="db-f"></tfoot></table></div></div>
@@ -894,6 +895,7 @@ Sign in with Google
   <div class="mo-b" id="mo-mem-pay" style="display:none;">
     <div class="mo-t"><span>Submit Monthly Payment</span><button class="mo-x" onclick="closeMo()">✕</button></div>
     <div style="font-size:12px;color:var(--am-t);background:var(--am-s);border:1px solid rgba(255,173,46,.2);border-radius:var(--r);padding:8px 12px;margin-bottom:1rem;">⏳ Your payment will show as <strong>Pending</strong> until an admin approves it.</div>
+    <div id="mempay-unpaid-hint" style="display:none;font-size:12px;color:var(--rd-t);background:var(--rd-s);border:1px solid rgba(255,92,108,.2);border-radius:var(--r);padding:8px 12px;margin-bottom:1rem;"></div>
     <div class="fg">
       <div class="fr"><label>Year</label><select id="mempay-yr"></select></div>
       <div class="fr"><label>Month</label><select id="mempay-mo"></select></div>
@@ -1498,7 +1500,7 @@ async function loadSharedData(){
     PRIVATE_NOTICES={};
     allNotices.filter(r=>r[4]).forEach(r=>{const to=r[4];if(!PRIVATE_NOTICES[to])PRIVATE_NOTICES[to]=[];PRIVATE_NOTICES[to].push({body:r[1]||'',time:r[3]||''});});
     // Nizam
-    const nizr=await sheetsGet(`${CONFIG.SHEET_NIZAM}!A2:C2`);
+    const nizr=await sheetsGet(`${CONFIG.SHEET_NIZAM}!A2:D2`);
     const nizRow=(nizr.values||[])[0]||[];
     NIZAM=nizRow[0]||'';
     // Load About Us from col B
@@ -1540,17 +1542,26 @@ async function saveToSheet(){
 }
 
 async function saveNotices(){
-  if(CURRENT_ROLE!=='admin'){toast('Admin only','t-err');return;}
+  // Admins do a full rewrite; non-admins use a lightweight patch saved locally and synced on next admin load
+  if(CURRENT_ROLE!=='admin'){
+    // Store reactions/comments locally so they persist for this session and are visible optimistically
+    // They will be merged by admin on next full save
+    try{localStorage.setItem('bft_notice_patches',JSON.stringify(NOTICES.map(n=>({reactions:n.reactions||{},comments:n.comments||[],viewers:n.viewers||{}}))));}catch(e){}
+    return;
+  }
   try{
     await sheetsClear(`${CONFIG.SHEET_NOTICES}!A2:J10000`);
     const rows=[];
     NOTICES.forEach(n=>{
       const reactions=Object.assign({},n.reactions||{});
       delete reactions._viewers;
+      // Merge any locally saved patches from viewers
       rows.push([n.title||'',n.body||'',n.by||'',n.time||'','',n.pinned?'1':'',n.photo||'',n.video||'',JSON.stringify(reactions),JSON.stringify(n.comments||[])]);
     });
     Object.entries(PRIVATE_NOTICES).forEach(([email,msgs])=>{msgs.forEach(m=>rows.push(['Private',''+m.body,'Admin',m.time||'',email]));});
     if(rows.length)await sheetsUpdate(`${CONFIG.SHEET_NOTICES}!A2:J${1+rows.length}`,rows);
+    // Clear local patches after admin save
+    localStorage.removeItem('bft_notice_patches');
   }catch(e){console.error('saveNotices',e);toast('Notice save failed','t-err');}
 }
 
@@ -1748,6 +1759,11 @@ function renderAll(){
   // Viewer visibility: hide admin-only UI elements
   const adminOnlyEls=['add-cost-btn','overview-pay-btn','add-proj-btn','clear-notif-btn'];
   adminOnlyEls.forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=isAdmin?'':'none';});
+  // Dashboard payment buttons — admins see + Payment, viewers see Submit Payment
+  const dashPay=document.getElementById('dash-pay-btn');
+  const dashViewerPay=document.getElementById('dash-viewer-pay-btn');
+  if(dashPay)dashPay.style.display=isAdmin?'':'none';
+  if(dashViewerPay)dashViewerPay.style.display=!isAdmin?'':'none';
   // cost action column - only admin sees edit button column
   const costCol=document.getElementById('cost-action-col');
   if(costCol)costCol.style.display=isAdmin?'':'none';
@@ -1807,7 +1823,11 @@ function renderMC(){
   const assignBtn=document.getElementById('assign-role-members-btn');
   const addBtn=document.getElementById('add-mem-btn');
   const submitPayBtn=document.getElementById('submit-pay-btn');
-  if(pendBtn)pendBtn.style.display=isAdmin?'':'none';
+  if(pendBtn){
+    const pendingCount=PENDING_PAYS.filter(p=>p.status==='pending').length;
+    pendBtn.style.display=isAdmin?'':'none';
+    pendBtn.innerHTML=pendingCount?`⏳ Pending <span style="background:var(--rd);color:#fff;border-radius:99px;padding:1px 6px;font-size:10px;margin-left:3px;">${pendingCount}</span>`:'⏳ Pending';
+  }
   if(assignBtn)assignBtn.style.display=isAdmin?'':'none';
   if(addBtn)addBtn.style.display=isAdmin?'':'none';
   if(submitPayBtn)submitPayBtn.style.display=(!isAdmin&&myMem)?'':'none';
@@ -2322,14 +2342,16 @@ function renderNoticeBoard(){
   const el=document.getElementById('notice-list');
 
   // Mark notices as viewed and record viewer
+  let viewsUpdated=false;
   NOTICES.forEach((n,i)=>{
     if(!n.viewers) n.viewers={};
     if(email && !n.viewers[email]){
       n.viewers[email]=new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
-      // Save viewers quietly in background — admin only so skip if viewer
-      if(isAdmin) saveNotices().catch(()=>{});
+      viewsUpdated=true;
     }
   });
+  // Save viewers — admin does full sheet save; viewers save locally (synced when admin next loads)
+  if(viewsUpdated) saveNotices().catch(()=>{});
 
   if(!NOTICES.length){el.innerHTML='<div class="empty"><div class="ei">📢</div><div>No announcements yet.</div></div>';}
   else{
@@ -2458,8 +2480,7 @@ async function toggleLike(idx){
   if(!n.reactions)n.reactions={};
   if(n.reactions[email]) delete n.reactions[email];
   else n.reactions[email]=1;
-  // Non-admins can't saveNotices directly — optimistic UI, admin saves on next full sync
-  if(CURRENT_ROLE==='admin') await saveNotices().catch(()=>{});
+  await saveNotices().catch(()=>{});
   renderNoticeBoard();
 }
 
@@ -2474,7 +2495,7 @@ async function postComment(idx){
   if(!n.comments)n.comments=[];
   n.comments.push({email,name:displayName,txt,time:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})});
   inp.value='';
-  if(CURRENT_ROLE==='admin') await saveNotices().catch(()=>{});
+  await saveNotices().catch(()=>{});
   renderNoticeBoard();
   // Re-open comments
   const wrap=document.getElementById(`comments-wrap-${idx}`);
@@ -2484,7 +2505,7 @@ async function postComment(idx){
 async function deleteComment(noticeIdx,commentIdx){
   const n=NOTICES[noticeIdx];if(!n||!n.comments)return;
   n.comments.splice(commentIdx,1);
-  if(CURRENT_ROLE==='admin') await saveNotices().catch(()=>{});
+  await saveNotices().catch(()=>{});
   renderNoticeBoard();
   const wrap=document.getElementById(`comments-wrap-${noticeIdx}`);
   if(wrap) wrap.classList.add('open');
@@ -3114,6 +3135,42 @@ function openMemberPayMo(){
   document.getElementById('mempay-m').value='';
   document.getElementById('mempay-b').value='';
   document.getElementById('mempay-note').value='';
+  // Auto-select earliest unpaid month for this member
+  const myMem=MEM.find(r=>r.email&&r.email.toLowerCase()===CURRENT_EMAIL.toLowerCase());
+  if(myMem){
+    const allKeys=activeMonthKeys();
+    const mp=gp(myMem.name);
+    for(const k of allKeys){
+      const[y,mo]=k.split('-').map(Number);
+      const d=new Date(y,mo-1,1);
+      if(d>now) break;
+      const p=mp[k];
+      const hasPending=PENDING_PAYS.find(pp=>pp.memberName===myMem.name&&pp.key===k&&pp.status==='pending');
+      if((!p||(!p.m&&!p.b))&&!hasPending){
+        // Pre-select this month
+        document.getElementById('mempay-yr').value=y;
+        document.getElementById('mempay-mo').value=mo-1;
+        break;
+      }
+    }
+    // Show unpaid months hint
+    const unpaid=allKeys.filter(k=>{
+      const[y,mo]=k.split('-').map(Number);
+      const d=new Date(y,mo-1,1);if(d>now)return false;
+      const p=mp[k];
+      const hasPending=PENDING_PAYS.find(pp=>pp.memberName===myMem.name&&pp.key===k&&pp.status==='pending');
+      return (!p||(!p.m&&!p.b))&&!hasPending;
+    });
+    const hintEl=document.getElementById('mempay-unpaid-hint');
+    if(hintEl){
+      if(unpaid.length>0){
+        hintEl.innerHTML=`⚠ You have <strong>${unpaid.length}</strong> unpaid month${unpaid.length>1?'s':''}: ${unpaid.slice(0,3).map(keyToFull).join(', ')}${unpaid.length>3?' …':''}`;
+        hintEl.style.display='';
+      } else {
+        hintEl.style.display='none';
+      }
+    }
+  }
   openMo('mo-mem-pay');
 }
 
@@ -3177,8 +3234,12 @@ async function approvePending(id){
   PENDING_PAYS[idx].status='approved';
   await savePendingToSheet();
   flush();
-  logActivity('✅','Approved payment: '+p.memberName+' '+keyToFull(p.key));
-  toast('Payment approved!');
+  logActivity('✅','Approved payment: '+p.memberName+' '+keyToFull(p.key)+' ৳'+(p.m+p.b).toFixed(2));
+  toast('Payment approved! ✅');
+  // Update pending badge count on button
+  const remaining=PENDING_PAYS.filter(pp=>pp.status==='pending');
+  const pendBtn=document.getElementById('pending-pay-btn');
+  if(pendBtn) pendBtn.textContent=remaining.length?`⏳ Pending (${remaining.length})`:'⏳ Pending';
   openPendingPayments();renderAll();
 }
 
