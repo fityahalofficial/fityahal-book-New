@@ -709,7 +709,7 @@ Sign in with Google
       <button class="mnb" id="mnb-table" onclick="mShowTab('table')"><span class="mnb-icon">💰</span>Overview</button>
       <button class="mnb" id="mnb-members" onclick="mShowTab('members')"><span class="mnb-icon">👥</span>Members</button>
       <button class="mnb" id="mnb-nizam" onclick="mShowTab('nizam')"><span class="mnb-icon">📖</span>Nizam</button>
-      <button class="mnb" id="mnb-chat" onclick="mShowTab('chat')"><span class="mnb-icon">💬</span>Massages<span class="mnb-dot" id="mnb-chat-dot"></span></button>
+      <button class="mnb" id="mnb-chat" onclick="mShowTab('chat')"><span class="mnb-icon">💬</span>Chat<span class="mnb-dot" id="mnb-chat-dot"></span></button>
       <button class="mnb" id="mnb-activity" onclick="mShowTab('activity')"><span class="mnb-icon">🔔</span>Notifications<span class="mnb-dot" id="mnb-notif-dot"></span></button>
       <button class="mnb" id="mnb-about" onclick="mShowTab('about')"><span class="mnb-icon">🏢</span>About Us</button>
       <button class="mnb" id="mnb-bkash" onclick="closeMobileNav();showBkashInfo();" style="color:#e2136e;display:none;"><span class="mnb-icon">📱</span>bKash Pay</button>
@@ -2178,7 +2178,7 @@ function openEditMem(idx){
   }
   openMo('mo-mem');
 }
-function saveMem(){
+async function saveMem(){
   const name=document.getElementById('em-name').value.trim();
   if(!name){toast('Name is required','t-err');return;}
   const idx=parseInt(document.getElementById('em-idx').value);
