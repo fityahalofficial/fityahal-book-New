@@ -1718,27 +1718,49 @@ async function saveToSheet(){
 }
 
 async function saveNotices(){
-  // Admins do a full rewrite; non-admins use a lightweight patch saved locally and synced on next admin load
-  if(CURRENT_ROLE!=='admin'){
-    // Store reactions/comments locally so they persist for this session and are visible optimistically
-    // They will be merged by admin on next full save
+  if(CURRENT_ROLE==='admin'){
+    // Admin: full rewrite of the sheet
+    try{
+      await sheetsClear(`${CONFIG.SHEET_NOTICES}!A2:J10000`);
+      const rows=[];
+      NOTICES.forEach(n=>{
+        const reactions=Object.assign({},n.reactions||{});
+        delete reactions._viewers;
+        rows.push([n.title||'',n.body||'',n.by||'',n.time||'','',n.pinned?'1':'',n.photo||'',n.video||'',JSON.stringify(reactions),JSON.stringify(n.comments||[])]);
+      });
+      Object.entries(PRIVATE_NOTICES).forEach(([email,msgs])=>{msgs.forEach(m=>rows.push(['Private',''+m.body,'Admin',m.time||'',email]));});
+      if(rows.length)await sheetsUpdate(`${CONFIG.SHEET_NOTICES}!A2:J${1+rows.length}`,rows);
+      localStorage.removeItem('bft_notice_patches');
+    }catch(e){console.error('saveNotices',e);toast('Notice save failed','t-err');}
+  } else {
+    // Non-admin (viewer/member): save reactions+comments to localStorage
+    // New posts are appended directly to sheet via saveNewMomentToSheet()
     try{localStorage.setItem('bft_notice_patches',JSON.stringify(NOTICES.map(n=>({reactions:n.reactions||{},comments:n.comments||[],viewers:n.viewers||{}}))));}catch(e){}
-    return;
   }
+}
+
+// Append a single new moment row to the Sheet (works for all users)
+async function saveNewMomentToSheet(n){
   try{
-    await sheetsClear(`${CONFIG.SHEET_NOTICES}!A2:J10000`);
-    const rows=[];
-    NOTICES.forEach(n=>{
-      const reactions=Object.assign({},n.reactions||{});
-      delete reactions._viewers;
-      // Merge any locally saved patches from viewers
-      rows.push([n.title||'',n.body||'',n.by||'',n.time||'','',n.pinned?'1':'',n.photo||'',n.video||'',JSON.stringify(reactions),JSON.stringify(n.comments||[])]);
+    const reactions=JSON.stringify(n.reactions||{});
+    const comments=JSON.stringify(n.comments||[]);
+    const row=[n.title||'',n.body||'',n.by||'',n.time||'','',n.pinned?'1':'',n.photo||'',n.video||'',reactions,comments];
+    const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(CONFIG.SHEET_NOTICES+'!A:J')}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,{
+      method:'POST',headers:{Authorization:`Bearer ${ACCESS_TOKEN}`,'Content-Type':'application/json'},
+      body:JSON.stringify({values:[row]})
     });
-    Object.entries(PRIVATE_NOTICES).forEach(([email,msgs])=>{msgs.forEach(m=>rows.push(['Private',''+m.body,'Admin',m.time||'',email]));});
-    if(rows.length)await sheetsUpdate(`${CONFIG.SHEET_NOTICES}!A2:J${1+rows.length}`,rows);
-    // Clear local patches after admin save
-    localStorage.removeItem('bft_notice_patches');
-  }catch(e){console.error('saveNotices',e);toast('Notice save failed','t-err');}
+    if(!res.ok)throw new Error('moment append failed '+res.status);
+  }catch(e){console.error('saveNewMomentToSheet',e);toast('Post failed to save — check your connection','t-err');}
+}
+
+// Update reactions/comments on an existing moment row (patch col I+J only)
+async function patchMomentRow(rowIndex,n){
+  // rowIndex is 0-based NOTICES index; sheet row = rowIndex+2
+  try{
+    const sheetRow=rowIndex+2;
+    const reactions=Object.assign({},n.reactions||{});delete reactions._viewers;
+    await sheetsUpdate(`${CONFIG.SHEET_NOTICES}!I${sheetRow}:J${sheetRow}`,[[JSON.stringify(reactions),JSON.stringify(n.comments||[])]]);
+  }catch(e){console.warn('patchMomentRow',e);}
 }
 
 async function saveNizamToSheet(){
@@ -2470,10 +2492,9 @@ function clearNoticeMedia(){
   p.innerHTML='';p.style.display='none';
   document.getElementById('notice-clear-media-btn').style.display='none';
 }
-function saveNotice(){
+async function saveNotice(){
   const body=document.getElementById('notice-body-inp').value.trim();
   const title=document.getElementById('notice-title-inp').value.trim();
-  // caption OR media required
   const mediaType=document.getElementById('notice-media-type').value;
   const photo=mediaType==='photo'?(document.getElementById('notice-photo-data')?.value||''):'';
   const video=mediaType==='video'?(document.getElementById('notice-video-data')?.value||''):'';
@@ -2497,14 +2518,28 @@ function saveNotice(){
     comments:existing?existing.comments||[]:[],
     viewers:existing?existing.viewers||{}:{}
   };
+  // Show optimistic UI immediately
   if(idx>=0) NOTICES[idx]=entry;
   else NOTICES.unshift(entry);
   NOTICES.sort((a,b)=>{if(a.pinned&&!b.pinned)return -1;if(!a.pinned&&b.pinned)return 1;return 0;});
-  saveNotices().then(()=>{
+  closeMo();
+  renderNoticeBoard();
+  toast('Posting…','t-info');
+  try{
+    if(idx>=0){
+      // Edit: admin rewrites, non-admin patches
+      if(CURRENT_ROLE==='admin') await saveNotices();
+      else await patchMomentRow(idx,entry);
+    } else {
+      // New post: append for everyone
+      await saveNewMomentToSheet(entry);
+    }
     logActivity('✨','New moment by '+entry.byName+(title?' — '+title:''));
-    toast('Moment posted! ✨');closeMo();renderNoticeBoard();
+    toast('Moment posted! ✨');
     if(CURRENT_ROLE==='admin') pushNotif('✨','New moment: '+(title||body.slice(0,40)));
-  });
+  }catch(e){
+    toast('Post failed — check connection','t-err');
+  }
 }
 async function deleteNotice(idx){
   const ok=await confirm2('Delete Notice','Remove this notice?','🗑️',true);
@@ -2639,6 +2674,7 @@ function renderNoticeBoard(){
             </div>
           </div>
           <button class="moment-action-btn" onclick="toggleMomentComments(${i})" aria-label="Comment">💬 Comment</button>
+          ${(n.photo||n.video)?`<button class="moment-action-btn" onclick="downloadMoment(${i})" aria-label="Download">⬇️ Save</button>`:''}
         </div>
         <div class="moment-comments-wrap" id="mcomments-${i}">
           <div id="mcomments-list-${i}">${commentsHtml||''}</div>
@@ -2693,6 +2729,23 @@ function openMediaViewer(i){
   document.body.appendChild(ov);
 }
 
+function downloadMoment(i){
+  const n=NOTICES[i];if(!n)return;
+  const src=n.video||n.photo;if(!src)return;
+  const ext=n.video?(n.video.includes('mp4')?'mp4':'mp4'):'jpg';
+  const posterName=n.byName||n.by||'moment';
+  const filename=`moment_${posterName.replace(/\s+/g,'_')}_${i}.${ext}`;
+  // Create a temporary link and trigger download
+  const a=document.createElement('a');
+  a.href=src;
+  a.download=filename;
+  a.style.display='none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>a.remove(),1000);
+  toast('Downloading…','t-info');
+}
+
 let _reactTimers={};
 function showReactPicker(i,btn){
   clearTimeout(_reactTimers[i]);
@@ -2710,12 +2763,11 @@ async function setReact(idx,emoji){
   if(!emoji) delete n.reactions[email];
   else n.reactions[email]=emoji;
   const f=document.getElementById('react-float-'+idx);if(f)f.style.display='none';
-  await saveNotices().catch(()=>{});
   renderNoticeBoard();
-  const w=document.getElementById('mcomments-'+idx);if(w&&w.classList.contains('open'))w.classList.add('open');
+  await patchMomentRow(idx,n).catch(()=>{});
 }
 
-// toggleLike now sets/removes ❤️ react
+// toggleLike sets/removes ❤️
 async function toggleLike(idx){
   const n=NOTICES[idx];if(!n)return;
   const email=(CURRENT_EMAIL||sessionStorage.getItem('bft_email')||'').toLowerCase();
@@ -2723,20 +2775,29 @@ async function toggleLike(idx){
   if(!n.reactions)n.reactions={};
   if(n.reactions[email]) delete n.reactions[email];
   else n.reactions[email]='❤️';
-  await saveNotices().catch(()=>{});
   renderNoticeBoard();
+  await patchMomentRow(idx,n).catch(()=>{});
 }
 
 function showLikers(idx){
   const n=NOTICES[idx];if(!n)return;
-  const likers=Object.entries(n.reactions||{}).filter(([k,v])=>typeof v==='string');
+  const likers=Object.entries(n.reactions||{}).filter(([,v])=>typeof v==='string');
   if(!likers.length){toast('No reactions yet','t-info');return;}
-  const content=likers.map(([e,react])=>{
+  const grouped={};
+  likers.forEach(([e,react])=>{if(!grouped[react])grouped[react]=[];grouped[react].push(e);});
+  let html=`<div style="display:flex;gap:6px;padding-bottom:10px;border-bottom:1px solid var(--br);flex-wrap:wrap;">`;
+  Object.entries(grouped).forEach(([emoji,emails])=>{
+    html+=`<span style="display:inline-flex;align-items:center;gap:4px;background:var(--sf2);border-radius:99px;padding:3px 10px;font-size:13px;border:1px solid var(--br2);">${emoji} <strong>${emails.length}</strong></span>`;
+  });
+  html+='</div>';
+  html+=likers.map(([e,react])=>{
     const m=MEM.find(r=>r.email&&r.email.toLowerCase()===e.toLowerCase());
     const name=m?m.nick||m.name:e.split('@')[0];
-    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--br);">${react} <span style="font-size:13px;">${escHtml(name)}</span></div>`;
+    const photo=m?(MEMBER_PHOTOS[m.name]||m.photo||''):'';
+    const av=photo?`<img src="${photo}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;">`:`<div style="width:32px;height:32px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;">${ini(name)}</div>`;
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--br);">${av}<span style="font-size:13px;font-weight:600;">${escHtml(name)}</span><span style="margin-left:auto;font-size:18px;">${react}</span></div>`;
   }).join('');
-  document.getElementById('viewers-list').innerHTML=content;
+  document.getElementById('viewers-list').innerHTML=html;
   document.querySelector('#mo-viewers .mo-t span').textContent=`${likers.length} Reaction${likers.length>1?'s':''}`;
   openMo('mo-viewers');
 }
@@ -2787,19 +2848,19 @@ async function postComment(idx){
   if(!n.comments)n.comments=[];
   n.comments.push({email,name:displayName,txt,time:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})});
   inp.value='';
-  await saveNotices().catch(()=>{});
   renderNoticeBoard();
   const wrap=document.getElementById(`mcomments-${idx}`);
   if(wrap) wrap.classList.add('open');
+  await patchMomentRow(idx,n).catch(()=>{});
 }
 
 async function deleteComment(noticeIdx,commentIdx){
   const n=NOTICES[noticeIdx];if(!n||!n.comments)return;
   n.comments.splice(commentIdx,1);
-  await saveNotices().catch(()=>{});
   renderNoticeBoard();
   const wrap=document.getElementById(`mcomments-${noticeIdx}`);
   if(wrap) wrap.classList.add('open');
+  await patchMomentRow(noticeIdx,n).catch(()=>{});
 }
 function openPrivateNoticeMo(){
   const sel=document.getElementById('pnotice-to');
@@ -2905,6 +2966,8 @@ async function sendChatMsg(){
   el.value='';
   CHAT_MSGS.push(msg);
   renderChat();
+  // Force scroll to bottom immediately after sending
+  setTimeout(()=>{const el2=document.getElementById('chat-msgs');if(el2)el2.scrollTop=el2.scrollHeight;},50);
   await saveChatMsg(msg);
 }
 
@@ -2937,10 +3000,13 @@ function renderChat(){
   if(!CHAT_MSGS.length){el.innerHTML='<div class="empty"><div class="ei">💬</div><div>No messages yet. Say hello!</div></div>';return;}
   const wasAtBottom=el.scrollTop+el.clientHeight>=el.scrollHeight-20;
 
-  // Filter: show public + DMs involving current user
+  // Filter: show public messages + DMs where current user is sender OR recipient
+  const myEmail=email.toLowerCase().trim();
   const visible=CHAT_MSGS.filter(m=>{
-    if(!m.dm) return true; // public
-    return m.email===email||m.dm===email||isAdmin; // dm: show if sender, recipient, or admin
+    if(!m.dm) return true; // public message
+    const senderMatch=m.email.toLowerCase().trim()===myEmail;
+    const recipientMatch=(m.dm||'').toLowerCase().trim()===myEmail;
+    return senderMatch||recipientMatch||isAdmin;
   });
 
   el.innerHTML=visible.map((m,vi)=>{
@@ -2976,6 +3042,8 @@ function renderChat(){
     </div>`;
   }).join('');
   if(wasAtBottom||visible.length<=3) el.scrollTop=el.scrollHeight;
+  // After DOM settles, ensure scroll is correct
+  requestAnimationFrame(()=>{if(wasAtBottom)el.scrollTop=el.scrollHeight;});
   initChatInput();
 }
 
