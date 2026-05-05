@@ -151,7 +151,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .tb-burger{display:flex !important;}
 .mnb-dot{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:var(--rd);display:none;}
 .mnb-dot.on{display:block;}
-@media(max-width:640px){
+@media(max-width:900px){
   .tb-nav{display:none;}
 }
 .tb-logo{width:34px;height:34px;background:var(--g1);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 12px rgba(91,141,238,.35);overflow:hidden;flex-shrink:0;}
@@ -162,6 +162,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .tb-profile-btn{display:flex;flex-direction:column;align-items:center;font-size:10px;padding:5px 10px;gap:1px;background:var(--sf2);border:1px solid var(--br2);border-radius:var(--r);cursor:pointer;color:var(--tx2);transition:all .18s;white-space:nowrap;}
 .tb-profile-btn:hover{background:var(--sf3);}
 .tb-profile-lbl{display:inline;}
+/* active page label in topbar */
+#tb-page-label{font-size:13px;font-weight:700;color:var(--tx2);padding:4px 12px;background:var(--sf2);border-radius:var(--r);border:1px solid var(--br2);}
 @media(max-width:640px){
   #sync-status{display:none;}
   .tb-desktop-only{display:none!important;}
@@ -170,27 +172,55 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   .tb-btn{padding:6px 8px;}
   .tb-em{display:none;}
   .tb-ttl{font-size:13px;}
+  #tb-page-label{display:none;}
 }
 .tb-btn{font-size:12px;padding:6px 10px;border-radius:var(--r);border:1px solid var(--br2);cursor:pointer;background:transparent;color:var(--tx2);font-family:var(--fn);transition:all .18s;font-weight:500;white-space:nowrap;}
 .tb-btn:hover{background:var(--sf2);color:var(--tx);border-color:var(--br3);}
 .tb-btn:disabled{opacity:.2;cursor:not-allowed;}
 .tb-btn.danger:hover{background:var(--rd-s);color:var(--rd-t);border-color:transparent;}
 
-/* ══ NAV ══ */
-.nav{background:rgba(17,24,39,.8);border-bottom:1px solid var(--br);display:flex;padding:0 1rem;scrollbar-width:none;backdrop-filter:blur(8px);overflow-x:auto;}
-.nav::-webkit-scrollbar{display:none;}
+/* ══ SIDEBAR NAV ══ */
+.sidebar{position:fixed;left:0;top:52px;bottom:0;width:220px;background:rgba(13,18,32,.98);border-right:1px solid var(--br2);display:flex;flex-direction:column;z-index:180;transition:transform .22s cubic-bezier(.16,1,.3,1);overflow-y:auto;overflow-x:hidden;}
+.sidebar::-webkit-scrollbar{width:4px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--sf3);border-radius:4px;}
+.sidebar-section{padding:.5rem 0;}
+.sidebar-label{font-size:9px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;padding:.4rem 1.1rem .2rem;opacity:.6;}
+.snb{display:flex;align-items:center;gap:10px;width:100%;padding:10px 1.1rem;background:none;border:none;border-left:3px solid transparent;font-family:var(--fn);font-size:13px;font-weight:600;color:var(--tx2);cursor:pointer;transition:all .15s;text-align:left;position:relative;white-space:nowrap;}
+.snb:hover{background:rgba(255,255,255,.04);color:var(--tx);}
+.snb.active{background:rgba(91,141,238,.1);color:var(--ac-t);border-left-color:var(--ac);}
+.snb-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.snb-badge{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:var(--rd);display:none;}
+.snb-badge.on{display:block;}
+.sidebar-bottom{margin-top:auto;border-top:1px solid var(--br);padding:.5rem 0;}
+/* sidebar collapsed state */
+.sidebar.collapsed{transform:translateX(-220px);}
+/* content area shifts with sidebar */
+#app-body{margin-left:220px;transition:margin-left .22s cubic-bezier(.16,1,.3,1);}
+#app-body.full{margin-left:0;}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-220px);}
+  .sidebar.open{transform:translateX(0);}
+  #app-body{margin-left:0!important;}
+  /* sidebar backdrop */
+  #sidebar-backdrop{display:none;position:fixed;inset:0;top:52px;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);z-index:179;}
+  #sidebar-backdrop.on{display:block;}
+}
+
+/* ══ NAV (kept for compatibility, hidden) ══ */
+.nav{display:none;}
 .nb{padding:13px 16px;font-size:13px;font-weight:600;color:var(--tx3);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;font-family:var(--fn);white-space:nowrap;transition:all .2s;letter-spacing:-.1px;}
 .nb:hover{color:var(--tx);}
 .nb.active{color:var(--ac-t);border-bottom-color:var(--ac);}
 
 /* ══ MAIN ══ */
-.main{flex:1;padding:1.25rem;max-width:900px;width:100%;margin:0 auto;}
+.main{flex:1;padding:1.25rem;max-width:860px;width:100%;margin:0 auto;}
 @media(max-width:640px){.main{padding:.75rem .5rem;}}
 
 /* ══ TABS ══ */
-.tab-panel{display:none;animation:tabIn .25s cubic-bezier(.16,1,.3,1);}
+.tab-panel{display:none;animation:tabIn .22s cubic-bezier(.16,1,.3,1);}
 .tab-panel.active{display:block;}
-@keyframes tabIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+#tab-chat.active{display:flex;}
+@keyframes tabIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 
 /* ══ STATS — portrait 2x2 ══ */
 .sr{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem;}
@@ -714,11 +744,13 @@ Sign in with Google
       <div style="position:relative;display:flex;"><button class="nb" onclick="showTab('notices',this)">✨ Social</button><span class="notif-dot" id="notice-dot" style="display:none;"></span></div>
     </div>
     <div style="display:flex;align-items:center;gap:4px;padding:0 .5rem;flex-shrink:0;">
+      <span id="tb-page-label">📊 Dashboard</span>
       <div id="sync-status" class="sync-ok" style="margin-right:2px;"><span class="sync-dot"></span><span id="sync-txt" style="font-size:10px;color:var(--tx3);"></span></div>
       <button class="theme-btn" id="theme-btn" onclick="cycleTheme()" title="Toggle theme" aria-label="Toggle theme">🌙</button>
       <button class="tb-btn tb-desktop-only" id="undo-btn" onclick="doUndo()" title="Undo" aria-label="Undo" disabled>↩</button>
       <button class="tb-btn tb-desktop-only" id="redo-btn" onclick="doRedo()" title="Redo" aria-label="Redo" disabled>↪</button>
       <button class="tb-btn" onclick="syncNow()" title="Sync now" aria-label="Sync now">↻</button>
+      <button id="nav-perms-btn" class="tb-btn tb-desktop-only" onclick="openNavPermModal()" title="Manage Nav Permissions" style="display:none;color:var(--am-t);border-color:rgba(251,191,36,.3);">🔐</button>
       <button onclick="goToProfile()" class="tb-profile-btn"><span style="font-size:18px;line-height:1;">👤</span><span class="tb-profile-lbl">Profile</span></button>
     </div>
   </div>
@@ -743,6 +775,7 @@ Sign in with Google
       <button class="mnb" id="mnb-about" onclick="mShowTab('about')"><span class="mnb-icon">🏢</span>About Us</button>
       <button class="mnb" id="mnb-bkash" onclick="closeMobileNav();showBkashInfo();" style="color:#e2136e;display:none;"><span class="mnb-icon">📱</span>bKash Pay</button>
       <div style="border-top:1px solid var(--br);margin-top:8px;padding:8px 0;">
+        <button class="mnb" id="mnb-nav-perms" onclick="closeMobileNav();openNavPermModal();" style="display:none;color:var(--am-t);"><span class="mnb-icon">🔐</span>Nav Permissions</button>
         <button class="mnb" onclick="goToProfile();closeMobileNav();"><span class="mnb-icon">👤</span>My Profile</button>
         <button class="mnb" onclick="doLogout()" style="color:var(--rd-t);"><span class="mnb-icon">🚪</span>Sign Out</button>
       </div>
@@ -1237,6 +1270,11 @@ Sign in with Google
     </div>
   </div>
 
+  <!-- Generic modal — reused for nav permissions and other one-off dialogs -->
+  <div class="mo-b" id="mo-generic" style="display:none;max-width:480px;">
+    <div class="mo-t"><span id="mo-generic-title">Settings</span><button class="mo-x" onclick="closeMo()">✕</button></div>
+    <div id="mo-generic-body" style="padding:.25rem 0;"></div>
+  </div>
 
 </div>
 <script>
@@ -1282,6 +1320,22 @@ let CURRENT_ROLE='viewer', syncTimer=null;
 let CURRENT_EMAIL='';
 let _chatPollTimer=null;
 const SUPREME_ADMIN='fityahalofficial@gmail.com';
+
+// ══ NAV PERMISSIONS — controlled by supreme admin ═══════════════════════════
+// Structure: { tabId: { admin: bool, viewer: bool } }
+// Stored in Nizam sheet col E as JSON
+const ALL_TABS=[
+  {id:'dashboard', label:'Dashboard', icon:'📊'},
+  {id:'table',     label:'Overview',  icon:'💰'},
+  {id:'members',   label:'Members',   icon:'👥'},
+  {id:'projects',  label:'Projects',  icon:'📁'},
+  {id:'notices',   label:'Social',    icon:'✨'},
+  {id:'nizam',     label:'Nizam',     icon:'📖'},
+  {id:'chat',      label:'Chat',      icon:'💬'},
+  {id:'activity',  label:'Notifications', icon:'🔔'},
+  {id:'about',     label:'About Us',  icon:'🏢'},
+];
+let NAV_PERMISSIONS={}; // loaded from sheet; empty = all visible
 
 // ══ UNDO/REDO ════════════════════════════════════════════════════════════════
 let HISTORY=[],FUTURE=[],undoTimer=null;
@@ -1674,18 +1728,19 @@ async function loadSharedData(){
     });
     PRIVATE_NOTICES={};
     allNotices.filter(r=>r[4]).forEach(r=>{const to=r[4];if(!PRIVATE_NOTICES[to])PRIVATE_NOTICES[to]=[];PRIVATE_NOTICES[to].push({body:r[1]||'',time:r[3]||''});});
-    // Nizam
-    const nizr=await sheetsGet(`${CONFIG.SHEET_NIZAM}!A2:D2`);
+    // Nizam sheet: col A=content, B=about, C=muted, D=books, E=nav_permissions
+    const nizr=await sheetsGet(`${CONFIG.SHEET_NIZAM}!A2:E2`);
     const nizRow=(nizr.values||[])[0]||[];
     NIZAM=nizRow[0]||'';
-    // Load About Us from col B
     const aboutStr=nizRow[1]||'';
     loadAboutFromStr(aboutStr||localStorage.getItem('bft_about')||'');
-    // Load CHAT_MUTED from col C and BORROWED_BOOKS from col D
     const mutedStr=nizRow[2]||'';
     if(mutedStr)try{CHAT_MUTED=JSON.parse(mutedStr);}catch(e){}
     const borrowedStr=nizRow[3]||'';
     if(borrowedStr)try{BORROWED_BOOKS=JSON.parse(borrowedStr);localStorage.setItem('bft_books',JSON.stringify(BORROWED_BOOKS));}catch(e){}
+    const navPermStr=nizRow[4]||'';
+    if(navPermStr)try{NAV_PERMISSIONS=JSON.parse(navPermStr);}catch(e){NAV_PERMISSIONS={};}
+    else NAV_PERMISSIONS={};
     // Chat - last 200 msgs (col E = JSON meta: dm, reactions)
     const chatr=await sheetsGet(`${CONFIG.SHEET_CHAT}!A2:E10000`);
     CHAT_MSGS=((chatr.values||[]).filter(r=>r[0]&&r[3]).map(r=>{
@@ -1771,6 +1826,12 @@ async function saveNizamToSheet(){
     await sheetsClear(`${CONFIG.SHEET_NIZAM}!A2:A2`);
     await sheetsUpdate(`${CONFIG.SHEET_NIZAM}!A2:A2`,[[NIZAM]]);
   }catch(e){console.error('saveNizam',e);toast('Nizam save failed','t-err');}
+}
+
+async function saveNavPermissions(){
+  try{
+    await sheetsUpdate(`${CONFIG.SHEET_NIZAM}!E2:E2`,[[JSON.stringify(NAV_PERMISSIONS)]]);
+  }catch(e){console.error('saveNavPerm',e);toast('Failed to save permissions','t-err');}
 }
 
 async function saveChatMsg(msg){
@@ -1861,7 +1922,14 @@ async function bootApp(){
   if(CURRENT_EMAIL.toLowerCase()===SUPREME_ADMIN.toLowerCase()){
     CURRENT_ROLE='admin';
     sessionStorage.setItem('bft_role','admin');
+    // Show supreme-admin-only controls
+    const navBtn=document.getElementById('nav-perms-btn');
+    if(navBtn) navBtn.style.display='';
+    const mnbNavPerms=document.getElementById('mnb-nav-perms');
+    if(mnbNavPerms) mnbNavPerms.style.display='';
   }
+  // Apply nav permissions (hides tabs based on role)
+  applyNavPermissions();
   // Auto-poll ALL shared data every 15 seconds from Sheets
   if(_autoSyncInterval)clearInterval(_autoSyncInterval);
   _autoSyncInterval=setInterval(async()=>{
@@ -1885,6 +1953,8 @@ async function bootApp(){
     else if(activeId==='tab-nizam')renderNizam();
     else if(activeId==='tab-projects')renderProjects();
     renderMC();
+    // Re-apply nav permissions in case supreme admin changed them
+    applyNavPermissions();
   },5000);
   // Chat polls faster (every 5s)
   _lastChatLen=CHAT_MSGS.length;
@@ -1918,6 +1988,11 @@ async function bootApp(){
 
 // ══ TABS ══════════════════════════════════════════════════════════════════════
 function showTab(id,btn){
+  // Permission check — block hidden tabs (except supreme admin)
+  if(!isTabVisible(id)){
+    toast('🚫 This section is not available to you','t-warn');
+    return;
+  }
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tb-nav .nb').forEach(b=>b.classList.remove('active'));
   const panel=document.getElementById('tab-'+id);
@@ -1927,6 +2002,12 @@ function showTab(id,btn){
   document.querySelectorAll('.mnb').forEach(b=>b.classList.remove('active'));
   const mnb=document.getElementById('mnb-'+id);
   if(mnb)mnb.classList.add('active');
+  // Update page label in topbar
+  const tabMeta=ALL_TABS.find(t=>t.id===id);
+  const lbl=document.getElementById('tb-page-label');
+  if(lbl&&tabMeta) lbl.textContent=tabMeta.icon+' '+tabMeta.label;
+  // Close mobile drawer if open
+  closeMobileNav();
   if(id==='activity'){
     const dot=document.getElementById('notif-dot');if(dot)dot.style.display='none';
     const mdot=document.getElementById('mnb-notif-dot');if(mdot)mdot.classList.remove('on');
@@ -2939,7 +3020,92 @@ function renderNizam(){
   }
 }
 
-// ══ CHAT MODE (Group / DM) ════════════════════════════════════════════════════
+// ══ NAV PERMISSION HELPERS ════════════════════════════════════════════════════
+function isTabVisible(id){
+  // Supreme admin sees everything always
+  if(CURRENT_EMAIL.toLowerCase()===SUPREME_ADMIN.toLowerCase()) return true;
+  // dashboard is always visible to everyone
+  if(id==='dashboard') return true;
+  const perm=NAV_PERMISSIONS[id];
+  if(!perm) return true; // default: visible
+  const key=CURRENT_ROLE==='admin'?'admin':'viewer';
+  return perm[key]!==false;
+}
+
+function applyNavPermissions(){
+  // Hide/show all nav buttons and tabs based on permissions
+  ALL_TABS.forEach(t=>{
+    const visible=isTabVisible(t.id);
+    // Mobile drawer button
+    const mnb=document.getElementById('mnb-'+t.id);
+    if(mnb) mnb.style.display=visible?'':'none';
+    // Topbar nav buttons (if any)
+    const nb=document.querySelector(`.tb-nav button[onclick*="'${t.id}'"]`);
+    if(nb) nb.parentElement.style.display=visible?'':'none';
+    // If current active tab becomes hidden, redirect to dashboard
+    const panel=document.getElementById('tab-'+t.id);
+    if(panel&&panel.classList.contains('active')&&!visible){
+      showTab('dashboard',null);
+      toast('That section is no longer available','t-warn');
+    }
+  });
+}
+
+function openNavPermModal(){
+  const isSupreme=CURRENT_EMAIL.toLowerCase()===SUPREME_ADMIN.toLowerCase();
+  if(!isSupreme){toast('Only the Supreme Admin can manage nav permissions','t-err');return;}
+  const rows=ALL_TABS.filter(t=>t.id!=='dashboard').map(t=>{
+    const perm=NAV_PERMISSIONS[t.id]||{admin:true,viewer:true};
+    const adminChecked=perm.admin!==false?'checked':'';
+    const viewerChecked=perm.viewer!==false?'checked':'';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--br);gap:8px;">
+      <span style="font-size:14px;min-width:90px;">${t.icon} ${t.label}</span>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ac-t);cursor:pointer;">
+        <input type="checkbox" data-tab="${t.id}" data-role="admin" ${adminChecked} style="width:16px;height:16px;accent-color:var(--ac);cursor:pointer;"> Admin
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--pu-t);cursor:pointer;">
+        <input type="checkbox" data-tab="${t.id}" data-role="viewer" ${viewerChecked} style="width:16px;height:16px;accent-color:#9d7afa;cursor:pointer;"> Viewer
+      </label>
+    </div>`;
+  }).join('');
+  const el=document.getElementById('mo-generic-body');
+  const title=document.getElementById('mo-generic-title');
+  if(!el||!title)return;
+  title.textContent='🔐 Nav Permissions';
+  el.innerHTML=`
+    <p style="font-size:12px;color:var(--tx3);margin-bottom:12px;">Control which tabs are visible to Admins and Viewers. Dashboard is always visible to everyone.</p>
+    <div style="max-height:360px;overflow-y:auto;">${rows}</div>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button class="btn btn-p" style="flex:1;" onclick="saveNavPermFromModal()">💾 Save Permissions</button>
+      <button class="btn" style="flex:1;" onclick="closeMo()">Cancel</button>
+    </div>`;
+  openMo('mo-generic');
+}
+
+async function saveNavPermFromModal(){
+  const checkboxes=document.querySelectorAll('#mo-generic-body input[data-tab]');
+  checkboxes.forEach(cb=>{
+    const tab=cb.dataset.tab;
+    const role=cb.dataset.role;
+    if(!NAV_PERMISSIONS[tab]) NAV_PERMISSIONS[tab]={admin:true,viewer:true};
+    NAV_PERMISSIONS[tab][role]=cb.checked;
+  });
+  await saveNavPermissions();
+  applyNavPermissions();
+  renderNavDrawer();
+  closeMo();
+  toast('✅ Nav permissions saved!','t-ok');
+}
+
+function renderNavDrawer(){
+  // Re-render mobile drawer visibility
+  ALL_TABS.forEach(t=>{
+    const mnb=document.getElementById('mnb-'+t.id);
+    if(mnb) mnb.style.display=isTabVisible(t.id)?'':'none';
+  });
+}
+
+// ══ NAV PERMISSION HELPERS END ════════════════════════════════════════════════
 let _chatMode = 'group';
 
 function setChatMode(mode) {
