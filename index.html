@@ -551,7 +551,7 @@ body.theme-night{
 @keyframes eliteShimmer{0%{background-position:0%;}100%{background-position:200%;}}
 .mc.elite .mc-av{background:linear-gradient(135deg,#ffd94d,#9d7afa);box-shadow:0 4px 20px rgba(200,160,255,.5);}
 
-/* ══ PENDING PAYMENT ══ */
+.chip.pending{background:rgba(255,173,46,.15);color:var(--am-t);border-color:rgba(255,173,46,.4);}
 .pay-pending-item{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:var(--r);background:rgba(255,173,46,.07);border:1px solid rgba(255,173,46,.2);margin-bottom:6px;}
 .pay-pending-badge{padding:2px 9px;border-radius:99px;font-size:10px;font-weight:700;background:var(--am-s);color:var(--am-t);border:1px solid rgba(255,173,46,.25);}
 .pay-approved-badge{background:var(--gn-s);color:var(--gn-t);border:1px solid rgba(16,212,142,.25);}
@@ -786,6 +786,27 @@ Sign in with Google
 
     <div id="tab-dashboard" class="tab-panel active">
       <div class="sr" id="stat-row"></div>
+      <!-- Admin: pending payments panel -->
+      <div id="dash-pending-admin" style="display:none;margin-bottom:1.1rem;">
+        <div class="sh" style="margin-bottom:0;border-bottom:none;">
+          <div class="sh-t" style="display:flex;align-items:center;gap:8px;">
+            <span>⏳ Pending Payments</span>
+            <span id="dash-pending-count" style="background:var(--rd);color:#fff;border-radius:99px;padding:1px 8px;font-size:11px;font-weight:800;"></span>
+          </div>
+          <div class="sh-a">
+            <button class="btn btn-sm" onclick="openPendingPayments()">View All</button>
+          </div>
+        </div>
+        <div id="dash-pending-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+      <!-- Viewer: my pending payments panel -->
+      <div id="dash-pending-viewer" style="display:none;margin-bottom:1.1rem;background:rgba(255,173,46,.07);border:1px solid rgba(255,173,46,.25);border-radius:var(--rl);overflow:hidden;">
+        <div style="padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,173,46,.15);">
+          <span style="font-size:13px;font-weight:700;color:var(--am-t);">⏳ My Pending Payments</span>
+          <button class="btn btn-sm" onclick="openMemberPayMo()">+ Submit</button>
+        </div>
+        <div id="dash-pending-viewer-list" style="padding:.5rem .75rem;display:flex;flex-direction:column;gap:5px;"></div>
+      </div>
       <div class="sh">
         <div class="sh-t">Payment Overview</div>
         <div class="sh-a" id="dash-admin-btns">
@@ -1959,6 +1980,7 @@ async function bootApp(){
   // Chat polls faster (every 5s)
   _lastChatLen=CHAT_MSGS.length;
   _lastNoticeLen=NOTICES.filter(n=>!n.private_to).length;
+  _lastPendingCount=PENDING_PAYS.filter(p=>p.status==='pending').length;
   startChatPoll();
   // Profile
   renderProfile();
@@ -2048,10 +2070,61 @@ function setMemberView(v){
     renderIC();
   }
 }
-// ══ RENDER ════════════════════════════════════════════════════════════════════
+// ══ RENDER PENDING DASHBOARD PANEL ════════════════════════════════════════════
+function renderPendingDashboard(){
+  const isAdmin=CURRENT_ROLE==='admin';
+  const adminPanel=document.getElementById('dash-pending-admin');
+  const viewerPanel=document.getElementById('dash-pending-viewer');
+  if(!adminPanel||!viewerPanel) return;
+
+  if(isAdmin){
+    // Admin panel — show all pending, approve/reject inline
+    viewerPanel.style.display='none';
+    const pending=PENDING_PAYS.filter(p=>p.status==='pending');
+    if(!pending.length){adminPanel.style.display='none';return;}
+    adminPanel.style.display='';
+    document.getElementById('dash-pending-count').textContent=pending.length;
+    const list=document.getElementById('dash-pending-list');
+    list.innerHTML=pending.slice(0,5).map(p=>`
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--sf);border:1px solid rgba(255,173,46,.2);border-radius:var(--r);flex-wrap:wrap;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:700;color:var(--tx);">${escHtml(p.memberName)}</div>
+          <div style="font-size:11px;color:var(--tx3);margin-top:1px;">${keyToFull(p.key)} — ৳${(p.m+p.b).toFixed(2)}${p.note?' · '+escHtml(p.note):''}</div>
+          <div style="font-size:10px;color:var(--tx3);margin-top:1px;">Submitted: ${new Date(p.submittedAt||p.id).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0;">
+          <button class="btn btn-sm btn-g" onclick="approvePending('${p.id}')">✓ Approve</button>
+          <button class="btn btn-sm btn-d" onclick="rejectPending('${p.id}')">✕ Reject</button>
+        </div>
+      </div>`).join('');
+    if(pending.length>5){
+      list.innerHTML+=`<div style="text-align:center;padding:6px;font-size:12px;color:var(--tx3);">+${pending.length-5} more — <a href="javascript:void(0)" onclick="openPendingPayments()" style="color:var(--ac-t);">View all</a></div>`;
+    }
+  } else {
+    // Viewer panel — show their own pending payments
+    adminPanel.style.display='none';
+    const me=MEM.find(r=>r.email&&r.email.toLowerCase()===CURRENT_EMAIL.toLowerCase());
+    if(!me){viewerPanel.style.display='none';return;}
+    const myPending=PENDING_PAYS.filter(p=>p.memberName===me.name&&p.status==='pending');
+    if(!myPending.length){viewerPanel.style.display='none';return;}
+    viewerPanel.style.display='';
+    const vlist=document.getElementById('dash-pending-viewer-list');
+    vlist.innerHTML=myPending.map(p=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 4px;border-bottom:1px solid rgba(255,173,46,.1);gap:8px;">
+        <div>
+          <span style="font-size:13px;font-weight:600;color:var(--tx);">${keyToFull(p.key)}</span>
+          <span style="margin-left:8px;font-size:12px;color:var(--tx3);">৳${(p.m+p.b).toFixed(2)}</span>
+        </div>
+        <span style="background:var(--am-s);color:var(--am-t);border:1px solid rgba(255,173,46,.3);border-radius:99px;padding:2px 10px;font-size:11px;font-weight:700;white-space:nowrap;">⏳ Awaiting Approval</span>
+      </div>`).join('');
+  }
+}
+
+// ══ RENDER ALL ════════════════════════════════════════════════════════════════
 function renderAll(){
   const isAdmin=CURRENT_ROLE==='admin';
   renderStats();
+  renderPendingDashboard();
   const allKeys=activeMonthKeys();
   rTable('db-h','db-b','db-f',allKeys,MEM,'M','B');
   const q=(document.getElementById('t-search')||{}).value||'';
@@ -2099,7 +2172,13 @@ function rTable(hId,bId,fId,keys,list,ml,bl){
   list.forEach(r=>{
     let tm=0,tb=0;keys.forEach(k=>{const p=gpk(r.name,k);tm+=p.m;tb+=p.b;});
     body+=`<tr><td class="sk">${r.nick||r.name}</td>`;
-    keys.forEach(k=>{const p=gpk(r.name,k);body+=`<td class="amt">${tk(p.m)}</td><td class="amt">${tk(p.b)}</td>`;});
+    keys.forEach(k=>{
+      const p=gpk(r.name,k);
+      const isPending=PENDING_PAYS.some(pp=>pp.memberName===r.name&&pp.key===k&&pp.status==='pending');
+      const mCell=p.m>0?tk(p.m):isPending?`<span style="color:var(--am-t);font-size:10px;" title="Pending approval">⏳</span>`:'—';
+      const bCell=p.b>0?tk(p.b):isPending?`<span style="color:var(--am-t);font-size:10px;" title="Pending approval">⏳</span>`:'—';
+      body+=`<td class="amt">${mCell}</td><td class="amt">${bCell}</td>`;
+    });
     body+=`<td class="amt"><strong>${tkp(tm)}</strong></td><td class="amt"><strong>${tkp(tb)}</strong></td></tr>`;
   });
   document.getElementById(bId).innerHTML=body;
@@ -2149,7 +2228,14 @@ function renderMC(){
     const roleBadge=`<span class="mc-role-badge ${r.role==='admin'?'rb-admin':'rb-viewer'}">${r.role==='admin'?'🔑 Admin':'👁 Viewer'}</span>`;
     const orgRole=ORG_ROLES[r.name];
     const orgBadge=orgRole?`<span class="org-role-badge ${ORG_ROLE_CLASS[orgRole]||'orb-alif'}">${ORG_ROLE_ICONS[orgRole]||'⭐'} ${orgRole}</span>`:'';
-    const chips=allKeys.map(k=>{const p=gpk(r.name,k);const paid=p.m>0||p.b>0;return`<div class="chip ${paid?'paid':'nopaid'}" title="${keyToFull(k)}: ৳${(p.m+p.b).toFixed(2)}">${keyToShort(k).replace(' ','<br>')}</div>`;}).join('');
+    const chips=allKeys.map(k=>{
+      const p=gpk(r.name,k);
+      const paid=p.m>0||p.b>0;
+      const isPending=PENDING_PAYS.some(pp=>pp.memberName===r.name&&pp.key===k&&pp.status==='pending');
+      const cls=paid?'paid':isPending?'pending':'nopaid';
+      const title=paid?`${keyToFull(k)}: ৳${(p.m+p.b).toFixed(2)}`:isPending?`${keyToFull(k)}: ⏳ Pending`:`${keyToFull(k)}: Not paid`;
+      return `<div class="chip ${cls}" title="${title}">${keyToShort(k).replace(' ','<br>')}${isPending?'<span style="font-size:7px;display:block;">⏳</span>':''}</div>`;
+    }).join('');
     const isMe=r.email&&r.email.toLowerCase()===currentEmail.toLowerCase();
     let glowClass='';
     if(isAdmin||isMe){const glow=getPaymentGlow(r.name);if(glow)glowClass='glow-'+glow;}
@@ -3405,7 +3491,7 @@ async function deleteChatMsg(time,senderEmail){
   renderChat();
 }
 
-let _lastChatLen=0, _lastNoticeLen=0;
+let _lastChatLen=0, _lastNoticeLen=0, _lastPendingCount=0;
 function startChatPoll(){
   if(_chatPollTimer)clearInterval(_chatPollTimer);
   _chatPollTimer=setInterval(async()=>{
@@ -3445,6 +3531,15 @@ function startChatPoll(){
         else document.getElementById('notice-dot').style.display='';
       }
       _lastNoticeLen=allN.length;
+      // Poll pending payments — notify admin of new ones
+      const newPendingCount=PENDING_PAYS.filter(p=>p.status==='pending').length;
+      if(typeof _lastPendingCount!=='undefined'&&newPendingCount>_lastPendingCount&&CURRENT_ROLE==='admin'){
+        pushNotif('⏳',`New payment awaiting approval (${newPendingCount} pending)`);
+        renderPendingDashboard();
+        const pendBtn=document.getElementById('pending-pay-btn');
+        if(pendBtn) pendBtn.innerHTML=`⏳ Pending <span style="background:var(--rd);color:#fff;border-radius:99px;padding:1px 6px;font-size:10px;margin-left:3px;">${newPendingCount}</span>`;
+      }
+      _lastPendingCount=newPendingCount;
     }catch(e){}
   },4000);
 }
@@ -3750,7 +3845,11 @@ function renderProfile(){
         <span class="profile-row-label">${keyToFull(k)}</span>
         <span>${paid
           ?`<span class="profile-pay-chip ppc-paid">✓ ৳${(p.m+p.b).toFixed(2)}</span>`
-          :(d<=now?`<span class="profile-pay-chip ppc-unpaid">Not paid</span>`:`<span class="profile-pay-chip ppc-unpaid" style="opacity:.5;">Upcoming</span>`)
+          :(()=>{
+            const isPending=PENDING_PAYS.some(pp=>pp.memberName===me.name&&pp.key===k&&pp.status==='pending');
+            if(isPending) return `<span class="profile-pay-chip" style="background:var(--am-s);color:var(--am-t);border:1px solid rgba(255,173,46,.3);">⏳ Pending</span>`;
+            return d<=now?`<span class="profile-pay-chip ppc-unpaid">Not paid</span>`:`<span class="profile-pay-chip ppc-unpaid" style="opacity:.5;">Upcoming</span>`;
+          })()
         }</span>
       </div>`;
     });
@@ -4002,10 +4101,6 @@ async function approvePending(id){
   flush();
   logActivity('✅','Approved payment: '+p.memberName+' '+keyToFull(p.key)+' ৳'+(p.m+p.b).toFixed(2));
   toast('Payment approved! ✅');
-  // Update pending badge count on button
-  const remaining=PENDING_PAYS.filter(pp=>pp.status==='pending');
-  const pendBtn=document.getElementById('pending-pay-btn');
-  if(pendBtn) pendBtn.textContent=remaining.length?`⏳ Pending (${remaining.length})`:'⏳ Pending';
   openPendingPayments();renderAll();
 }
 
