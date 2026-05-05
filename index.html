@@ -3598,33 +3598,97 @@ function renderAbout() {
   const container = document.getElementById('about-content');
   if (!container) return;
   const a = ABOUT_US;
-  const hasContent = a.headline || a.body || a.fbPage || a.fbGroup || a.photo;
-  // Supreme admin card
-  const supremeMem = MEM.find(m=>m.email&&m.email.toLowerCase()===SUPREME_ADMIN.toLowerCase());
-  const supremeSection = supremeMem ? `<div style="margin-bottom:1.5rem;background:linear-gradient(135deg,rgba(255,200,40,.08),rgba(157,122,250,.08));border:1.5px solid rgba(255,200,40,.3);border-radius:var(--rxl);padding:1.5rem;display:flex;align-items:center;gap:1rem;position:relative;overflow:hidden;">
-    <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,200,40,.03),transparent);pointer-events:none;"></div>
-    <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#ffd94d,#9d7afa);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 4px 20px rgba(200,160,255,.4);">${supremeMem.photo?`<img src="${MEMBER_PHOTOS[supremeMem.name]||supremeMem.photo}" style="width:64px;height:64px;object-fit:cover;border-radius:50%;">`:ini(supremeMem.name)}</div>
-    <div>
-      <div style="font-size:11px;font-weight:800;color:#ffd94d;letter-spacing:1px;margin-bottom:4px;">👑 SUPREME ADMIN</div>
-      <div style="font-size:16px;font-weight:800;color:var(--tx);">${supremeMem.name}</div>
-      ${supremeMem.phone?`<div style="font-size:12px;color:var(--tx3);margin-top:2px;">📞 ${supremeMem.phone}</div>`:''}
+
+  // Supreme admin
+  const supremeMem = MEM.find(m => m.email && m.email.toLowerCase() === SUPREME_ADMIN.toLowerCase());
+  const supPhoto = supremeMem ? (MEMBER_PHOTOS[supremeMem.name] || supremeMem.photo || '') : '';
+  const supAv = supPhoto
+    ? `<img src="${supPhoto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+    : `<span style="font-size:26px;font-weight:900;color:#fff;">${supremeMem ? ini(supremeMem.name) : 'F'}</span>`;
+
+  // All members grid (excluding supreme admin)
+  const members = MEM.filter(m => !(m.email && m.email.toLowerCase() === SUPREME_ADMIN.toLowerCase()));
+  const memberAvatars = members.map(r => {
+    const photo = MEMBER_PHOTOS[r.name] || r.photo || '';
+    const orgRole = ORG_ROLES[r.name];
+    const roleIcon = orgRole ? (ORG_ROLE_ICONS[orgRole] || '⭐') : (r.role === 'admin' ? '🔑' : '');
+    const av = photo
+      ? `<img src="${photo}" style="width:46px;height:46px;object-fit:cover;border-radius:50%;display:block;">`
+      : `<div style="width:46px;height:46px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;">${ini(r.name)}</div>`;
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div style="position:relative;border-radius:50%;border:2px solid ${r.role==='admin'?'rgba(91,141,238,.6)':'rgba(255,255,255,.1)'};">
+        ${av}
+        ${roleIcon ? `<span style="position:absolute;bottom:-1px;right:-1px;font-size:9px;background:var(--sf);border-radius:50%;width:15px;height:15px;display:flex;align-items:center;justify-content:center;border:1px solid var(--br);">${roleIcon}</span>` : ''}
+      </div>
+      <span style="font-size:9px;font-weight:600;color:var(--tx3);max-width:54px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;">${r.nick || r.name.split(' ')[0]}</span>
+    </div>`;
+  }).join('');
+
+  const fbSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`;
+
+  container.innerHTML = `
+    <!-- HERO -->
+    <div style="position:relative;border-radius:20px;overflow:hidden;margin-bottom:14px;min-height:180px;display:flex;align-items:flex-end;background:linear-gradient(135deg,#0d1220 0%,#1a1040 50%,#0d1220 100%);">
+      ${a.photo ? `<img src="${a.photo}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.22;filter:blur(1px);">` : ''}
+      <div style="position:absolute;top:-30px;right:-30px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(91,141,238,.3),transparent 70%);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-40px;left:10px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(157,122,250,.25),transparent 70%);pointer-events:none;"></div>
+      <div style="position:relative;z-index:1;padding:2rem 1.5rem;width:100%;">
+        ${a.photo ? `<div style="width:72px;height:72px;border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 8px 24px rgba(0,0,0,.5);border:2px solid rgba(255,255,255,.12);"><img src="${a.photo}" style="width:100%;height:100%;object-fit:cover;"></div>` : ''}
+        <h1 style="font-size:clamp(20px,4vw,28px);font-weight:900;color:#fff;margin:0 0 6px;letter-spacing:-.5px;line-height:1.2;">${a.headline || 'Fityahal'}</h1>
+        ${a.body ? `<p style="font-size:13px;color:rgba(255,255,255,.6);line-height:1.7;margin:0;max-width:540px;">${a.body.split('\n')[0]}</p>` : ''}
+      </div>
     </div>
-  </div>` : '';
-  if (!hasContent) {
-    container.innerHTML = supremeSection + '<div class="empty"><div class="ei">🏢</div><div>No information added yet.</div></div>';
-    return;
-  }
-  let html = supremeSection;
-  if (a.photo) html += `<img src="${a.photo}" style="width:100%;max-height:220px;object-fit:cover;border-radius:var(--rl);margin-bottom:1rem;">`;
-  if (a.headline) html += `<h2 style="font-size:20px;font-weight:800;color:var(--tx);margin-bottom:.75rem;">${a.headline}</h2>`;
-  if (a.body) html += `<p style="font-size:14px;color:var(--tx2);line-height:1.9;white-space:pre-wrap;margin-bottom:1rem;">${a.body}</p>`;
-  if (a.fbPage || a.fbGroup) {
-    html += '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:.5rem;">';
-    if (a.fbPage) html += `<a href="${a.fbPage}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:#1877f2;color:#fff;border-radius:var(--r);text-decoration:none;font-size:13px;font-weight:600;"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Page</a>`;
-    if (a.fbGroup) html += `<a href="${a.fbGroup}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:#1877f2;color:#fff;border-radius:var(--r);text-decoration:none;font-size:13px;font-weight:600;"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook Group</a>`;
-    html += '</div>';
-  }
-  container.innerHTML = html;
+
+    <!-- STATS ROW -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+      <div style="background:var(--sf);border:1px solid var(--br);border-radius:14px;padding:14px;text-align:center;">
+        <div style="font-size:22px;font-weight:900;color:var(--ac-t);">${MEM.length}</div>
+        <div style="font-size:11px;color:var(--tx3);font-weight:600;margin-top:2px;">Members</div>
+      </div>
+      <div style="background:var(--sf);border:1px solid var(--br);border-radius:14px;padding:14px;text-align:center;">
+        <div style="font-size:22px;font-weight:900;color:var(--pu-t);">${MEM.filter(m=>m.role==='admin').length}</div>
+        <div style="font-size:11px;color:var(--tx3);font-weight:600;margin-top:2px;">Admins</div>
+      </div>
+      <div style="background:var(--sf);border:1px solid var(--br);border-radius:14px;padding:14px;text-align:center;">
+        <div style="font-size:22px;font-weight:900;color:var(--gn-t);">${PROJECTS.length}</div>
+        <div style="font-size:11px;color:var(--tx3);font-weight:600;margin-top:2px;">Projects</div>
+      </div>
+    </div>
+
+    <!-- SUPREME ADMIN -->
+    ${supremeMem ? `
+    <div style="background:linear-gradient(135deg,rgba(255,200,40,.07),rgba(157,122,250,.07));border:1.5px solid rgba(255,200,40,.25);border-radius:16px;padding:16px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px;">
+      <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#ffd94d,#9d7afa);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 16px rgba(157,122,250,.35);overflow:hidden;">${supAv}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:10px;font-weight:800;color:#ffd94d;letter-spacing:1.2px;margin-bottom:3px;">👑 SUPREME ADMIN</div>
+        <div style="font-size:16px;font-weight:800;color:var(--tx);">${supremeMem.name}</div>
+        ${supremeMem.phone ? `<div style="font-size:12px;color:var(--tx3);margin-top:2px;">📞 ${supremeMem.phone}</div>` : ''}
+      </div>
+    </div>` : ''}
+
+    <!-- MEMBER GRID -->
+    ${members.length ? `
+    <div style="background:var(--sf);border:1px solid var(--br);border-radius:16px;padding:16px;margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;">👥 Our Members</div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;">${memberAvatars}</div>
+    </div>` : ''}
+
+    <!-- ABOUT BODY (full text) -->
+    ${a.body && a.body.includes('\n') || (a.body && a.body.length > 80) ? `
+    <div style="background:var(--sf);border:1px solid var(--br);border-radius:16px;padding:16px;margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">📖 About Us</div>
+      <p style="font-size:13px;color:var(--tx2);line-height:1.85;white-space:pre-wrap;margin:0;">${a.body}</p>
+    </div>` : ''}
+
+    <!-- SOCIAL LINKS -->
+    ${(a.fbPage || a.fbGroup) ? `
+    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+      ${a.fbPage ? `<a href="${a.fbPage}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:10px 18px;background:#1877f2;color:#fff;border-radius:12px;text-decoration:none;font-size:13px;font-weight:700;box-shadow:0 4px 14px rgba(24,119,242,.35);">${fbSvg} Facebook Page</a>` : ''}
+      ${a.fbGroup ? `<a href="${a.fbGroup}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:10px 18px;background:#1877f2;color:#fff;border-radius:12px;text-decoration:none;font-size:13px;font-weight:700;box-shadow:0 4px 14px rgba(24,119,242,.35);">${fbSvg} Facebook Group</a>` : ''}
+    </div>` : ''}
+
+    ${!a.headline && !a.body && !a.photo && !a.fbPage && !a.fbGroup && !supremeMem && !members.length ? '<div class="empty"><div class="ei">🏢</div><div>No information added yet.</div></div>' : ''}
+  `;
 }
 
 function openAboutEdit() {
